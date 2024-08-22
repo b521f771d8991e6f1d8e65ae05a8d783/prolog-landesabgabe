@@ -7,5 +7,6 @@
         80
     ],
     "git.autofetch": "all",
-    "cmake.automaticReconfigure": false
+    "cmake.automaticReconfigure": false,
+    "git.enableCommitSigning": true
 }

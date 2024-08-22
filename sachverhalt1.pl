@@ -1,3 +1,0 @@
-grund_und_boden(mein_haus).
-zivilrecht_erwerb_entgeltlich(mein_haus).
-zivilrecht_erwerb_unentgeltlich(dein_haus).

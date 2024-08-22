@@ -4,12 +4,12 @@ project(LX VERSION 1.0 LANGUAGES Swift CXX C)
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
     OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set(SWIFT_CXX_INTEROP
-    $<$<COMPILE_LANGUAGE:Swift>:-cxx-interoperability-mode=default>
+    #$<$<COMPILE_LANGUAGE:Swift>:-cxx-interoperability-mode=default>
   )
 
   set(SWIFT_CXX_INTEROP_LANGUAGE_VERSION
-    $<$<COMPILE_LANGUAGE:Swift>:-Xcc>
-    $<$<COMPILE_LANGUAGE:Swift>:-std=c++17>
+    #$<$<COMPILE_LANGUAGE:Swift>:-Xcc>
+    #$<$<COMPILE_LANGUAGE:Swift>:-std=c++17>
   )
 
   set(SWIFT_TESTABLE

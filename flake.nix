@@ -3,8 +3,14 @@
   description = "LegalXML";
 
   inputs = {
-    nixpkgs.url = "./Dependencies/nixpkgs";
-    flake-utils.url = "./Dependencies/flake-utils";
+    nixpkgs = {
+      url = "git+file:./Dependencies/nixpkgs";
+      flake = true;
+    };
+    flake-utils = {
+      url = "git+file:./Dependencies/flake-utils";
+      flake = true;
+    };
   };
 
   outputs = { self, nixpkgs, flake-utils }:

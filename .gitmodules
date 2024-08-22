@@ -1,0 +1,18 @@
+[submodule "Dependencies/googletest"]
+	path = Dependencies/googletest
+	url = https://github.com/google/googletest
+[submodule "Dependencies/boost"]
+	path = Dependencies/boost
+	url = https://github.com/boostorg/boost
+[submodule "Dependencies/swi-prolog"]
+	path = Dependencies/swi-prolog
+	url = https://github.com/SWI-Prolog/swipl
+[submodule "Dependencies/zlib"]
+	path = Dependencies/zlib
+	url = https://github.com/madler/zlib
+[submodule "Dependencies/nixpkgs"]
+	path = Dependencies/nixpkgs
+	url = https://github.com/NixOS/nixpkgs
+[submodule "Dependencies/xctest"]
+	path = Dependencies/xctest
+	url = https://github.com/swiftlang/swift-corelibs-xctest

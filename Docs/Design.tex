@@ -1,0 +1,205 @@
+\documentclass[8pt]{article}
+
+\title{LegalXML}
+\author{AMH}
+
+\usepackage{outlines}
+\usepackage{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage[T1]{fontenc}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Zielsetzung}
+Ziel dieses Projekts ist es, ein österreichisches Landesgesetz (das oberösterreichische "Landesgesetz über eine Landesabgabe für das obertägige Gewinnen mineralischer Rohstoffe
+(Oö. Landschaftsabgabegesetz)")\footnote{\url{https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=LrOO&Gesetzesnummer=20000943}}
+zu digitalisieren. Es wird dabei eine Identität zwischen Code und Gesetz hergestellt.
+
+\section{Generelle technische Entscheidungen}
+Bei der Erstellung des Projekts werden folgende Techniken verwendet:
+\begin{outline}
+    \1 Für das Dependency-Management werden nix (\url{https://nixos.org/}) und
+        git submodules (\url{https://git-scm.com/book/en/v2/Git-Tools-Submodules}) verwendet.
+    \1 Als Programmiersprache erster Wahl wird Swift\textregistered (\url{https://www.swift.org/}) verwendet,
+        sofern nötig wird (Objective) C/++ (\url{https://www.swift.org/documentation/cxx-interop/}) verwendet.
+        \2 Dies deshalb, da für die Programmiersprache, in der 95\% des Codes geschrieben werden soll
+            eine bekannte Programmiersprache mit Speichersicherheit verwendet werden, die gut mit C/++ interagieren kann.
+            Diese Funktion ist bei Swift eingebaut (siehe Link oben).
+        \2 Evaluiert wurden insofern lt. dem TIOBE-Index 2024\footnote{\url{https://www.tiobe.com/tiobe-index/}} die 20 bekanntesten Programmiersprachen:
+            Python, Java, C\#, JavaScript, Go, Visual Basic, Fortran, Object Pascal/Delphi, Rust, Ruby, PHP, Swift, COBOL, Kotlin
+        \2 Die offensichtlich nicht geeigneten Sprachen für Spezialanwendungen (SQL, Assembler, Scratch, MATLAB) sowie
+            nicht speichersichere Sprachen (C/++) wurden ausgeschieden.
+        \2 Veralterte Programmiersprache wie Fortran, COBOL, PHP, Delphi und Visual Basic werden nicht verwendet.
+        \2 Nativen Programmiersprachen wurde der Vorzug gegeben, da diese eine höhere Ausführungsgeschwindigkeit erreichen
+            und einfacher zu deployen sind. Java und Kotlin wären prinzipiell geeignet, jedoch erscheint die Verwendung hier unklug,
+            da  die JNI-Schnittstelle zur Anbindung an C/++ wurde bereits in vergangenen Projekten an der Landesregierung verwendet
+            wurde und dort für eher umständlich befunden wurde.
+        \2 Damit bleiben erhalten: Go, Swift, Rust.
+        \2 Lt. der offiziellen FAQ von Go ist Go schlecht geeignet um mit anderen Modulen, die in C/++ geschrieben sind,
+            gelinkt zu werden (\url{https://go.dev/doc/faq#Do_Go_programs_link_with_Cpp_programs}).
+        \2 Rust hat eine höhere Lernschwelle und ein komplett eigenes Ownership-Modell, das Modell der Speicherverwaltung das Swift benutzt
+            (ARC \footnote{\url{https://docs.swift.org/swift-book/documentation/the-swift-programming-language/automaticreferencecounting/}}) ist
+            für unsere Zwecke ausreichend schnell.
+    \1 Als Build-Tool wird CMake (\url{https://cmake.org/}) verwendet.
+\end{outline}
+
+\section{Analyse des logischen Backends}
+Untersucht wurde
+\begin{itemize}
+\end{itemize}
+\endsection
+
+\section{Module}
+\begin{itemize}
+    \item \textbf{ActBuilder}: Frontend für die Gestaltung von Gesetzen, basiert auf ActKit.
+    \item \textbf{ActKit}: Abstrahiert den Aufbau von Gesetzen programmatisch, hält Klassen bereit für ganze Gesetze, Paragraphen, Absätze, ...
+             Verwendet einen an Swift-UI \footnote{\url{https://developer.apple.com/xcode/swiftui/}} angelehnten Syntax.
+    \item \textbf{LogicKit}: Zuständig für die Ausführung von Gesetzen.
+\end{itemize}
+
+Auf die Struktur der komplexeren Module wird in eigenen Abschnitten eingegangen.
+
+\section{LogicKit}
+Das eigentliche Herzstück von LegalXML ist LogicKit, dieses Modul kümmert sich um die Ausführung von Gesetzen.
+Hier werden die einzelnen Paragraphen des Gesetzes auführt, und die Umsetzung erklärt.
+
+\subsection{Gegenstand der Abgabe}
+
+\fbox{\begin{minipage}{\textwidth}
+\begin{enumerate}
+    \item Das Land erhebt eine Landschaftsabgabe für das obertägige Gewinnen mineralischer Rohstoffe in Oberösterreich.
+    \item Von der Erhebung ausgenommen sind:
+    \begin{itemize}
+        \item[-] Abraummaterial,
+        \item[-] Material aus Fließgewässern, das aus flussbaulichen Gründen wieder in Fließgewässer eingebracht wird,
+        \item[-] bundeseigene mineralische Rohstoffe gemäß § 4 Abs. 1 Mineralrohstoffgesetz (MinroG), BGBl. I Nr. 38/1999, in der Fassung des Bundesgesetzes BGBl. I Nr. 95/2016,
+        \item[-] Kohle,
+        \item[-] Material aus Seitenentnahmen und
+        \item[-] Rohstoffe, deren Verwendung Maßnahmen zur Abwehr einer unmittelbaren Gefahr für das Leben oder die Gesundheit von Menschen oder zur unmittelbaren Abwehr von Katastrophen dient.
+    \end{itemize}
+    \item Die Gemeinde, in der sich eine Gewinnungsstätte befindet, erhält einen Ertragsanteil in Höhe von 20 \% der Landschaftsabgabe, die im Gemeindegebiet erhoben wurde. (Anm: LGBl.Nr. 96/2023)
+    \item Die Landschaftsabgabe ist für Angelegenheiten des Natur- und Landschaftsschutzes sowie der Landschafts- und Ortsbildpflege, zur Verbesserung der ökologischen Infrastruktur, die Umweltbildung und Umwelterziehung sowie sonstige Maßnahmen im Bereich des Umweltschutzes zu verwenden. (Anm: LGBl.Nr. 96/2023)
+    \item Die der Gemeinde gemäß Abs. 3 zufließenden Mittel sind für Angelegenheiten des Natur- und Landschaftsschutzes sowie der Landschafts- und Ortsbildpflege, zur Verbesserung der ökologischen Infrastruktur, für naturnahe Erholungsformen in der Gemeinde, die Umweltbildung oder die Umwelterziehung zu verwenden. (Anm: LGBl.Nr. 96/2023)
+    \item Die Überweisung des Ertragsanteils an die Gemeinden hat jeweils spätestens am 30. Juni für das vorangegangene Kalenderjahr zu erfolgen. (Anm: LGBl.Nr. 96/2023)
+\end{enumerate}
+\end{minipage}}
+
+Im ersten Paragraph definiert eine neue Abgabe, die dann in den folgenden Pragraphen und Absätzen genauer ausgestaltet wird.
+
+\subsection{Begriffsbestimmungen}
+
+\fbox{\begin{minipage}{\textwidth}
+Im Sinn des Landesgesetzes ist:
+\begin{enumerate}
+    \item „Abraummaterial“: jedes beim Gewinnen anfallende, nicht verwertbare Material (zB taubes Gestein, Abschlämmbares) sowie Materialien,
+    die zur Böschungsherstellung, Rekultivierung oder Geländegestaltung (zB Lärmschutz- oder Hochwasserschutzdämme) betriebsintern verwendet werden;
+    \item „Betreiberin“ bzw. „Betreiber“: jede physische und juristische Person sowie jeder sonstige Rechtsträger, die bzw. der ein Gewinnen gewerblich oder berufsmäßig durchführt;
+    \item „Gewinnen“: das Lösen oder Freisetzen (Abbau) mineralischer Rohstoffe einschließlich der durch dieselbe Betreiberin bzw. denselben Betreiber
+            vorgenommenen damit zusammenhängenden vorbereitenden, begleitenden und nachfolgenden Tätigkeiten zur Aufbereitung des Naturmaterials;
+    \item „Gewinnungsstätte“: Steinbruch bzw. Entnahmestelle von mineralischen Rohstoffen unabhängig davon, ob dafür eine Bewilligungspflicht nach dem MinroG besteht;
+    \item „Mineralischer Rohstoff“: jedes Mineral, Mineralgemenge oder Gestein (Fest- und Lockergestein), wenn es natürlicher Herkunft ist;
+    \item „Seitenentnahme“: obertägiges Gewinnen im direkten Areal eines Bauprojekts zwecks Verwendung bei diesem Bauprojekt;
+    \item „Verwertung“: Übergabe an Dritte oder betriebsinterne Übergabe zur Weiterverarbeitung nach der Aufbereitung.
+\end{enumerate}
+\end{minipage}}
+
+\subsection{Abgabepflichtige bzw. Abgabepflichtiger}
+
+\fbox{\begin{minipage}{\textwidth}
+Abgabepflichtige bzw. Abgabepflichtiger ist die Betreiberin bzw. der Betreiber einer Gewinnungsstätte eines abgabepflichtigen Materials.
+\end{minipage}}
+
+\subsection{Abgabenbefreiung}
+
+\fbox{\begin{minipage}{\textwidth}
+Von der Landschaftsabgabe befreit sind Betreiberinnen bzw. Betreiber, deren Abgabenschuld im jeweiligen Kalenderjahr weniger als 120 Euro beträgt.
+\end{minipage}}
+
+\subsection{Höhe der Abgabe}
+
+\fbox{\begin{minipage}{\textwidth}
+\begin{enumerate}
+    \item Die Höhe der Landschaftsabgabe beträgt 15,95 Cent pro Tonne gewonnenen und verwerteten mineralischen Rohstoffs.
+    \item Der im Abs. 1 festgesetzte Tarif ändert sich jeweils zum 1. Jänner entsprechend den durchschnittlichen Änderungen
+            des von der Bundesanstalt „Statistik Austria“ für das zweitvorangegangene Jahr verlautbarten Verbraucherpreisindex 2015 oder eines an seine Stelle
+            tretenden Index. Bezugsgröße für die erstmalige Änderung zum Stichtag 1. Jänner 2025 ist der durchschnittliche Indexwert für das Jahr 2017;
+            Bezugsgröße für jede weitere Änderung ist der durchschnittliche Indexwert des der jeweils letzten Änderung zweitvorangegangenen Kalenderjahres.
+            Ein sich aus dieser Berechnung ergebender neuer Betrag ist auf einen vollen Hundertstel-Centbetrag zu runden, wobei Beträge bis einschließlich
+            0,005 Cent abgerundet und Beträge über 0,005 Cent aufgerundet werden. Eine solchermaßen ermittelte Änderung des Tarifs wird nur dann wirksam,
+            wenn der geänderte Betrag von der Landesregierung vor dem Stichtag 1. Jänner im Landesgesetzblatt für Oberösterreich kundgemacht wurde. (Anm: LGBl.Nr. 95/2022, 96/2023)
+\end{enumerate}
+\end{minipage}}
+
+\subsection{Entstehen der Abgabenschuld}
+
+\fbox{\begin{minipage}{\textwidth}
+Die Abgabenschuld entsteht zu dem Zeitpunkt, in dem das gewonnene Material verwertet wird.
+\end{minipage}}
+
+\subsection{Aufzeichnungspflicht}
+
+\fbox{\begin{minipage}{\textwidth}
+Die bzw. der Abgabepflichtige ist verpflichtet, zur Feststellung der Abgabe und der Grundlagen ihrer Berechnung Aufzeichnungen zu führen.
+\end{minipage}}
+
+\subsection{Anzeigepflicht}
+
+\fbox{\begin{minipage}{\textwidth}
+Die bzw. der Abgabepflichtige hat den Beginn und das Ende eines abgabepflichtigen Gewinnens binnen vier Wochen der Abgabenbehörde anzuzeigen.
+\end{minipage}}
+
+\subsection{Selbstbemessung, Fälligkeit}
+
+\fbox{\begin{minipage}{\textwidth}
+\begin{enumerate}
+    \item Die bzw. der Abgabepflichtige hat die Abgabe selbst zu bemessen. Die Abgabenerklärung ist jeweils
+            bis 30. April eines jeden Jahres (Fälligkeitstag) für die im Vorjahr entstandene Abgabenschuld einzureichen.
+    \item Die Abgabenerklärung ist nach Gemeinden und nach Gewinnungsstätten aufzugliedern.
+            Die bzw. der Abgabepflichtige hat den Abgabenbetrag zu berechnen und die Abgabe am Fälligkeitstag zu entrichten. (Anm: LGBl.Nr. 96/2023)
+\end{enumerate}
+\end{minipage}}
+
+\subsection{Behörde}
+
+\fbox{\begin{minipage}{\textwidth}
+Abgabenbehörde ist die Landesregierung.
+\end{minipage}}
+
+\subsection{Übermittlung von Daten}
+
+\fbox{\begin{minipage}{\textwidth}
+\begin{enumerate}
+    \item Die Abgabenbehörde hat jährlich jeweils bis 30. September eines jeden Jahres die ihr im Rahmen der Vorlage von Abgabenerklärungen für die im Vorjahr entstandene Abgabenschuld bekannt gegebenen
+    \begin{itemize}
+        \item[-] Namen oder Firmenbezeichnungen oder Firmenbuchnummern der Betreiberinnen und Betreiber von Gewinnungsstätten,
+        \item[-] den Ort der Gewinnung (politischer Bezirk und Gemeinde) und
+        \item[-] die Menge des dort gewonnenen und verwerteten mineralischen Rohstoffs
+    \end{itemize}
+    in elektronischer Form an die für die Vollziehung des Oö. Raumordnungsgesetzes 1994 (Oö. ROG 1994) zuständige Behörde und
+    die die Parteistellung gemäß § 81 MinroG wahrnehmende Dienststelle des Amtes der Landesregierung zum Zweck der Einspeisung in das Oö. Rohstoffinformationssystem zu übermitteln.
+    \item Sollte ein Hinderungsgrund für die vollständige oder auch nur teilweise Datenübermittlung vorliegen, hat die Abgabenbehörde die für die Vollziehung des Oö. ROG 1994
+            zuständige Behörde und die die Parteistellung gemäß § 81 MinroG wahrnehmende Dienststelle des Amtes der Landesregierung hierüber unter Mitteilung des Hinderungsgrundes zu informieren.
+    \item Die Naturschutzbehörden haben in Bewilligungsbescheide gemäß § 5 Z 11 und 15 Oö. Natur- und Landschaftsschutzgesetz 2001 einen Hinweis
+        auf die Verpflichtungen nach dem Oö. Landschaftsabgabegesetz aufzunehmen. (Anm: LGBl.Nr. 96/2023)
+\end{enumerate}
+\end{minipage}}
+
+\subsection{Schlussbestimmungen}
+
+\fbox{\begin{minipage}{\textwidth}
+    \begin{enumerate}
+        \item Dieses Landesgesetz tritt mit dem seiner Kundmachung im Landesgesetzblatt für Oberösterreich folgenden Monatsersten in Kraft.
+        \item Personen, die zum Zeitpunkt des Inkrafttretens dieses Landesgesetzes bereits eine Gewinnungsstätte eines abgabepflichtigen Materials betreiben,
+                haben ihre Tätigkeit binnen vier Wochen nach Inkrafttreten dieses Landesgesetzes der Abgabenbehörde anzuzeigen.
+        \item Abweichend von § 9 ist die Abgabenerklärung für das erste Halbjahr 2018 bis längstens 31. Oktober 2018 einzureichen und auch
+                die Abgabe für das erste Halbjahr 2018 bis längstens 31. Oktober 2018 zu entrichten.
+    \end{enumerate}
+\end{minipage}}
+
+
+
+\end{document}

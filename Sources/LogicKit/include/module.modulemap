@@ -1,0 +1,7 @@
+module LogicKitC {
+    requires cplusplus
+    
+    header "LogicKit.h++"
+
+    export *
+}

@@ -2,22 +2,30 @@
 % Titel: Oö. Landschaftsabgabegesetz
 % Kurztitel: LAbgG
 
-file_search_path(stdLib, './StdLib').
+file_search_path(stdlib, './stdlib').
 
-:- use_module(stdLib(abgabe)).
-:- use_module(stdLib(bergbau)).
-:- use_module(stdLib(gebietskoerperschaften)).
-:- use_module(stdLib(mineralrohstoffgesetz)).
+:- use_module(stdlib(abgabe)).
+:- use_module(stdlib(bergbau)).
+:- use_module(stdlib(gebietskoerperschaften)).
+:- use_module(stdlib(mineralrohstoffgesetz)).
 
 % §1 Gegenstand der Abgabe:
 
 %   1. Das Land erhebt eine Landschaftsabgabe für das obertägige Gewinnen mineralischer Rohstoffe in Oberoesterreich. 
-abgabe_auf(landesabgabe_ooe_obertaetige_gewinnen_von_mineralische_rohstoffe, landesabgabe, oberoesterreich, bergbau(gewinnen, obertags, mineralische_rohstoffe)).
+abgabe_auf(landesabgabe_ooe_obertaetige_gewinnen_von_mineralische_rohstoffe,
+    landesabgabe,
+    oberoesterreich,
+    bergbau(gewinnen, obertags, mineralische_rohstoffe)).
+
+grund_und_boden(mein_haus).
+zivilrecht_erwerb_entgeltlich(mein_haus).
+zivilrecht_erwerb_unentgeltlich(dein_haus).
 
 % andere Abgaben (für Demozecke)
-abgabe_auf(hundehalterabgabe, gemeinde, X, zivilrecht_eigentuemer(hund)) :-
-    gemeinde(oesterreich, X).
+
+
 abgabe_auf(humusabgabe, gemeinde, tragwein, zivilrecht_eigentuemer(humus)).
+
 abgabe_auf(grunderwerbssteuer, bundesabgabe, oesterreich, X) :-
     (zivilrecht_erwerb_entgeltlich(X) ; zivilrecht_erwerb_unentgeltlich(X)),
     grund_und_boden(X).
@@ -117,7 +125,7 @@ abgabepflichtiger(bundessteuer_koest, juristische_personen_koerperschaften_lt_P1
 % §5 Höhe der Abgabe:
 %   (1)  Die  Höhe  der  Landschaftsabgabe  beträgt  15,95  Cent  pro  Tonne  gewonnenen  und  verwerteten  mineralischen Rohstoffs.
 abgabe_hoehe(landesabgabe_ooe_obertaetige_gewinnen_von_mineralische_rohstoffe, tonne_gewonnener_u_verwerteter_rohstoff_in_kg, 15.95, eur_2017). % eur_2017 ... this means that the levy is 15.94 in 2017's EUR
-abgabe_hoehe(grundstuecke, m2, 12, dollar).
+abgabe_hoehe(grunderwerbssteuer, m2, 12, euro).
 
 %   (2) Der im Abs. 1 festgesetzte Tarif ändert sich jeweils zum 1. Jänner entsprechend den durchschnittlichen Änderungen des von der Bundesanstalt „Statistik Austria“ für das zweitvorangegangene Jahr verlautbarten Verbraucherpreisindex 2015 oder eines an seine Stelle tretenden Index, soweit sich die Indexzahl um mehr als 5 % geändert hat. Bezugsgröße für die erstmalige Änderung ist  der  durchschnittliche  Indexwert  für  das  Jahr  2017;  Bezugsgröße  für  jede  weitere  Änderung  ist  der durchschnittliche Indexwert desjenigen Kalenderjahres, das für die letzte Änderung maßgeblich war. Ein sich  aus  dieser  Berechnung  ergebender  neuer  Betrag  ist  auf  einen  vollen  Zehntel-Centbetrag  zu  runden, wobei Beträge  bis einschließlich 0,05 Cent abgerundet und Beträge  über 0,05 Cent aufgerundet  werden. Eine  solchermaßen  ermittelte  Änderung  des  Tarifs  wird  nur  dann  wirksam,  wenn  der  geänderte  Betrag von der Landesregierung vor dem Stichtag 1. Jänner im Landesgesetzblatt für Oberoesterreich kundgemacht wurde. 
 abgabe_hoehe_index(landesabgabe_ooe_obertaetige_gewinnen_von_mineralische_rohstoffe, statistik_austria_vpi).

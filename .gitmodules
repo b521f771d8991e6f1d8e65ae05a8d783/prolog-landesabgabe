@@ -16,3 +16,6 @@
 [submodule "Dependencies/xctest"]
 	path = Dependencies/xctest
 	url = https://github.com/swiftlang/swift-corelibs-xctest
+[submodule "Dependencies/flake-utils"]
+	path = Dependencies/flake-utils
+	url = https://github.com/numtide/flake-utils

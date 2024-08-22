@@ -71,10 +71,11 @@
           export CXX=${pkgs.clang_18.out}/bin/clang++
           export OBJCXX=${pkgs.clang_18.out}/bin/clang++
           export SWIFTC=${pkgs.swift}/bin/swiftc
+      '' + (if pkgs.stdenv.isLinux then ''
           export OBJCFLAGS="$CFLAGS $(gnustep-config --objc-flags) $(gnustep-config --base-libs)"
           export OBJCXXFLAGS="$CFLAGS $(gnustep-config --objc-flags) $(gnustep-config --base-libs)"
           export LDFLAGS="$LDFLAGS $(gnustep-config --objc-flags) $(gnustep-config --base-libs)"
-      '';
+      '' else "");
     in {
       devShells = {
         default = pkgs.mkShell.override
@@ -101,6 +102,12 @@
                         publisher = "sswg";
                         version = "1.10.4";
                         sha256 = "sha256-5NrWBuaNdDNF0ON0HUwdwPFsRO3Hfe0UW4AooJbjiA0=";
+                      }
+                      {
+                        name = "vsc-prolog";
+                        publisher = "arthurwang";
+                        version = "0.8.23";
+                        sha256 = "sha256-Da2dCpruVqzP3g1hH0+TyvvEa1wEwGXgvcmIq9B/2cQ=";
                       }
                   ];
               })

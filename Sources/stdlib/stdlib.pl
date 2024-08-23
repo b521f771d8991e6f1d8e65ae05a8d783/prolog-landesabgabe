@@ -5,5 +5,6 @@
     bergbau,
     gebietskoerperschaften,
     mineralrohstoffgesetz,
-    abgb
+    abgb,
+    grunderwerbssteuer
 ]).

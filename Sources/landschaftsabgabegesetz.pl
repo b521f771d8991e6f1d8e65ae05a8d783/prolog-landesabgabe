@@ -3,11 +3,7 @@
 % Kurztitel: LAbgG
 
 file_search_path(stdlib, './stdlib').
-
-:- use_module(stdlib(abgabe)).
-:- use_module(stdlib(bergbau)).
-:- use_module(stdlib(gebietskoerperschaften)).
-:- use_module(stdlib(mineralrohstoffgesetz)).
+:- use_module(stdlib(stdlib)).
 
 % §1 Gegenstand der Abgabe:
 
@@ -16,19 +12,6 @@ abgabe_auf(landesabgabe_ooe_obertaetige_gewinnen_von_mineralische_rohstoffe,
     landesabgabe,
     oberoesterreich,
     bergbau(gewinnen, obertags, mineralische_rohstoffe)).
-
-grund_und_boden(mein_haus).
-zivilrecht_erwerb_entgeltlich(mein_haus).
-zivilrecht_erwerb_unentgeltlich(dein_haus).
-
-% andere Abgaben (für Demozecke)
-
-
-abgabe_auf(humusabgabe, gemeinde, tragwein, zivilrecht_eigentuemer(humus)).
-
-abgabe_auf(grunderwerbssteuer, bundesabgabe, oesterreich, X) :-
-    (zivilrecht_erwerb_entgeltlich(X) ; zivilrecht_erwerb_unentgeltlich(X)),
-    grund_und_boden(X).
 
 %   2. Von der Erhebung ausgenommen sind:
 %       - Abraummaterial,
@@ -53,18 +36,20 @@ ausnahme(landesabgabe_ooe_obertaetige_gewinnen_von_mineralische_rohstoffe, X) :-
 ausnahme(landesabgabe_ooe_obertaetige_gewinnen_von_mineralische_rohstoffe, kohle).
 
 ausnahme(landesabgabe_ooe_obertaetige_gewinnen_von_mineralische_rohstoffe, X) :-
-    current_predicate(ist_seitentnahme/1),
-    ist_seitentnahme(X).
+    current_predicate(entstammt_seitentnahme/1),
+    entstammt_seitentnahme(X).
 
 ausnahme(landesabgabe_ooe_obertaetige_gewinnen_von_mineralische_rohstoffe, X) :-
     current_predicate(rohstoff_zur_abwehr_von_gefahren/1),
     rohstoff_zur_abwehr_von_gefahren(X).
 
-ausnahme(landesabgabe_ooe_obertaetige_gewinnen_von_mineralische_rohstoffe, preis(X, eur)) :-
+ausnahme(landesabgabe_ooe_obertaetige_gewinnen_von_mineralische_rohstoffe,
+    preis(X, eur)) :-
     X < 120.
 
 %   3. Die Gemeinde, in der sich eine Gewinnungsstätte befindet, erhält einen Ertragsanteil in Höhe von 10 % der Landschaftsabgabe, die im Gemeindegebiet erhoben wurde
 %   4. Der  Ertragsanteil  der  Gemeinde  gemäß  Abs. 3  entfällt  zur  Gänze,  wenn  sich  die  bzw.  der Abgabepflichtige  auf  Grund  von  zivilrechtlichen  Verträgen  verpflichtet  hat,  der  Gemeinde  gegenüber Leistungen zum Ausgleich der Nachteile aus den nach diesem Landesgesetz abgabenpflichtigen Tätigkeiten  zu  erbringen  und  diese  Leistungen  dem  Ertragsanteil  entsprechen  oder  diesen  übersteigen. Wenn  eine  derartige  zivilrechtliche  Leistungsverpflichtung  die  Höhe  des  Ertragsanteils  gemäß  Abs. 3 nicht erreicht, verringert sich der Ertragsanteil um die Höhe der vereinbarten zivilrechtlichen Leistung.
+
 ertragsanteil(landesabgabe_ooe_obertaetige_gewinnen_von_mineralische_rohstoffe
     , gemeinde
     , \+ zivilrechtliche_leistungen
@@ -103,20 +88,18 @@ gewinnen.
 gewinnungsstaette.
 
 %   5. „Mineralischer Rohstoff“: jedes Mineral, Mineralgemenge oder Gestein (Fest- und Lockergestein), wenn es natürlicher Herkunft ist;
-mineralischer_rohstoff.
+% s. §1
 
 %   6. „Seitenentnahme“: obertägiges Gewinnen im direkten Areal eines Bauprojekts zwecks Verwendung bei diesem Bauprojekt;
-seitenentnahmen.
+% s.o. 
 
 %   7. „Verwertung“:  Übergabe  an  Dritte  oder  betriebsinterne  Übergabe  zur  Weiterverarbeitung  nach der Aufbereitung. 
 verwertung.
 
 % §3 Abgabepflichtige bzw. Abgabepflichtiger
 % Abgabepflichtige bzw. Abgabepflichtiger ist die Betreiberin bzw. der Betreiber einer Gewinnungsstätte eines abgabepflichtigen Materials
-abgabepfichtiger(landesabgabe_ooe_obertaetige_gewinnen_von_mineralische_rohstoffe, betreiber_gewinnungsstaette).
-
-abgabepflichtiger(bundesteuer_ust, juristische_person_unternehmer_lt_P2UStG). % example of a reference
-abgabepflichtiger(bundessteuer_koest, juristische_personen_koerperschaften_lt_P1KStG).
+abgabepfichtiger(landesabgabe_ooe_obertaetige_gewinnen_von_mineralische_rohstoffe, X)
+    :- betreiber(X).
 
 % §4 Abgabenbefreiung:
 % Von  der  Landschaftsabgabe befreit sind  Betreiberinnen  bzw.  Betreiber,  deren  Abgabenschuld  im jeweiligen Kalenderjahr weniger als 120 Euro beträgt.
@@ -124,7 +107,11 @@ abgabepflichtiger(bundessteuer_koest, juristische_personen_koerperschaften_lt_P1
 
 % §5 Höhe der Abgabe:
 %   (1)  Die  Höhe  der  Landschaftsabgabe  beträgt  15,95  Cent  pro  Tonne  gewonnenen  und  verwerteten  mineralischen Rohstoffs.
-abgabe_hoehe(landesabgabe_ooe_obertaetige_gewinnen_von_mineralische_rohstoffe, tonne_gewonnener_u_verwerteter_rohstoff_in_kg, 15.95, eur_2017). % eur_2017 ... this means that the levy is 15.94 in 2017's EUR
+abgabe_hoehe(landesabgabe_ooe_obertaetige_gewinnen_von_mineralische_rohstoffe,
+            gewonnener_u_verwerteter_rohstoff,
+            tonne,
+            15.95,
+            eur_2017). % eur_2017 ... this means that the levy is 15.94 in 2017's EUR
 abgabe_hoehe(grunderwerbssteuer, m2, 12, euro).
 
 %   (2) Der im Abs. 1 festgesetzte Tarif ändert sich jeweils zum 1. Jänner entsprechend den durchschnittlichen Änderungen des von der Bundesanstalt „Statistik Austria“ für das zweitvorangegangene Jahr verlautbarten Verbraucherpreisindex 2015 oder eines an seine Stelle tretenden Index, soweit sich die Indexzahl um mehr als 5 % geändert hat. Bezugsgröße für die erstmalige Änderung ist  der  durchschnittliche  Indexwert  für  das  Jahr  2017;  Bezugsgröße  für  jede  weitere  Änderung  ist  der durchschnittliche Indexwert desjenigen Kalenderjahres, das für die letzte Änderung maßgeblich war. Ein sich  aus  dieser  Berechnung  ergebender  neuer  Betrag  ist  auf  einen  vollen  Zehntel-Centbetrag  zu  runden, wobei Beträge  bis einschließlich 0,05 Cent abgerundet und Beträge  über 0,05 Cent aufgerundet  werden. Eine  solchermaßen  ermittelte  Änderung  des  Tarifs  wird  nur  dann  wirksam,  wenn  der  geänderte  Betrag von der Landesregierung vor dem Stichtag 1. Jänner im Landesgesetzblatt für Oberoesterreich kundgemacht wurde. 

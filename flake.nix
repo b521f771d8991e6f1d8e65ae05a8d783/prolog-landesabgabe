@@ -63,6 +63,9 @@
 
           # for building the documentation
           texliveFull
+          
+          # for the web part
+          nodejs_22
       ];
 
       shellEnvironment = ''

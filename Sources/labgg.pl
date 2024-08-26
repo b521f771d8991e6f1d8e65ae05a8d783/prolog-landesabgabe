@@ -6,9 +6,7 @@ file_search_path(stdlib, './stdlib').
 langtitel(labgg, X) :-
     string_concat("Landesgesetz über eine Landesabgabe für das obertägige",
     "Gewinnen mineralischer Rohstoffe (Oö. Landschaftsabgabegesetz)", X).
-
 titel(labgg, "Oö. Landschaftsabgabegesetz").
-
 kurztitel(labgg, "LAbgG").
 
 % §1 Gegenstand der Abgabe:
@@ -84,11 +82,12 @@ ertragsanteil(labgg
 %% Im Sinn des Landesgesetzes ist:
 %%% 1. „Abraummaterial“:  jedes  beim  Gewinnen  anfallende,  nicht  verwertbare  Material  (zB  taubes Gestein,  Abschlämmbares)  sowie  Materialien,  die  zur  Böschungsherstellung,  Rekultivierung oder Geländegestaltung (zB Lärmschutz- oder Hochwasserschutzdämme) betriebsintern verwendet werden;
 
-abbraummaterial(X) :-
-    \+ verwertbar(X) ;
-    verwendet_fuer(boschungsherstellung, X) ;
-    verwendet_fuer(rekultivierung, X);
-    verwendet_fuer(gelaendegestaltung, X).
+%#  it actually makes more sense to do omit this.
+%#abbraummaterial(X) :-
+%#    \+ verwertbar(X) ;
+%#    verwendet_fuer(boschungsherstellung, X) ;
+%#    verwendet_fuer(rekultivierung, X);
+%#    verwendet_fuer(gelaendegestaltung, X).
 
 %%% 2. „Betreiberin“  bzw.  „Betreiber“:  jede  physische  und  juristische  Person  sowie  jeder  sonstige Rechtsträger, die bzw. der ein Gewinnen gewerblich oder berufsmaessig durchführt;
 
@@ -207,3 +206,12 @@ inkrafttreten(labgg, 20180101).
 
 %% (3)  Abweichend  von  § 9  ist  die  Abgabenerklärung  für  das  erste  Halbjahr  2018  bis  längstens 31. Oktober 2018 einzureichen und auch die Abgabe für das erste Halbjahr 2018 bis längstens 31. Oktober 2018 zu entrichten.
 %# s.o.
+
+% END LEGAL ACT
+
+% utility functions
+abgabepflichtig_labbg(Sachverhalt) :-
+    % subjekt(Sachverhalt, Person),
+    (verbum(Sachverhalt, Verbum); objekt(Sachverhalt, Objekt); true),
+    abgabe_auf(labgg, landesabgabe, oberoesterreich, Verbum),
+    \+ ausnahme(labgg, Objekt).

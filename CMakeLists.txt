@@ -9,7 +9,7 @@ ExternalProject_Add(zlib # swi-prolog needs that and does not ship it itself ðŸ˜
   CONFIGURE_COMMAND "CFLAGS=-fPIC" "<SOURCE_DIR>/configure" "-static"
   BUILD_COMMAND     "make"
   INSTALL_COMMAND ""
-  TEST_COMMAND "" #"make" "test"
+  TEST_COMMAND "" "make" "test"
   BUILD_BYPRODUCTS  <BINARY_DIR>/libz.a
 )
 ExternalProject_Get_Property(zlib SOURCE_DIR)
@@ -32,10 +32,11 @@ ExternalProject_Add(swi-prolog
     -DSWIPL_PACKAGE_LIST=cpp;zlib # seperate this by ;
     -DZLIB_LIBRARY=${ZLIB_BINARY_DIR}/libz.a
     -DZLIB_INCLUDE_DIR=${ZLIB_SOURCE_DIR}
-    -DINSTALL_TESTS=OFF
+    -DINSTALL_TESTS=ON
     -DINSTALL_DOCUMENTATION=OFF
     -DSWIPL_INSTALL_IN_LIB=OFF
     -DSWIPL_INSTALL_IN_SHARE=OFF
+  TEST_COMMAND ""
   INSTALL_COMMAND ""
   BUILD_BYPRODUCTS <BINARY_DIR>/src/libswipl_static.a
 )

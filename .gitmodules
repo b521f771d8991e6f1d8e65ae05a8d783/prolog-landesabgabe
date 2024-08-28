@@ -33,3 +33,12 @@
 	url = https://github.com/numtide/flake-utils
 	fetchRecurseSubmodules = true
 	ignore = all
+[submodule "Dependencies/incbin"]
+	path = Dependencies/incbin
+	url = https://github.com/graphitemaster/incbin
+[submodule "Dependencies/libarchive"]
+	path = Dependencies/libarchive
+	url = https://github.com/libarchive/libarchive
+[submodule "Dependencies/openssl"]
+	path = Dependencies/openssl
+	url = https://github.com/openssl/openssl

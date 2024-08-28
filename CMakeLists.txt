@@ -3,12 +3,13 @@ project(LX VERSION 1.0 LANGUAGES Swift OBJCXX CXX OBJC C)
 
 include(ExternalProject)
 
+# https://www.swi-prolog.org/build/WebAssembly.html <-- we need that
 ExternalProject_Add(zlib # swi-prolog needs that and does not ship it itself 😒
   URL ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/zlib
   CONFIGURE_COMMAND "CFLAGS=-fPIC" "<SOURCE_DIR>/configure" "-static"
   BUILD_COMMAND     "make"
   INSTALL_COMMAND ""
-#  TEST_COMMAND "make" "test" TODO: do this correctly on wasm/do not do this at wasm at all, only on traditional platforms
+  TEST_COMMAND "" #"make" "test"
   BUILD_BYPRODUCTS  <BINARY_DIR>/libz.a
 )
 ExternalProject_Get_Property(zlib SOURCE_DIR)
@@ -31,9 +32,6 @@ ExternalProject_Add(swi-prolog
     -DSWIPL_PACKAGE_LIST=cpp;zlib # seperate this by ;
     -DZLIB_LIBRARY=${ZLIB_BINARY_DIR}/libz.a
     -DZLIB_INCLUDE_DIR=${ZLIB_SOURCE_DIR}
-    #-DOPENSSL_INCLUDE_DIR=${OPENSSL_BINARY_DIR}/include
-    #-DOPENSSL_SSL_LIBRARY=${OPENSSL_BINARY_DIR}/libssl.a
-    #-DOPENSSL_CRYPTO_LIBRARY=${OPENSSL_BINARY_DIR}/libcrypto.a
     -DINSTALL_TESTS=OFF
     -DINSTALL_DOCUMENTATION=OFF
     -DSWIPL_INSTALL_IN_LIB=OFF
@@ -46,6 +44,18 @@ ExternalProject_Get_Property(swi-prolog BINARY_DIR)
 set(SWI_PROLOG_SOURCE_DIR "${SOURCE_DIR}")
 set(SWI_PROLOG_BINARY_DIR "${BINARY_DIR}")
 
+set(SWI_PROLOG_HOME_STORE_PATH "${CMAKE_CURRENT_BINARY_DIR}/swipl-prolog-home.tar")
+add_custom_target(swi-prolog-home
+WORKING_DIRECTORY
+  "${SWI_PROLOG_BINARY_DIR}"
+COMMAND
+  ${CMAKE_COMMAND} -E tar "cf" ${SWI_PROLOG_HOME_STORE_PATH} home
+)
+add_dependencies(swi-prolog-home swi-prolog)
+
+include(Dependencies/incbin.cmake)
+
+# TODO: migrate this to ExternalProject_Add
 include(FetchContent)
 
 FetchContent_Declare(google-test
@@ -53,10 +63,7 @@ FetchContent_Declare(google-test
 )
 
 # flags for boost
-#set(OPENSSL_USE_STATIC_LIBS ON)i
-#set(OPENSSL_SSL_LIBRARY ${OPENSSL_BINARY_DIR}/libssl.a)
-#set(OPENSSL_CRYPTO_LIBRARY ${OPENSSL_BINARY_DIR}/libcrypto.a)
-#set(OPENSSL_INCLUDE_DIR ${OPENSSL_BINARY_DIR}/include)
+#set(OPENSSL_USE_STATIC_LIBS ON)
 FetchContent_Declare(boost
   URL ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/boost
 )
@@ -64,7 +71,7 @@ FetchContent_Declare(boost
 FetchContent_MakeAvailable(boost)
 FetchContent_MakeAvailable(google-test)
 
-# configuration for individual targets
+# configuration for our targets
 
 # ActKit
 add_library(ActKit
@@ -75,23 +82,30 @@ add_library(ActKit
 
 # LogicKit
 add_library(LogicKit
-  Sources/LogicKit/Norm.swift
+  Sources/LogicKit/SWIPrologHome.c
   Sources/LogicKit/LogicKit.c++
+  Sources/LogicKit/Norm.swift
   Sources/LogicKit/TemplateEngine.swift
   Sources/LogicKit/LegalStatement.swift
   Sources/LogicKit/StdStatements.swift
 )
-add_dependencies(LogicKit swi-prolog zlib)
-target_include_directories(LogicKit PUBLIC
+add_dependencies(LogicKit zlib swi-prolog swi-prolog-home)
+target_include_directories(LogicKit
+PUBLIC
   Sources/LogicKit/include
   "${SWI_PROLOG_BINARY_DIR}/home/include"
+PRIVATE
+  Sources/LogicKit/include-project
 )
-target_compile_options(LogicKit PRIVATE ${CXX_Werror})
+target_compile_options(LogicKit PRIVATE
+  $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJCXX>:-DSWI_PROLOG_HOME_STORE="${SWI_PROLOG_HOME_STORE_PATH}">
+)
 target_link_libraries(LogicKit PUBLIC
   ActKit
   ${SWI_PROLOG_BINARY_DIR}/src/libswipl_static.a 
   ${ZLIB_BINARY_DIR}/libz.a
   Boost::numeric_conversion
+  incbin
 )
 
 # Tests

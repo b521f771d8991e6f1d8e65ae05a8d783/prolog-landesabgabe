@@ -1,9 +1,7 @@
-#include <algorithm>
-#include <gtest/gtest.h>
-
-#include <iterator>
 #include <vector>
 #include <string>
+
+#include <gtest/gtest.h>
 
 #include <Testing.h++>
 #include <LogicKit.h++>

@@ -1,80 +1,5 @@
 cmake_minimum_required(VERSION 3.28)
-project(LX VERSION 1.0 LANGUAGES Swift CXX C)
-
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
-    OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  set(SWIFT_CXX_INTEROP
-    $<$<COMPILE_LANGUAGE:Swift>:-cxx-interoperability-mode=default>
-  )
-
-  set(SWIFT_CXX_INTEROP_LANGUAGE_VERSION
-    $<$<COMPILE_LANGUAGE:Swift>:-Xcc>
-    $<$<COMPILE_LANGUAGE:Swift>:-std=c++17>
-  )
-
-  set(SWIFT_TESTABLE
-    $<$<COMPILE_LANGUAGE:Swift>:-enable-testing>
-  )
-
-  set(CXX_WALL
-    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJCXX>:-Wall>
-  )
-
-  set(CXX_Wextra
-    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJCXX>:-Wall>
-  )
-
-  set(CXX_Werror
-    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJCXX>:-Werror>
-  )
-
-  set(CXX_pedantic
-    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJCXX>:-pedantic>
-  )
-
-  set(CXX_FPIC
-    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJCXX>:-fPIC>
-  )
-
-  set(CXX_SANITIZE
-    #$<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJCXX>:-fsanitize=address>
-  )
-else()
-  message("This program should be compiled with clang or gcc")
-endif()
-
-add_compile_options(
-  ${SWIFT_CXX_INTEROP}
-  ${SWIFT_CXX_INTEROP_LANGUAGE_VERSION}
-  ${SWIFT_TESTABLE}
-  ${CXX_WALL}
-  ${CXX_Wextra}
-  ${CXX_pedantic}
-  ${CXX_FPIC}
-  ${CXX_SANITIZE}
-)
-
-add_link_options(
-  #-lasan
-)
-
-set(CMAKE_Swift_LANGUAGE_VERSION 5)
-
-set(CMAKE_OBJCXX_STANDARD 17)
-set(CMAKE_OBJCXX_STANDARD_REQUIRED ON)
-set(CMAKE_OBJCXX_EXTENSIONS OFF)
-
-set(CMAKE_OBJC_STANDARD 17)
-set(CMAKE_OBJC_STANDARD_REQUIRED ON)
-set(CMAKE_OBJC_EXTENSIONS OFF)
-
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-
-set(CMAKE_C_STANDARD 17)
-set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_C_EXTENSIONS OFF)
+project(LX VERSION 1.0 LANGUAGES Swift OBJCXX CXX OBJC C)
 
 include(ExternalProject)
 
@@ -132,11 +57,14 @@ FetchContent_Declare(google-test
 #set(OPENSSL_SSL_LIBRARY ${OPENSSL_BINARY_DIR}/libssl.a)
 #set(OPENSSL_CRYPTO_LIBRARY ${OPENSSL_BINARY_DIR}/libcrypto.a)
 #set(OPENSSL_INCLUDE_DIR ${OPENSSL_BINARY_DIR}/include)
-#FetchContent_Declare(boost
-#  URL ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/boost
-#)
+FetchContent_Declare(boost
+  URL ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/boost
+)
 
+FetchContent_MakeAvailable(boost)
 FetchContent_MakeAvailable(google-test)
+
+# configuration for individual targets
 
 # ActKit
 add_library(ActKit
@@ -161,8 +89,9 @@ target_include_directories(LogicKit PUBLIC
 target_compile_options(LogicKit PRIVATE ${CXX_Werror})
 target_link_libraries(LogicKit PUBLIC
   ActKit
-  ${SWI_PROLOG_BINARY_DIR}/src/libswipl_static.a
+  ${SWI_PROLOG_BINARY_DIR}/src/libswipl_static.a 
   ${ZLIB_BINARY_DIR}/libz.a
+  Boost::numeric_conversion
 )
 
 # Tests
@@ -174,7 +103,7 @@ Testing/ActKitTests.swift
 )
 target_compile_options(LXTests PRIVATE ${CXX_Werror})
 target_include_directories(LXTests PUBLIC Testing/include)
-target_link_libraries(LXTests PUBLIC LogicKit ActKit gtest)
+target_link_libraries(LXTests PUBLIC LogicKit ActKit GTest::gtest)
 
 # LX executable
 add_executable(LX
@@ -182,12 +111,106 @@ add_executable(LX
 )
 target_link_libraries(LX LogicKit ActKit)
 
+# configuration for all targets
+set(TARGETS
+  LogicKit
+  LX
+  ActKit
+  LXTests
+)
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
+    OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  set(SWIFT_CXX_INTEROP
+    $<$<COMPILE_LANGUAGE:Swift>:-cxx-interoperability-mode=default>
+  )
+
+  set(SWIFT_CXX_INTEROP_LANGUAGE_VERSION
+    $<$<COMPILE_LANGUAGE:Swift>:-Xcc>
+    $<$<COMPILE_LANGUAGE:Swift>:-std=c++17>
+  )
+
+  set(SWIFT_TESTABLE
+    $<$<COMPILE_LANGUAGE:Swift>:-enable-testing>
+  )
+
+  set(CXX_WALL
+    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJCXX>:-Wall>
+  )
+
+  set(CXX_Wextra
+    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJCXX>:-Wall>
+  )
+
+  set(CXX_Werror
+    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJCXX>:-Werror>
+  )
+
+  set(CXX_pedantic
+    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJCXX>:-pedantic>
+  )
+
+  set(CXX_FPIC
+    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJCXX>:-fPIC>
+  )
+
+  set(CXX_SANITIZE
+    #$<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJCXX>:-fsanitize=address>
+  )
+
+  set(CXX_HARDENED
+    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJCXX>:-fhardened>
+    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJCXX>:-O4>
+  )
+else()
+  message("This program should be compiled with clang or gcc")
+endif()
+
 find_program(CLANG_TIDY_EXE NAMES "clang-tidy")
 set(CLANG_TIDY_COMMAND "${CLANG_TIDY_EXE}")
 set(CLANG_TIDY_OPTIONS "-checks=-*,bugprone-*,objc-*,cert-*,clang-analyzer-*,darwin-*,hicpp-*,performance-*,portability-*")
-set_target_properties(LogicKit LXTests PROPERTIES
-  OBJCXX_CLANG_TIDY "${CLANG_TIDY_EXE};${CLANG_TIDY_OPTIONS}"
-  OBJC_CLANG_TIDY "${CLANG_TIDY_EXE};${CLANG_TIDY_OPTIONS}"
-  CXX_CLANG_TIDY "${CLANG_TIDY_EXE};${CLANG_TIDY_OPTIONS}"
-  C_CLANG_TIDY "${CLANG_TIDY_EXE};${CLANG_TIDY_OPTIONS}"
+
+set_target_properties(PROPERTIES
+    OBJCXX_CLANG_TIDY "${CLANG_TIDY_EXE};${CLANG_TIDY_OPTIONS}"
+    OBJC_CLANG_TIDY "${CLANG_TIDY_EXE};${CLANG_TIDY_OPTIONS}"
+    CXX_CLANG_TIDY "${CLANG_TIDY_EXE};${CLANG_TIDY_OPTIONS}"
+    C_CLANG_TIDY "${CLANG_TIDY_EXE};${CLANG_TIDY_OPTIONS}"
+  )
+
+foreach(TARGET ${TARGETS})
+  target_compile_options(${TARGET} PRIVATE
+    ${SWIFT_CXX_INTEROP}
+    ${SWIFT_CXX_INTEROP_LANGUAGE_VERSION}
+    ${SWIFT_TESTABLE}
+    ${CXX_WALL}
+    ${CXX_Wextra}
+    ${CXX_Werror}
+    ${CXX_pedantic}
+    ${CXX_FPIC}
+    ${CXX_SANITIZE}
+    ${CXX_HARDENED}
+  )
+
+  set_target_properties(${TARGET} PROPERTIES
+    CMAKE_Swift_LANGUAGE_VERSION 5
+
+    CMAKE_OBJCXX_STANDARD 20
+    CMAKE_CXX_STANDARD 20
+    CMAKE_OBJC_STANDARD 17
+    CMAKE_C_STANDARD 17
+
+    CMAKE_OBJCXX_STANDARD_REQUIRED ON
+    CMAKE_CXX_STANDARD_REQUIRED ON
+    CMAKE_OBJC_STANDARD_REQUIRED ON
+    CMAKE_C_STANDARD_REQUIRED ON
+
+    CMAKE_OBJCXX_EXTENSIONS OFF
+    CMAKE_CXX_EXTENSIONS OFF
+    CMAKE_OBJC_EXTENSIONS OFF
+    CMAKE_C_EXTENSIONS OFF
+  )
+endforeach()
+
+target_compile_options(gtest PRIVATE
+  ${CXX_FPIC}
 )

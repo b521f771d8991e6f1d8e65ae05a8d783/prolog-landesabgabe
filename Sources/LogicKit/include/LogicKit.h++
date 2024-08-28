@@ -13,7 +13,8 @@ namespace looe::LegalXML::LogicKit
 class PrologVM final
 {
 private:
-  std::string argv0;
+  std::vector<std::string> args;
+  std::vector<char *> cArgs;
   PlEngine engine;
 
 public:

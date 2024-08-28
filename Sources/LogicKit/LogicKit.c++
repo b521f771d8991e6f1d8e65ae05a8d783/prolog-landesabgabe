@@ -1,13 +1,14 @@
+#include <iterator>
 #include <sys/syslog.h>
 #include <syslog.h>
 
-#include <cassert>
-#include <cstddef>
+#include <assert.h>
 
-#include <sstream>
+#include <algorithm>
 #include <vector>
 #include <string>
-#include <ostream>
+
+#include <boost/numeric/conversion/cast.hpp>
 
 #include <SWI-Prolog.h>
 #include <SWI-cpp2.h>
@@ -17,25 +18,22 @@
 namespace looe::LegalXML::LogicKit
 {
 
-std::string
-to_string(const std::vector<std::string> &vec)
+template <typename T, typename A>
+std::vector<T>
+map(std::vector<A> &container, T (*const f)(A &))
 {
-  std::stringstream ss;
-  ss << '{';
-  for(size_t i = 0; i < vec.size(); ++i)
-    {
-      ss << vec[i];
-      if(i < vec.size() - 1)
-        {
-          ss << ", ";
-        }
-    }
-  ss << '}';
-  return ss.str();
+  std::vector<T> output;
+  output.reserve(container.size());
+  std::transform(container.begin(), container.end(), std::back_inserter(output),
+                 f);
+  return output;
 }
 
 PrologVM::PrologVM(const std::string &argv0)
-    : argv0(argv0), engine(&this->argv0[0])
+    : args({ argv0, "--home=/usr/lib64/swipl-9.2.6" }),
+      cArgs(map(
+        this->args, +[](std::string &i) -> char * { return &i[0]; })),
+      engine(this->cArgs.size(), this->cArgs.data())
 {
   assert(PL_is_initialised(nullptr, nullptr));
 }

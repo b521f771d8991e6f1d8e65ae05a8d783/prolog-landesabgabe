@@ -16,6 +16,8 @@ ExternalProject_Get_Property(zlib SOURCE_DIR)
 ExternalProject_Get_Property(zlib BINARY_DIR)
 set(ZLIB_SOURCE_DIR "${SOURCE_DIR}")
 set(ZLIB_BINARY_DIR "${BINARY_DIR}")
+set(ZLIB_INCLUDE_DIR ${ZLIB_SOURCE_DIR})
+set(ZLIB_LIBRARY ${ZLIB_BINARY_DIR}/libz.a)
 
 # zlib https://www.swi-prolog.org/build/prerequisites.html
 # regarding the build opptions, see here: https://github.com/SWI-Prolog/swipl-devel/blob/master/CMAKE.md
@@ -30,8 +32,8 @@ ExternalProject_Add(swi-prolog
     -DSWIPL_PACKAGES=ON
     -DCMAKE_BUILD_TYPE=Release
     -DSWIPL_PACKAGE_LIST=cpp;zlib # seperate this by ;
-    -DZLIB_LIBRARY=${ZLIB_BINARY_DIR}/libz.a
-    -DZLIB_INCLUDE_DIR=${ZLIB_SOURCE_DIR}
+    -DZLIB_INCLUDE_DIR=${ZLIB_INCLUDE_DIR}
+    -DZLIB_LIBRARY=${ZLIB_LIBRARY}
     -DINSTALL_TESTS=ON
     -DINSTALL_DOCUMENTATION=OFF
     -DSWIPL_INSTALL_IN_LIB=OFF
@@ -40,10 +42,13 @@ ExternalProject_Add(swi-prolog
   INSTALL_COMMAND ""
   BUILD_BYPRODUCTS <BINARY_DIR>/src/libswipl_static.a
 )
+add_dependencies(swi-prolog zlib)
 ExternalProject_Get_Property(swi-prolog SOURCE_DIR)
 ExternalProject_Get_Property(swi-prolog BINARY_DIR)
 set(SWI_PROLOG_SOURCE_DIR "${SOURCE_DIR}")
 set(SWI_PROLOG_BINARY_DIR "${BINARY_DIR}")
+set(SWIPL_INCLUDE_DIR "${SWI_PROLOG_BINARY_DIR}/home/include")
+set(SWIPL_LIBRARY "${SWI_PROLOG_BINARY_DIR}/src/libswipl_static.a")
 
 set(SWI_PROLOG_HOME_STORE_PATH "${CMAKE_CURRENT_BINARY_DIR}/swipl-prolog-home.tar")
 add_custom_target(swi-prolog-home
@@ -94,7 +99,7 @@ add_dependencies(LogicKit zlib swi-prolog swi-prolog-home)
 target_include_directories(LogicKit
 PUBLIC
   Sources/LogicKit/include
-  "${SWI_PROLOG_BINARY_DIR}/home/include"
+  ${SWIPL_INCLUDE_DIR}
 PRIVATE
   Sources/LogicKit/include-project
 )
@@ -103,8 +108,8 @@ target_compile_options(LogicKit PRIVATE
 )
 target_link_libraries(LogicKit PUBLIC
   ActKit
-  ${SWI_PROLOG_BINARY_DIR}/src/libswipl_static.a 
-  ${ZLIB_BINARY_DIR}/libz.a
+  ${SWIPL_LIBRARY}
+  ${ZLIB_LIBRARY}
   Boost::numeric_conversion
   incbin
 )

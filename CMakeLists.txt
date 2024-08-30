@@ -6,7 +6,9 @@ include(ExternalProject)
 # https://www.swi-prolog.org/build/WebAssembly.html <-- we need that
 ExternalProject_Add(zlib # swi-prolog needs that and does not ship it itself 😒
   URL ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/zlib
-  CONFIGURE_COMMAND "CFLAGS=-fPIC" "<SOURCE_DIR>/configure" "-static"
+  CONFIGURE_COMMAND
+    CFLAGS=-fPIC
+    "<SOURCE_DIR>/configure" "-static"
   BUILD_COMMAND     "make"
   INSTALL_COMMAND ""
   TEST_COMMAND "" "make" "test"
@@ -22,7 +24,7 @@ set(ZLIB_LIBRARY ${ZLIB_BINARY_DIR}/libz.a)
 ExternalProject_Add(libarchive
   URL ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/libarchive
   CMAKE_ARGS
-    -DCMAKE_C_FLAGS=-fPIC
+    -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
     -DENABLE_TAR:BOOL=ON
     -DENABLE_TEST:BOOL=ON
     -DENABLE_ACL:BOOL=OFF
@@ -206,12 +208,14 @@ foreach(TARGET ${TARGETS})
   )
 
   set_target_properties(${TARGET} PROPERTIES
-    CMAKE_Swift_LANGUAGE_VERSION 5
+    COMPILE_WARNING_AS_ERROR ON
+    
+    CMAKE_Swift_LANGUAGE_VERSION 6
 
-    CMAKE_OBJCXX_STANDARD 20
-    CMAKE_CXX_STANDARD 20
-    CMAKE_OBJC_STANDARD 17
-    CMAKE_C_STANDARD 17
+    CMAKE_OBJCXX_STANDARD 23
+    CMAKE_CXX_STANDARD 23
+    CMAKE_OBJC_STANDARD 23
+    CMAKE_C_STANDARD 23
 
     CMAKE_OBJCXX_STANDARD_REQUIRED ON
     CMAKE_CXX_STANDARD_REQUIRED ON

@@ -5,7 +5,11 @@
 #include <vector>
 
 #include <SWI-Prolog.h>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+// this is brain-damaged, TODO: fix it upstream
 #include <SWI-cpp2.h>
+#pragma GCC diagnostic pop
 
 namespace looe::LegalXML::LogicKit
 {

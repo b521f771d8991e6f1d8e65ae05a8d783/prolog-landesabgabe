@@ -19,8 +19,7 @@
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/filesystem.hpp>
 
-#include <SWI-Prolog.h>
-#include <SWI-cpp2.h>
+// swi-prolog is included in header
 
 #include <archive.h>
 #include <archive_entry.h>

@@ -13,8 +13,10 @@ set(CMAKE_OBJCXX_COMPILER "${GXX_EXE}")
 set(CMAKE_Swift_COMPILER "${SWIFTC_EXE}")
 
 # Set the flags for the newest preprocessor instructions
-set(CMAKE_C_FLAGS "-march=native -mtune=native -O3 -Wall -Wextra -Wpedantic -fhardened")
-set(CMAKE_CXX_FLAGS "-march=native -mtune=native -O3 -Wall -Wextra -Wpedantic -fhardened")
+set(CMAKE_C_FLAGS "-march=native -mtune=native -m64 -O3 -Wall -Wextra -Wpedantic -fhardened -fPIC")
+set(CMAKE_CXX_FLAGS "-march=native -mtune=native -m64 -O3 -Wall -Wextra -Wpedantic -fhardened -fPIC")
 set(CMAKE_OBJC_FLAGS "${CMAKE_C_CFLAGS}")
 set(CMAKE_OBJCXX_FLAGS "${CMAKE_CXX_CFLAGS}")
 set(CMAKE_Swift_FLAGS "-cxx-interoperability-mode=default")
+
+add_link_options()

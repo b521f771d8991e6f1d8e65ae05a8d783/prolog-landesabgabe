@@ -4,10 +4,6 @@ import XCTest
 import TestingC
 import CxxStdlib
 
-func swift_syslog(withPriority priority : Int32, andMessage message : String, _ args : CVarArg...) {
-    withVaList(args) { vsyslog(priority, message, $0) }
-}
-
 class CTests: XCTestCase {
     static let allTests = [
         ("tests all embedded google Tests", test)

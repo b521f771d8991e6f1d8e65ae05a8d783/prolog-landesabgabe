@@ -1,0 +1,6 @@
+[
+    {
+        "name": "x64_linux_static",
+        "toolchainFile": "/workspace/Build/Toolchains/x86_64-linux-gnu.cmake"
+    }
+]

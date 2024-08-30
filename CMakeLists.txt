@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.28)
-project(LX VERSION 1.0 LANGUAGES Swift OBJCXX CXX OBJC C)
+project(LX VERSION 1.0 LANGUAGES Swift CXX C)
 
 include(ExternalProject)
 
@@ -88,8 +88,6 @@ add_dependencies(swi-prolog-home swi-prolog)
 include(Dependencies/incbin.cmake)
 
 # TODO: migrate these to ExternalProject_Add
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -fhardened -O4")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -fhardened -O4")
 
 include(FetchContent)
 
@@ -185,35 +183,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
   set(SWIFT_TESTABLE
     $<$<COMPILE_LANGUAGE:Swift>:-enable-testing>
   )
-
-  set(CXX_WALL
-    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJCXX>:-Wall>
-  )
-
-  set(CXX_Wextra
-    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJCXX>:-Wall>
-  )
-
-  set(CXX_Werror
-    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJCXX>:-Werror>
-  )
-
-  set(CXX_pedantic
-    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJCXX>:-pedantic>
-  )
-
-  set(CXX_FPIC
-    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJCXX>:-fPIC>
-  )
-
-  set(CXX_SANITIZE
-    #$<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJCXX>:-fsanitize=address>
-  )
-
-  set(CXX_HARDENED
-    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJCXX>:-fhardened>
-    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJCXX>:-O4>
-  )
 else()
   message("This program should be compiled with clang or gcc")
 endif()
@@ -234,13 +203,6 @@ foreach(TARGET ${TARGETS})
     ${SWIFT_CXX_INTEROP}
     ${SWIFT_CXX_INTEROP_LANGUAGE_VERSION}
     ${SWIFT_TESTABLE}
-    ${CXX_WALL}
-    ${CXX_Wextra}
-    ${CXX_Werror}
-    ${CXX_pedantic}
-    ${CXX_FPIC}
-    ${CXX_SANITIZE}
-    ${CXX_HARDENED}
   )
 
   set_target_properties(${TARGET} PROPERTIES
@@ -262,7 +224,3 @@ foreach(TARGET ${TARGETS})
     CMAKE_C_EXTENSIONS OFF
   )
 endforeach()
-
-target_compile_options(gtest PRIVATE
-  ${CXX_FPIC}
-)

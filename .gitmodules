@@ -36,3 +36,6 @@
 [submodule "Dependencies/incbin"]
 	path = Dependencies/incbin
 	url = https://github.com/graphitemaster/incbin
+[submodule "Dependencies/libarchive"]
+	path = Dependencies/libarchive
+	url = https://github.com/libarchive/libarchive

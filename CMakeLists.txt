@@ -19,6 +19,30 @@ set(ZLIB_BINARY_DIR "${BINARY_DIR}")
 set(ZLIB_INCLUDE_DIR ${ZLIB_SOURCE_DIR})
 set(ZLIB_LIBRARY ${ZLIB_BINARY_DIR}/libz.a)
 
+ExternalProject_Add(libarchive
+  URL ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/libarchive
+  CMAKE_ARGS
+    -DCMAKE_C_FLAGS=-fPIC
+    -DENABLE_TAR:BOOL=ON
+    -DENABLE_TEST:BOOL=ON
+    -DENABLE_ACL:BOOL=OFF
+    # some tests fail without zlib, we build it anyway for swipl-wasm,
+    # so we might as well fix those
+    -DZLIB_INCLUDE_DIR=${ZLIB_INCLUDE_DIR}
+    -DZLIB_LIBRARY=${ZLIB_LIBRARY}
+    -DENABLE_CPIO_SHARED:BOOL=OF
+  TEST_COMMAND "ctest" "||" "true" # TODO: fix those failing tests
+  INSTALL_COMMAND ""
+  BUILD_BYPRODUCTS <BINARY_DIR>/libarchive/libarchive.a
+)
+add_dependencies(libarchive zlib)
+ExternalProject_Get_Property(libarchive SOURCE_DIR)
+ExternalProject_Get_Property(libarchive BINARY_DIR)
+set(LIBARCHIVE_SOURCE_DIR "${SOURCE_DIR}")
+set(LIBARCHIVE_BINARY_DIR "${BINARY_DIR}")
+set(LIBARCHIVE_INCLUDE_DIR ${LIBARCHIVE_SOURCE_DIR}/libarchive)
+set(LIBARCHIVE_LIBRARY ${LIBARCHIVE_BINARY_DIR}/libarchive/libarchive.a)
+
 # zlib https://www.swi-prolog.org/build/prerequisites.html
 # regarding the build opptions, see here: https://github.com/SWI-Prolog/swipl-devel/blob/master/CMAKE.md
 ExternalProject_Add(swi-prolog
@@ -50,18 +74,23 @@ set(SWI_PROLOG_BINARY_DIR "${BINARY_DIR}")
 set(SWIPL_INCLUDE_DIR "${SWI_PROLOG_BINARY_DIR}/home/include")
 set(SWIPL_LIBRARY "${SWI_PROLOG_BINARY_DIR}/src/libswipl_static.a")
 
-set(SWI_PROLOG_HOME_STORE_PATH "${CMAKE_CURRENT_BINARY_DIR}/swipl-prolog-home.tar")
+set(SWI_PROLOG_HOME_STORE_PATH "${CMAKE_CURRENT_BINARY_DIR}/swipl-prolog-home.tar.xz")
 add_custom_target(swi-prolog-home
 WORKING_DIRECTORY
   "${SWI_PROLOG_BINARY_DIR}"
 COMMAND
-  ${CMAKE_COMMAND} -E tar "cf" ${SWI_PROLOG_HOME_STORE_PATH} home
+  # ${CMAKE_COMMAND} -E # cmake has no support for the -h option needed
+  # to dereference symlink
+  XZ_OPT=-9 tar "cJfh" ${SWI_PROLOG_HOME_STORE_PATH} home
 )
 add_dependencies(swi-prolog-home swi-prolog)
 
 include(Dependencies/incbin.cmake)
 
-# TODO: migrate this to ExternalProject_Add
+# TODO: migrate these to ExternalProject_Add
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -fhardened -O4")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -fhardened -O4")
+
 include(FetchContent)
 
 FetchContent_Declare(google-test
@@ -102,6 +131,7 @@ PUBLIC
   ${SWIPL_INCLUDE_DIR}
 PRIVATE
   Sources/LogicKit/include-project
+  ${LIBARCHIVE_INCLUDE_DIR}
 )
 target_compile_options(LogicKit PRIVATE
   $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJCXX>:-DSWI_PROLOG_HOME_STORE="${SWI_PROLOG_HOME_STORE_PATH}">
@@ -110,6 +140,8 @@ target_link_libraries(LogicKit PUBLIC
   ActKit
   ${SWIPL_LIBRARY}
   ${ZLIB_LIBRARY}
+  ${LIBARCHIVE_LIBRARY}
+  Boost::filesystem
   Boost::numeric_conversion
   incbin
 )

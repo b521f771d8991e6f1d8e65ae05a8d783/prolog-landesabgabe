@@ -1,0 +1,7 @@
+module TestingC {
+    requires cplusplus
+    
+    header "Testing.h++"
+
+    export *
+}

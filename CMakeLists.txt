@@ -97,6 +97,8 @@ FetchContent_Declare(google-test
   URL ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/googletest
 )
 
+enable_testing()
+
 # flags for boost
 #set(OPENSSL_USE_STATIC_LIBS ON)
 FetchContent_Declare(boost
@@ -113,6 +115,15 @@ add_library(ActKit
   Sources/ActKit/LegalElements.swift
   Sources/ActKit/LegalElementsBuilders.swift
   Sources/ActKit/Code.swift
+)
+
+add_executable(ActKitTests
+  Sources/ActKit/Testing/Tests.swift
+)
+target_link_libraries(ActKitTests ActKit)
+add_test(
+  NAME ActKitTests
+  COMMAND ActKitTests
 )
 
 # LogicKit
@@ -146,16 +157,17 @@ target_link_libraries(LogicKit PUBLIC
   incbin
 )
 
-# Tests
-add_executable(LXTests
-Testing/ActKitTests.swift
-  Testing/Testing.c++
-  Testing/LogicKitTests.swift
-  Testing/main.swift
+add_executable(LogicKitTests
+  Sources/LogicKit/Testing/Testing.c++
+  Sources/LogicKit/Testing/LogicKitTests.swift
+  Sources/LogicKit/Testing/main.swift
 )
-target_compile_options(LXTests PRIVATE ${CXX_Werror})
-target_include_directories(LXTests PUBLIC Testing/include)
-target_link_libraries(LXTests PUBLIC LogicKit ActKit GTest::gtest)
+target_include_directories(LogicKitTests PUBLIC Sources/LogicKit/Testing/include)
+target_link_libraries(LogicKitTests PUBLIC LogicKit ActKit GTest::gtest)
+add_test(
+  NAME LogicKitTests
+  COMMAND ./LogicKitTests
+)
 
 # LX executable
 add_executable(LX
@@ -165,10 +177,11 @@ target_link_libraries(LX LogicKit ActKit)
 
 # configuration for all targets
 set(TARGETS
-  LogicKit
-  LX
   ActKit
-  LXTests
+  ActKitTests
+  LogicKit
+  LogicKitTests
+  LX
 )
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
@@ -179,7 +192,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
 
   set(SWIFT_CXX_INTEROP_LANGUAGE_VERSION
     $<$<COMPILE_LANGUAGE:Swift>:-Xcc>
-    $<$<COMPILE_LANGUAGE:Swift>:-std=c++17>
+    $<$<COMPILE_LANGUAGE:Swift>:-std=c++20>
   )
 
   set(SWIFT_TESTABLE
@@ -205,17 +218,18 @@ foreach(TARGET ${TARGETS})
     ${SWIFT_CXX_INTEROP}
     ${SWIFT_CXX_INTEROP_LANGUAGE_VERSION}
     ${SWIFT_TESTABLE}
+    ${CXX_Werror}
   )
 
   set_target_properties(${TARGET} PROPERTIES
     COMPILE_WARNING_AS_ERROR ON
     
-    CMAKE_Swift_LANGUAGE_VERSION 6
+    CMAKE_Swift_LANGUAGE_VERSION 5
 
-    CMAKE_OBJCXX_STANDARD 23
-    CMAKE_CXX_STANDARD 23
-    CMAKE_OBJC_STANDARD 23
-    CMAKE_C_STANDARD 23
+    CMAKE_OBJCXX_STANDARD 20
+    CMAKE_CXX_STANDARD 20
+    CMAKE_OBJC_STANDARD 11
+    CMAKE_C_STANDARD 11
 
     CMAKE_OBJCXX_STANDARD_REQUIRED ON
     CMAKE_CXX_STANDARD_REQUIRED ON

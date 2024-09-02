@@ -1,15 +1,24 @@
 cmake_minimum_required(VERSION 3.28)
 project(LX VERSION 1.0 LANGUAGES Swift CXX C)
 
+enable_testing()
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/Build/wrapper.sh.in
+  ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh
+  @ONLY
+)
+
 include(ExternalProject)
 
+include(Dependencies/Dependencies.cmake)
+
 # https://www.swi-prolog.org/build/WebAssembly.html <-- we need that
+set(ZLIB_FLAGS ${CMAKE_C_FLAGS})
 ExternalProject_Add(zlib # swi-prolog needs that and does not ship it itself 😒
   URL ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/zlib
   CONFIGURE_COMMAND
-    CFLAGS=-fPIC
-    "<SOURCE_DIR>/configure" "-static"
-  BUILD_COMMAND     "make"
+    COMMAND "/bin/sh" ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh "<SOURCE_DIR>/configure" "-static"
+  BUILD_COMMAND "/bin/sh" ${CMAKE_CURRENT_BINARY_DIR}/wrapper.sh "make"
   INSTALL_COMMAND ""
   TEST_COMMAND "" "make" "test"
   BUILD_BYPRODUCTS  <BINARY_DIR>/libz.a
@@ -24,7 +33,8 @@ set(ZLIB_LIBRARY ${ZLIB_BINARY_DIR}/libz.a)
 ExternalProject_Add(libarchive
   URL ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/libarchive
   CMAKE_ARGS
-    -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
+    -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+    -DCMAKE_C_FLAGS=${EXTERNAL_PROJECT_OPTIONS}
     -DENABLE_TAR:BOOL=ON
     -DENABLE_TEST:BOOL=ON
     -DENABLE_ACL:BOOL=OFF
@@ -33,6 +43,7 @@ ExternalProject_Add(libarchive
     -DZLIB_INCLUDE_DIR=${ZLIB_INCLUDE_DIR}
     -DZLIB_LIBRARY=${ZLIB_LIBRARY}
     -DENABLE_CPIO_SHARED:BOOL=OF
+    -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON
   TEST_COMMAND "ctest" "||" "true" # TODO: fix those failing tests
   INSTALL_COMMAND ""
   BUILD_BYPRODUCTS <BINARY_DIR>/libarchive/libarchive.a
@@ -50,6 +61,10 @@ set(LIBARCHIVE_LIBRARY ${LIBARCHIVE_BINARY_DIR}/libarchive/libarchive.a)
 ExternalProject_Add(swi-prolog
   URL ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/swi-prolog
   CMAKE_ARGS
+    -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+    -DCMAKE_C_FLAGS=${EXTERNAL_PROJECT_OPTIONS}
+    -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+    -DCMAKE_CXX_FLAGS=${EXTERNAL_PROJECT_OPTIONS}
     -DUSE_GMP=OFF
     -DUSE_TCMALLOC=OFF
     -DBUILD_TESTING=OFF
@@ -97,8 +112,6 @@ FetchContent_Declare(google-test
   URL ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/googletest
 )
 
-enable_testing()
-
 # flags for boost
 #set(OPENSSL_USE_STATIC_LIBS ON)
 FetchContent_Declare(boost
@@ -120,10 +133,12 @@ add_library(ActKit
 add_executable(ActKitTests
   Sources/ActKit/Testing/Tests.swift
 )
-target_link_libraries(ActKitTests ActKit)
+target_link_libraries(ActKitTests PUBLIC
+  ActKit
+)
 add_test(
   NAME ActKitTests
-  COMMAND ActKitTests
+  COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ActKitTests
 )
 
 # LogicKit
@@ -144,8 +159,8 @@ PRIVATE
   Sources/LogicKit/include-project
   ${LIBARCHIVE_INCLUDE_DIR}
 )
-target_compile_options(LogicKit PRIVATE
-  $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJCXX>:-DSWI_PROLOG_HOME_STORE="${SWI_PROLOG_HOME_STORE_PATH}">
+target_compile_definitions(LogicKit PRIVATE
+  SWI_PROLOG_HOME_STORE="${SWI_PROLOG_HOME_STORE_PATH}"
 )
 target_link_libraries(LogicKit PUBLIC
   ActKit
@@ -163,17 +178,24 @@ add_executable(LogicKitTests
   Sources/LogicKit/Testing/main.swift
 )
 target_include_directories(LogicKitTests PUBLIC Sources/LogicKit/Testing/include)
-target_link_libraries(LogicKitTests PUBLIC LogicKit ActKit GTest::gtest)
+target_link_libraries(LogicKitTests PUBLIC
+  LogicKit
+  ActKit
+  GTest::gtest
+)
 add_test(
   NAME LogicKitTests
-  COMMAND ./LogicKitTests
+  COMMAND ${CMAKE_CURRENT_BINARY_DIR}/LogicKitTests
 )
 
 # LX executable
 add_executable(LX
-  Sources/main.swift
+  Sources/LX/main.swift
 )
-target_link_libraries(LX LogicKit ActKit)
+target_link_libraries(LX PRIVATE
+  LogicKit
+  ActKit
+)
 
 # configuration for all targets
 set(TARGETS
@@ -186,18 +208,14 @@ set(TARGETS
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
     OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  set(SWIFT_CXX_INTEROP
-    $<$<COMPILE_LANGUAGE:Swift>:-cxx-interoperability-mode=default>
-  )
-
-  set(SWIFT_CXX_INTEROP_LANGUAGE_VERSION
-    $<$<COMPILE_LANGUAGE:Swift>:-Xcc>
-    $<$<COMPILE_LANGUAGE:Swift>:-std=c++20>
-  )
-
   set(SWIFT_TESTABLE
     $<$<COMPILE_LANGUAGE:Swift>:-enable-testing>
   )
+
+  set(Wall "$<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-Wall>")
+  set(Wextra "$<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-Wextra>")
+  set(Wpedantic "$<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-Wpedantic>")
+  set(Werror "$<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-Werror>")
 else()
   message("This program should be compiled with clang or gcc")
 endif()
@@ -215,16 +233,17 @@ set_target_properties(PROPERTIES
 
 foreach(TARGET ${TARGETS})
   target_compile_options(${TARGET} PRIVATE
-    ${SWIFT_CXX_INTEROP}
-    ${SWIFT_CXX_INTEROP_LANGUAGE_VERSION}
     ${SWIFT_TESTABLE}
-    ${CXX_Werror}
+    ${Wall}
+    ${Wextra}
+    ${Werror}
+    ${Wpedantic}
   )
 
   set_target_properties(${TARGET} PROPERTIES
     COMPILE_WARNING_AS_ERROR ON
     
-    CMAKE_Swift_LANGUAGE_VERSION 5
+    CMAKE_Swift_LANGUAGE_VERSION 4
 
     CMAKE_OBJCXX_STANDARD 20
     CMAKE_CXX_STANDARD 20

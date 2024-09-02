@@ -8,7 +8,6 @@ set(CMAKE_SYSTEM_PROCESSOR x86_64)
 find_program(CC_EXE NAMES "clang")
 find_program(CXX_EXE NAMES "clang++")
 find_program(SWIFTC_EXE NAMES "swiftc")
-find_program(LINK_EXE NAMES "ld")
 
 set(CMAKE_C_COMPILER "${CC_EXE}")
 set(CMAKE_CXX_COMPILER "${CXX_EXE}")
@@ -16,15 +15,21 @@ set(CMAKE_OBJC_COMPILER "${CC_EXE}")
 set(CMAKE_OBJCXX_COMPILER "${CXX_EXE}")
 set(CMAKE_Swift_COMPILER "${SWIFTC_EXE}")
 
-#set(CMAKE_C_LINK_EXECUTABLE "${LINK_EXE}")
-#set(CMAKE_CXX_LINK_EXECUTABLE "<CMAKE_LINKER> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>")
-#set(CMAKE_OBJC_LINK_EXECUTABLE "${LINK_EXE}")
-#set(CMAKE_OBJCXX_LINK_EXECUTABLE "${LINK_EXE}")
-#set(CMAKE_Swift_LINK_EXECUTABLE "<CMAKE_LINKER> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>")
+set(CMAKE_C_COMPILER_TARGET x86_64-unknown-linux-musl)
+set(CMAKE_CXX_COMPILER_TARGET ${CMAKE_C_COMPILER_TARGET})
+set(CMAKE_OBJC_COMPILER_TARGET ${CMAKE_C_COMPILER_TARGET})
+set(CMAKE_OBJCXX_COMPILER_TARGET ${CMAKE_C_COMPILER_TARGET})
+#set(CMAKE_Swift_COMPILER_TARGET ${CMAKE_C_COMPILER_TARGET})
 
-# Set the flags for the newest preprocessor instructions
-set(CMAKE_C_FLAGS "-march=native -mtune=native -m64 -O3 -Wall -Wextra -Wpedantic -fPIC")
-set(CMAKE_CXX_FLAGS "-march=native -mtune=native -m64 -O3 -Wall -Wextra -Wpedantic -fPIC")
-set(CMAKE_OBJC_FLAGS "${CMAKE_C_CFLAGS}")
-set(CMAKE_OBJCXX_FLAGS "${CMAKE_CXX_CFLAGS}")
-set(CMAKE_Swift_FLAGS "-cxx-interoperability-mode=default")
+# flags for all files, including dependencies (DO NOT do -Werror here, it would break dependencies)
+set(EXTERNAL_PROJECT_OPTIONS "-fPIC -march=native -mtune=native -m64 -O3")
+add_compile_options(
+    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-march=native>
+    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-mtune=native>
+    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-m64>
+    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-O3>
+    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-fPIC>
+    $<$<COMPILE_LANGUAGE:Swift>:-cxx-interoperability-mode=default>
+    $<$<COMPILE_LANGUAGE:Swift>:-Xcc>
+    $<$<COMPILE_LANGUAGE:Swift>:-std=c++17>
+)

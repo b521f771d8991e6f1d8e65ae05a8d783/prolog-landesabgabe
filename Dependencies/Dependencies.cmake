@@ -1,7 +1,6 @@
 include(ExternalProject)
 
 # https://www.swi-prolog.org/build/WebAssembly.html <-- we need that
-set(ZLIB_FLAGS ${CMAKE_C_FLAGS})
 ExternalProject_Add(zlib # swi-prolog needs that and does not ship it itself 😒
   URL ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/zlib
   CMAKE_ARGS
@@ -96,19 +95,31 @@ add_dependencies(swi-prolog-home swi-prolog)
 
 include(Dependencies/incbin.cmake)
 
+# https://www.swi-prolog.org/build/WebAssembly.html <-- we need that
+ExternalProject_Add(gtest # swi-prolog needs that and does not ship it itself 😒
+  URL ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/googletest
+  CMAKE_ARGS
+    -DSKIP_INSTALL_ALL=ON
+    -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+    -DCMAKE_C_FLAGS=${EXTERNAL_PROJECT_OPTIONS}
+  TEST_COMMAND ""
+  INSTALL_COMMAND ""
+  BUILD_BYPRODUCTS  <BINARY_DIR>/lib/libgtest.a
+)
+ExternalProject_Get_Property(gtest SOURCE_DIR)
+ExternalProject_Get_Property(gtest BINARY_DIR)
+set(GTEST_SOURCE_DIR "${SOURCE_DIR}")
+set(GTEST_BINARY_DIR "${BINARY_DIR}")
+set(GTEST_INCLUDE_DIR ${GTEST_SOURCE_DIR}/googletest/include)
+set(GTEST_LIBRARY ${GTEST_BINARY_DIR}/lib/libgtest.a)
+
 # TODO: migrate these to ExternalProject_Add
 
 include(FetchContent)
-
-FetchContent_Declare(google-test
-  URL ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/googletest
-)
 
 # flags for boost
 #set(OPENSSL_USE_STATIC_LIBS ON)
 FetchContent_Declare(boost
   URL ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/boost
 )
-
 FetchContent_MakeAvailable(boost)
-FetchContent_MakeAvailable(google-test)

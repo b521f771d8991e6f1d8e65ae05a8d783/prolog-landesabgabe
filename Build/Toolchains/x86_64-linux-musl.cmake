@@ -1,6 +1,8 @@
 set(CMAKE_SYSTEM_NAME Linux)
 set(CMAKE_SYSTEM_PROCESSOR x86_64)
 
+message (SEND_ERROR "TODO")
+
 # see https://best.openssf.org/Compiler-Hardening-Guides/Compiler-Options-Hardening-Guide-for-C-and-C++.html
 # https://www.phoronix.com/news/GCC-fhardened-Hardening-Option
 

@@ -1,16 +1,8 @@
 cmake_minimum_required(VERSION 3.28)
-project(LX VERSION 1.0 LANGUAGES
-  Swift
-  OBJCXX
-  CXX
-  OBJC
-  C
-)
+project(LX VERSION 1.0 LANGUAGES Swift OBJCXX CXX OBJC C)
 
 include(CTest)
-
 include(Build/BuildInformation.cmake)
-
 include(Dependencies/Dependencies.cmake)
 
 # configuration for our targets
@@ -70,11 +62,15 @@ add_executable(LogicKitTests
   Sources/LogicKit/Testing/LogicKitTests.swift
   Sources/LogicKit/Testing/main.swift
 )
-target_include_directories(LogicKitTests PUBLIC Sources/LogicKit/Testing/include)
+target_include_directories(LogicKitTests
+PUBLIC
+  ${GTEST_INCLUDE_DIR}
+  Sources/LogicKit/Testing/include
+)
 target_link_libraries(LogicKitTests PUBLIC
+  ${GTEST_LIBRARY}
   LogicKit
   ActKit
-  GTest::gtest
   BuildInformation
 )
 add_test(

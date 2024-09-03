@@ -1,31 +1,11 @@
-[submodule "Dependencies/googletest"]
-	path = Dependencies/googletest
-	url = https://github.com/google/googletest
-	fetchRecurseSubmodules = true
-	ignore = all
-[submodule "Dependencies/boost"]
-	path = Dependencies/boost
-	url = https://github.com/boostorg/boost
-	fetchRecurseSubmodules = true
-	ignore = all
 [submodule "Dependencies/swi-prolog"]
 	path = Dependencies/swi-prolog
 	url = https://github.com/SWI-Prolog/swipl
 	fetchRecurseSubmodules = true
 	ignore = all
-[submodule "Dependencies/zlib"]
-	path = Dependencies/zlib
-	url = https://github.com/madler/zlib
-	fetchRecurseSubmodules = true
-	ignore = all
 [submodule "Dependencies/nixpkgs"]
 	path = Dependencies/nixpkgs
 	url = https://github.com/NixOS/nixpkgs
-	fetchRecurseSubmodules = true
-	ignore = all
-[submodule "Dependencies/xctest"]
-	path = Dependencies/xctest
-	url = https://github.com/swiftlang/swift-corelibs-xctest
 	fetchRecurseSubmodules = true
 	ignore = all
 [submodule "Dependencies/flake-utils"]
@@ -36,6 +16,3 @@
 [submodule "Dependencies/incbin"]
 	path = Dependencies/incbin
 	url = https://github.com/graphitemaster/incbin
-[submodule "Dependencies/libarchive"]
-	path = Dependencies/libarchive
-	url = https://github.com/libarchive/libarchive

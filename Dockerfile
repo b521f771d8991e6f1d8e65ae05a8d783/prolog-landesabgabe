@@ -1,4 +1,5 @@
 FROM fedora:40
+# TODO replace this by nix as soon as they have a more recent
 # FROM nixos/nix
 
 RUN dnf update -y
@@ -23,5 +24,10 @@ RUN dnf install -y gcc
 RUN dnf install -y gcc-objc
 RUN dnf install -y g++
 RUN dnf install -y gcc-objc++
+
+RUN dnf install -y boost-devel
+RUN dnf install -y gtest-devel
+RUN dnf install -y zlib-ng-compat-static libzstd-static
+RUN dnf install -y libarchive-devel
 
 RUN git config --global --add safe.directory /workspace

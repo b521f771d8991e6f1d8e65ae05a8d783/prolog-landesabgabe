@@ -34,14 +34,13 @@ add_library(LogicKit
   Sources/LogicKit/LegalStatement.swift
   Sources/LogicKit/StdStatements.swift
 )
-add_dependencies(LogicKit zlib swi-prolog swi-prolog-home)
+add_dependencies(LogicKit swi-prolog swi-prolog-home)
 target_include_directories(LogicKit
 PUBLIC
   Sources/LogicKit/include
   ${SWIPL_INCLUDE_DIR}
 PRIVATE
   Sources/LogicKit/include-project
-  ${LIBARCHIVE_INCLUDE_DIR}
 )
 target_compile_definitions(LogicKit PRIVATE
   SWI_PROLOG_HOME_STORE="${SWI_PROLOG_HOME_STORE_PATH}"
@@ -49,10 +48,10 @@ target_compile_definitions(LogicKit PRIVATE
 target_link_libraries(LogicKit PUBLIC
   ActKit
   ${SWIPL_LIBRARY}
-  ${ZLIB_LIBRARY}
-  ${LIBARCHIVE_LIBRARY}
+  ZLIB::ZLIB
+  LibArchive::LibArchive
   Boost::filesystem
-  Boost::numeric_conversion
+  Boost::headers
   incbin
   BuildInformation
 )
@@ -64,11 +63,10 @@ add_executable(LogicKitTests
 )
 target_include_directories(LogicKitTests
 PUBLIC
-  ${GTEST_INCLUDE_DIR}
   Sources/LogicKit/Testing/include
 )
 target_link_libraries(LogicKitTests PUBLIC
-  ${GTEST_LIBRARY}
+  GTest::GTest
   LogicKit
   ActKit
   BuildInformation

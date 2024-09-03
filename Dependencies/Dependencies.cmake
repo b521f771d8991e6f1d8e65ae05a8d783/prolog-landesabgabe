@@ -1,50 +1,9 @@
+find_package(Boost REQUIRED COMPONENTS filesystem headers)
+find_package(GTest REQUIRED)
+find_package(ZLIB REQUIRED)
+find_package(LibArchive REQUIRED)
+
 include(ExternalProject)
-
-# https://www.swi-prolog.org/build/WebAssembly.html <-- we need that
-ExternalProject_Add(zlib # swi-prolog needs that and does not ship it itself 😒
-  URL ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/zlib
-  CMAKE_ARGS
-    #-DSTATIC=ON
-    -DSKIP_INSTALL_ALL=ON
-    -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-    -DCMAKE_C_FLAGS=${EXTERNAL_PROJECT_OPTIONS}
-    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-  TEST_COMMAND "ctest"
-  INSTALL_COMMAND ""
-  BUILD_BYPRODUCTS  <BINARY_DIR>/libz.a
-)
-ExternalProject_Get_Property(zlib SOURCE_DIR)
-ExternalProject_Get_Property(zlib BINARY_DIR)
-set(ZLIB_SOURCE_DIR "${SOURCE_DIR}")
-set(ZLIB_BINARY_DIR "${BINARY_DIR}")
-set(ZLIB_INCLUDE_DIR ${ZLIB_SOURCE_DIR})
-set(ZLIB_LIBRARY ${ZLIB_BINARY_DIR}/libz.a)
-
-ExternalProject_Add(libarchive
-  URL ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/libarchive
-  CMAKE_ARGS
-    -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-    -DCMAKE_C_FLAGS=${EXTERNAL_PROJECT_OPTIONS}
-    -DENABLE_TAR:BOOL=ON
-    -DENABLE_TEST:BOOL=ON
-    -DENABLE_ACL:BOOL=OFF
-    # some tests fail without zlib, we build it anyway for swipl-wasm,
-    # so we might as well fix those
-    -DZLIB_INCLUDE_DIR=${ZLIB_INCLUDE_DIR}
-    -DZLIB_LIBRARY=${ZLIB_LIBRARY}
-    -DENABLE_CPIO_SHARED:BOOL=OF
-    -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON
-  TEST_COMMAND "ctest" "||" "true" # TODO: fix those failing tests
-  INSTALL_COMMAND ""
-  BUILD_BYPRODUCTS <BINARY_DIR>/libarchive/libarchive.a
-  DEPENDS zlib
-)
-ExternalProject_Get_Property(libarchive SOURCE_DIR)
-ExternalProject_Get_Property(libarchive BINARY_DIR)
-set(LIBARCHIVE_SOURCE_DIR "${SOURCE_DIR}")
-set(LIBARCHIVE_BINARY_DIR "${BINARY_DIR}")
-set(LIBARCHIVE_INCLUDE_DIR ${LIBARCHIVE_SOURCE_DIR}/libarchive)
-set(LIBARCHIVE_LIBRARY ${LIBARCHIVE_BINARY_DIR}/libarchive/libarchive.a)
 
 # zlib https://www.swi-prolog.org/build/prerequisites.html
 # regarding the build opptions, see here: https://github.com/SWI-Prolog/swipl-devel/blob/master/CMAKE.md
@@ -61,10 +20,7 @@ ExternalProject_Add(swi-prolog
     -DBUILD_SWIPL_LD=OFF
     -DSWIPL_STATIC_LIB=ON
     -DSWIPL_PACKAGES=ON
-    -DCMAKE_BUILD_TYPE=Release
-    -DSWIPL_PACKAGE_LIST=cpp;zlib # seperate this by ;
-    -DZLIB_INCLUDE_DIR=${ZLIB_INCLUDE_DIR}
-    -DZLIB_LIBRARY=${ZLIB_LIBRARY}
+    -DSWIPL_PACKAGE_LIST=cpp # seperate this by ;
     -DINSTALL_TESTS=OFF
     -DINSTALL_DOCUMENTATION=OFF
     -DSWIPL_INSTALL_IN_LIB=OFF
@@ -72,9 +28,7 @@ ExternalProject_Add(swi-prolog
   TEST_COMMAND ""
   INSTALL_COMMAND ""
   BUILD_BYPRODUCTS <BINARY_DIR>/src/libswipl_static.a
-  DEPENDS zlib
 )
-add_dependencies(swi-prolog zlib)
 ExternalProject_Get_Property(swi-prolog SOURCE_DIR)
 ExternalProject_Get_Property(swi-prolog BINARY_DIR)
 set(SWI_PROLOG_SOURCE_DIR "${SOURCE_DIR}")
@@ -94,32 +48,3 @@ COMMAND
 add_dependencies(swi-prolog-home swi-prolog)
 
 include(Dependencies/incbin.cmake)
-
-# https://www.swi-prolog.org/build/WebAssembly.html <-- we need that
-ExternalProject_Add(gtest # swi-prolog needs that and does not ship it itself 😒
-  URL ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/googletest
-  CMAKE_ARGS
-    -DSKIP_INSTALL_ALL=ON
-    -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-    -DCMAKE_C_FLAGS=${EXTERNAL_PROJECT_OPTIONS}
-  TEST_COMMAND ""
-  INSTALL_COMMAND ""
-  BUILD_BYPRODUCTS  <BINARY_DIR>/lib/libgtest.a
-)
-ExternalProject_Get_Property(gtest SOURCE_DIR)
-ExternalProject_Get_Property(gtest BINARY_DIR)
-set(GTEST_SOURCE_DIR "${SOURCE_DIR}")
-set(GTEST_BINARY_DIR "${BINARY_DIR}")
-set(GTEST_INCLUDE_DIR ${GTEST_SOURCE_DIR}/googletest/include)
-set(GTEST_LIBRARY ${GTEST_BINARY_DIR}/lib/libgtest.a)
-
-# TODO: migrate these to ExternalProject_Add
-
-include(FetchContent)
-
-# flags for boost
-#set(OPENSSL_USE_STATIC_LIBS ON)
-FetchContent_Declare(boost
-  URL ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/boost
-)
-FetchContent_MakeAvailable(boost)

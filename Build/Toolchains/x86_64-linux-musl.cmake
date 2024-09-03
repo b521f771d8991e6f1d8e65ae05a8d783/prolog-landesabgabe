@@ -22,7 +22,7 @@ set(CMAKE_Swift_COMPILER "${SWIFTC_EXE}")
 #set(CMAKE_Swift_COMPILER_TARGET ${CMAKE_C_COMPILER_TARGET})
 
 # flags for all files, including dependencies (DO NOT do -Werror here, it would break dependencies)
-set(EXTERNAL_PROJECT_OPTIONS -fPIC;-m64;-O3;-march=native;-mtune=native)
+set(EXTERNAL_PROJECT_OPTIONS -fPIC)
 add_compile_options(
     $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-march=native>
     $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-mtune=native>

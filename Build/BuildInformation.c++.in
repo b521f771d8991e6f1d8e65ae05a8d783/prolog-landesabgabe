@@ -1,0 +1,34 @@
+#include "BuildInformation.h"
+
+extern "C"
+{
+  const char *
+  getBuildType(void)
+  {
+    return nobs::BuildInformation::buildType;
+  }
+
+  const char *
+  getGitHash(void)
+  {
+    return nobs::BuildInformation::gitHash;
+  }
+
+  unsigned
+  getBuildYear(void)
+  {
+    return nobs::BuildInformation::buildYear;
+  }
+
+  unsigned
+  getBuildMonth(void)
+  {
+    return nobs::BuildInformation::buildMonth;
+  }
+
+  unsigned
+  getBuildDay(void)
+  {
+    return nobs::BuildInformation::buildDay;
+  }
+}

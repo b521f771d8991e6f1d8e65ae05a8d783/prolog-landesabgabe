@@ -6,10 +6,11 @@ extern "C"
 {
 #endif
 
-  extern const char *gitHash;
-  extern unsigned buildYear;
-  extern unsigned buildMonth;
-  extern unsigned buildDay;
+  extern const char *getBuildType(void);
+  extern const char *getGitHash(void);
+  extern unsigned getBuildYear(void);
+  extern unsigned getBuildMonth(void);
+  extern unsigned getBuildDay(void);
 
 #ifdef __cplusplus
 }
@@ -22,7 +23,8 @@ namespace nobs::BuildInformation
 
 // clang-format off
 
-constexpr std::string_view gitHash("@GIT_HASH@");
+constexpr const char* gitHash("@GIT_HASH@");
+constexpr const char* buildType("@BUILD_TYPE@");
 constexpr unsigned buildYear(@BUILD_YEAR@);
 constexpr unsigned buildMonth(0x@BUILD_MONTH@);
 constexpr unsigned buildDay(0x@BUILD_DAY@);
@@ -30,11 +32,13 @@ constexpr unsigned buildDay(0x@BUILD_DAY@);
 class VersionString {
 private:
   std::string_view gitHash;
+  std::string_view buildType;
   unsigned buildYear, buildMonth, buildDay;
 
 public:
-  constexpr VersionString(std::string_view gitHash, unsigned buildYear, unsigned buildMonth, unsigned buildDay)
+  constexpr VersionString(std::string_view gitHash, std::string_view buildType, unsigned buildYear, unsigned buildMonth, unsigned buildDay)
   : gitHash(gitHash)
+  , buildType(buildType)
   , buildYear(buildYear)
   , buildMonth(buildMonth)
   , buildDay(buildDay)
@@ -55,9 +59,10 @@ public:
   constexpr static VersionString getCurrentVersion(void) noexcept {
     return VersionString{
       nobs::BuildInformation::gitHash,
+      nobs::BuildInformation::buildType,
       nobs::BuildInformation::buildYear,
       nobs::BuildInformation::buildMonth,
-      nobs::BuildInformation::buildDay,
+      nobs::BuildInformation::buildDay
     };
   }
 
@@ -71,7 +76,8 @@ public:
     return std::to_string(this->buildYear)
       + '.' + std::to_string(this->buildMonth)
       + '.' + std::to_string(this->buildDay)
-      + '-' + std::string(this->gitHash);
+      + '-' + std::string(this->gitHash)
+      + '(' + std::string(this->buildType) + ')';
   }
 
   #if __cplusplus >= 202002L

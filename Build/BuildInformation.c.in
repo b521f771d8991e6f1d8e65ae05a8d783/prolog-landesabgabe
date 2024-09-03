@@ -1,0 +1,10 @@
+#include "BuildInformation.h"
+
+// clang-format off
+
+const char *gitHash = "@GIT_HASH@";
+unsigned buildYear = 0x@BUILD_YEAR@;
+unsigned buildMonth = 0x@BUILD_MONTH@;
+unsigned buildDay = 0x@BUILD_DAY@;
+
+// clang-format on

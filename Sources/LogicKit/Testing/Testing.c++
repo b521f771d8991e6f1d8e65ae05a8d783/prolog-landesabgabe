@@ -1,10 +1,13 @@
 #include <vector>
 #include <string>
+#include <iostream>
 
 #include <gtest/gtest.h>
 
 #include <Testing.h++>
 #include <LogicKit.h++>
+
+#include <BuildInformation.h>
 
 using namespace looe::LegalXML::LogicKit;
 
@@ -12,6 +15,10 @@ std::vector<std::string> arguments;
 
 TEST(PrologVM, testStartUp)
 {
+  std::cout
+    << "Running Tests in version: "
+    << nobs::BuildInformation::VersionString::getCurrentVersion().toString()
+    << std::endl;
   PrologVM pvm(arguments[0]);
   ASSERT_TRUE(pvm.isInitialised());
 }

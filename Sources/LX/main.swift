@@ -1,5 +1,8 @@
 import Foundation
 import ActKit
 import LogicKit
+import BuildInformation
 
-print("Hello, Digital laws")
+print("Running digital law server in version: ",
+    String(nobs.BuildInformation.getCurrentVersionAsString())
+)

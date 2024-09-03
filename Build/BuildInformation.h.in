@@ -1,0 +1,102 @@
+#ifndef BUILD_INFORMATION_H
+#define BUILD_INFORMATION_H
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+  extern const char *gitHash;
+  extern unsigned buildYear;
+  extern unsigned buildMonth;
+  extern unsigned buildDay;
+
+#ifdef __cplusplus
+}
+
+#include <string_view>
+#include <string>
+
+namespace nobs::BuildInformation
+{
+
+// clang-format off
+
+constexpr std::string_view gitHash("@GIT_HASH@");
+constexpr unsigned buildYear(@BUILD_YEAR@);
+constexpr unsigned buildMonth(0x@BUILD_MONTH@);
+constexpr unsigned buildDay(0x@BUILD_DAY@);
+
+class VersionString {
+private:
+  std::string_view gitHash;
+  unsigned buildYear, buildMonth, buildDay;
+
+public:
+  constexpr VersionString(std::string_view gitHash, unsigned buildYear, unsigned buildMonth, unsigned buildDay)
+  : gitHash(gitHash)
+  , buildYear(buildYear)
+  , buildMonth(buildMonth)
+  , buildDay(buildDay)
+  { }
+
+  constexpr unsigned getBuildYear(void) noexcept {
+    return this->buildYear;
+  }
+
+  constexpr unsigned getBuildMonth(void) noexcept {
+    return this->buildMonth;
+  }
+
+  constexpr unsigned getBuildDay(void) noexcept {
+    return this->buildDay;
+  }
+
+  constexpr static VersionString getCurrentVersion(void) noexcept {
+    return VersionString{
+      nobs::BuildInformation::gitHash,
+      nobs::BuildInformation::buildYear,
+      nobs::BuildInformation::buildMonth,
+      nobs::BuildInformation::buildDay,
+    };
+  }
+
+  #if __cplusplus >= 202002L
+    // C++20 (and later) code
+    constexpr
+  #else
+    inline
+  #endif
+  operator std::string(void) const noexcept {
+    return std::to_string(this->buildYear)
+      + '.' + std::to_string(this->buildMonth)
+      + '.' + std::to_string(this->buildDay)
+      + '-' + std::string(this->gitHash);
+  }
+
+  #if __cplusplus >= 202002L
+    constexpr
+  #else
+    inline
+  #endif
+  std::string toString(void) const noexcept {
+    return *this;
+  }
+};
+
+#if __cplusplus >= 202002L
+  constexpr
+#else
+  inline
+#endif
+std::string getCurrentVersionAsString(void) {
+  return VersionString::getCurrentVersion().toString();
+}
+
+// // clang-format on
+
+}
+
+#endif
+
+#endif

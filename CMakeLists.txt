@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.28)
-project(LX VERSION 1.0 LANGUAGES Swift OBJCXX CXX OBJC C)
+project(LX LANGUAGES Swift OBJCXX CXX OBJC C)
 
 include(CTest)
 include(Build/BuildInformation.cmake)
@@ -34,11 +34,11 @@ add_library(LogicKit
   Sources/LogicKit/LegalStatement.swift
   Sources/LogicKit/StdStatements.swift
 )
-add_dependencies(LogicKit swi-prolog swi-prolog-home)
+add_dependencies(LogicKit swi-prolog-home)
 target_include_directories(LogicKit
 PUBLIC
   Sources/LogicKit/include
-  ${SWIPL_INCLUDE_DIR}
+  ${DEPENDENCY_INCLUDE_DIRS}
 PRIVATE
   Sources/LogicKit/include-project
 )
@@ -47,7 +47,7 @@ target_compile_definitions(LogicKit PRIVATE
 )
 target_link_libraries(LogicKit PUBLIC
   ActKit
-  ${SWIPL_LIBRARY}
+  ${DEPENDENCY_LIBRARIES_DIRS}
   ZLIB::ZLIB
   LibArchive::LibArchive
   Boost::filesystem
@@ -79,8 +79,14 @@ add_test(
 # LX executable
 add_executable(LX
   Sources/LX/main.swift
+  Sources/LX/RabbitMQListener.c++
 )
-target_link_libraries(LX PRIVATE
+target_include_directories(LX
+PRIVATE
+  Sources/LX/IncludeProjectPrivate
+)
+target_link_libraries(LX
+PRIVATE
   LogicKit
   ActKit
   BuildInformation

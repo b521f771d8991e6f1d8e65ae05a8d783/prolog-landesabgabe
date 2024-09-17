@@ -2,9 +2,20 @@
     "version": 3,
     "configurePresets": [
         {
-            "name": "debug",
+            "name": "debug-x86-64-unknown-linux-gnu",
             "generator": "Ninja",
-            "cacheVariables": {}
+            "cacheVariables": {
+                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/Build/Toolchains/x86-64-unknown-linux-gnu.cmake",
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "release-x86-64-unknown-linux-gnu",
+            "generator": "Ninja",
+            "cacheVariables": {
+                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/Build/Toolchains/x86-64-unknown-linux-gnu.cmake",
+                "CMAKE_BUILD_TYPE": "Release"
+            }
         }
     ]
 }

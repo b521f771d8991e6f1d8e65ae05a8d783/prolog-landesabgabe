@@ -21,6 +21,8 @@ RUN dnf install -y gcc-objc
 RUN dnf install -y g++
 RUN dnf install -y gcc-objc++
 
+RUN dnf install -y autoconf automake autoconf-archive
+
 #RUN dnf groupinstall "Development Tools" "Development Libraries"
 
 # for fedora builds
@@ -48,5 +50,3 @@ RUN swift sdk install https://download.swift.org/swift-6.0-release/static-sdk/sw
 WORKDIR /
 
 RUN git config --global --add safe.directory /workspace
-
-#RUN /workspace/Dependencies/vcpkg/bootstrap-vcpkg.sh -disableMetrics

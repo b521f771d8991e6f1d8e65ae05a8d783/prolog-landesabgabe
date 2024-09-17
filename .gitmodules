@@ -3,16 +3,6 @@
 	url = https://github.com/SWI-Prolog/swipl
 	fetchRecurseSubmodules = true
 	ignore = all
-[submodule "Dependencies/nixpkgs"]
-	path = Dependencies/nixpkgs
-	url = https://github.com/NixOS/nixpkgs
-	fetchRecurseSubmodules = true
-	ignore = all
-[submodule "Dependencies/flake-utils"]
-	path = Dependencies/flake-utils
-	url = https://github.com/numtide/flake-utils
-	fetchRecurseSubmodules = true
-	ignore = all
 [submodule "Dependencies/incbin"]
 	path = Dependencies/incbin
 	url = https://github.com/graphitemaster/incbin

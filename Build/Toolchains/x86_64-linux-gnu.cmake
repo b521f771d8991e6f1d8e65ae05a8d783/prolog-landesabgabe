@@ -40,3 +40,5 @@ add_compile_options(
     $<$<COMPILE_LANGUAGE:Swift>:-Xcc>
     $<$<COMPILE_LANGUAGE:Swift>:-std=c++17>
 )
+
+include(${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/vcpkg/scripts/buildsystems/vcpkg.cmake)

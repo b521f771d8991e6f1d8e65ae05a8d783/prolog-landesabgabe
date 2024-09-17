@@ -6,3 +6,6 @@
 [submodule "Dependencies/incbin"]
 	path = Dependencies/incbin
 	url = https://github.com/graphitemaster/incbin
+[submodule "Dependencies/vcpkg"]
+	path = Dependencies/vcpkg
+	url = https://github.com/microsoft/vcpkg

@@ -1,0 +1,9 @@
+{
+    "dependencies": [
+        "zlib",
+        "boost",
+        "gtest",
+        "libarchive",
+        "abseil"
+    ]
+}

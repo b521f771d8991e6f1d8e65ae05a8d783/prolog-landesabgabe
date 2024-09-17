@@ -3,7 +3,8 @@
     "configurePresets": [
         {
             "name": "debug",
-            "generator": "Ninja"
+            "generator": "Ninja",
+            "cacheVariables": {}
         }
     ]
 }

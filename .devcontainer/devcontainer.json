@@ -1,7 +1,7 @@
 {
     "name": "LegalXML",
     "build": {
-        "dockerfile": "../Dockerfile"
+        "dockerfile": "Dockerfile"
     },
     "customizations": {
         "vscode": {

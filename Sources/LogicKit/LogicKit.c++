@@ -62,6 +62,9 @@ public:
 LaunchOnStartup i([]() -> void {
   static std::once_flag flag;
   std::call_once(flag, []() -> void {
+    syslog(LOG_DEBUG, "Stored archive of size %i from ('%s')\n",
+           lx_rawdata_SwiPrologHomeSize, SWI_PROLOG_HOME_STORE);
+
     static const std::filesystem::path rootDir(
       std::filesystem::temp_directory_path()
       / boost::filesystem::unique_path("%%%%-%%%%-%%%%-%%%%").c_str());
@@ -74,34 +77,28 @@ LaunchOnStartup i([]() -> void {
 
     std::filesystem::create_directory(rootDir);
 
-#ifdef DUMP_EMBEDDED_TAR
+#ifdef DEBUG
     {
-      const std::filesystem::path dumpTarPath("tar-dump.tar");
+      const std::filesystem::path dumpTarPath(
+        std::filesystem::temp_directory_path() / "tar-dump.tar");
       if(std::filesystem::exists(dumpTarPath))
         {
           std::filesystem::remove(dumpTarPath);
         }
       std::ofstream s(dumpTarPath, std::ios::binary);
-      s.write(reinterpret_cast<const char *>(lx_rawdataSwiPrologHomeData),
-              lx_rawdataSwiPrologHomeSize);
+      s.write(lx_rawdata_SwiPrologHomeData, lx_rawdata_SwiPrologHomeSize);
       s.close();
+      printf("Dumped tar to: %s", dumpTarPath.c_str());
     }
 #endif
 
     struct archive *archive = archive_read_new();
+    assert(archive);
+
     archive_read_support_format_tar(archive);
-    archive_read_support_filter_xz(archive);
+
     archive_read_open_memory(archive, lx_rawdata_SwiPrologHomeData,
                              lx_rawdata_SwiPrologHomeSize);
-
-    syslog(LOG_DEBUG, "Stored archive of size %i from ('%s')\n",
-           lx_rawdata_SwiPrologHomeSize, SWI_PROLOG_HOME_STORE);
-
-    if(archive == nullptr)
-      {
-        syslog(LOG_ERR, "Failed to open in-memory archive");
-        return;
-      }
 
     struct archive_entry *entry(nullptr);
     int r(0);

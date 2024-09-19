@@ -1,9 +1,10 @@
 {
     "dependencies": [
+        "libarchive",
         "zlib",
         "boost",
         "gtest",
-        "libarchive",
-        "abseil"
+        "ncurses",
+        "openssl"
     ]
 }

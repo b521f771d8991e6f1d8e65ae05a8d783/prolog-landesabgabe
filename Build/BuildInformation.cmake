@@ -5,12 +5,20 @@ execute_process(
 )
 
 execute_process(
+  COMMAND git rev-parse --abbrev-ref HEAD
+  OUTPUT_VARIABLE GIT_BRANCH
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+execute_process(
   COMMAND git diff --quiet
   RESULT_VARIABLE GIT_STATUS
 )
 
 if(NOT GIT_STATUS EQUAL 0)
-  set(GIT_HASH "${GIT_HASH}-dirty")
+  set(GIT_DIRTY "true")
+else()
+  set(GIT_DIRTY "false")
 endif()
 
 string(TIMESTAMP BUILD_DAY "%d")

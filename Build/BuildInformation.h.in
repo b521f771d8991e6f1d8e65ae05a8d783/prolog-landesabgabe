@@ -24,7 +24,11 @@ namespace nobs::BuildInformation
 // clang-format off
 
 constexpr const char* gitHash("@GIT_HASH@");
+constexpr const char* gitBranch("@GIT_BRANCH@");
+constexpr bool isDirty(@GIT_DIRTY@);
+
 constexpr const char* buildType("@BUILD_TYPE@");
+
 constexpr unsigned buildYear(@BUILD_YEAR@);
 constexpr unsigned buildMonth(0x@BUILD_MONTH@);
 constexpr unsigned buildDay(0x@BUILD_DAY@);
@@ -32,12 +36,24 @@ constexpr unsigned buildDay(0x@BUILD_DAY@);
 class VersionString {
 private:
   std::string_view gitHash;
+  std::string_view gitBranch;
+  bool isDirty;
+
   std::string_view buildType;
+  
   unsigned buildYear, buildMonth, buildDay;
 
 public:
-  constexpr VersionString(std::string_view gitHash, std::string_view buildType, unsigned buildYear, unsigned buildMonth, unsigned buildDay)
+  constexpr VersionString(std::string_view gitHash,
+                         std::string_view gitBranch,
+                         bool isDirty,
+                         std::string_view buildType,
+                         unsigned buildYear,
+                         unsigned buildMonth,
+                         unsigned buildDay)
   : gitHash(gitHash)
+  , gitBranch(gitBranch)
+  , isDirty(isDirty)
   , buildType(buildType)
   , buildYear(buildYear)
   , buildMonth(buildMonth)
@@ -59,6 +75,8 @@ public:
   constexpr static VersionString getCurrentVersion(void) noexcept {
     return VersionString{
       nobs::BuildInformation::gitHash,
+      nobs::BuildInformation::gitBranch,
+      nobs::BuildInformation::isDirty,
       nobs::BuildInformation::buildType,
       nobs::BuildInformation::buildYear,
       nobs::BuildInformation::buildMonth,
@@ -77,6 +95,8 @@ public:
       + '.' + std::to_string(this->buildMonth)
       + '.' + std::to_string(this->buildDay)
       + '-' + std::string(this->gitHash)
+      + (this->isDirty ? std::string("-dirty-") : std::string(""))
+      + '-' + std::string(this->gitBranch)
       + '(' + std::string(this->buildType) + ')';
   }
 
@@ -99,7 +119,7 @@ std::string getCurrentVersionAsString(void) {
   return VersionString::getCurrentVersion().toString();
 }
 
-// // clang-format on
+// clang-format on
 
 }
 

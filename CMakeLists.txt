@@ -29,10 +29,6 @@ add_test(
 add_library(LogicKit
   Sources/LogicKit/SWIPrologHome.c
   Sources/LogicKit/LogicKit.c++
-  Sources/LogicKit/Norm.swift
-  Sources/LogicKit/TemplateEngine.swift
-  Sources/LogicKit/LegalStatement.swift
-  Sources/LogicKit/StdStatements.swift
 )
 add_dependencies(LogicKit swi-prolog-home)
 target_include_directories(LogicKit
@@ -58,7 +54,6 @@ target_link_libraries(LogicKit PUBLIC
 
 add_executable(LogicKitTests
   Sources/LogicKit/Testing/Testing.c++
-  Sources/LogicKit/Testing/LogicKitTests.swift
   Sources/LogicKit/Testing/main.swift
 )
 target_include_directories(LogicKitTests

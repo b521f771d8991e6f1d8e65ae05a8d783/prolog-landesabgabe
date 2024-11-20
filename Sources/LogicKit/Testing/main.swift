@@ -16,6 +16,5 @@ class CTests: XCTestCase {
 
 // Swift tests
 XCTMain([
-    testCase(CTests.allTests),
-    testCase(TestLogicKit.allTests),
+    testCase(CTests.allTests)
 ])

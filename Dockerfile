@@ -8,6 +8,7 @@ RUN swift sdk install https://download.swift.org/swift-6.0.2-release/static-sdk/
 RUN apt update -y
 RUN apt upgrade -y
 
+RUN apt install -y curl
 RUN apt install -y git
 RUN apt install -y gpg
 RUN apt install -y cmake

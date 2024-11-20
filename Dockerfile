@@ -1,5 +1,9 @@
 FROM swift:noble AS dev
-# TOOD replace this with nixos/nix once nix has swift 5.10
+# TOOD replace this with nixos/nix once nix has swift 6 support
+# https://github.com/NixOS/nixpkgs/issues/343210#issuecomment-2424134735
+
+# install swift static SDK
+RUN swift sdk install https://download.swift.org/swift-6.0.2-release/static-sdk/swift-6.0.2-RELEASE/swift-6.0.2-RELEASE_static-linux-0.0.1.artifactbundle.tar.gz --checksum aa5515476a403797223fc2aad4ca0c3bf83995d5427fb297cab1d93c68cee075
 
 RUN apt update -y
 RUN apt upgrade -y
@@ -18,8 +22,8 @@ RUN apt install -y gobjc-14
 RUN apt install -y g++-14
 RUN apt install -y gobjc++-14
 
-# install swift static SDK
-RUN swift sdk install https://download.swift.org/swift-6.0.2-release/static-sdk/swift-6.0.2-RELEASE/swift-6.0.2-RELEASE_static-linux-0.0.1.artifactbundle.tar.gz --checksum aa5515476a403797223fc2aad4ca0c3bf83995d5427fb297cab1d93c68cee075
+# for musl builds
+RUN apt install -y clang-14
 
 WORKDIR /
 
@@ -37,6 +41,10 @@ ENV CMAKE_OBJCXX_COMPILER=/usr/bin/g++-14
 
 RUN git config --global --add safe.directory /workspace
 
-FROM dev as build
+FROM dev AS build
+
+# build it into a static binary
 
 FROM alpine:3
+
+# copy and run it here

@@ -1,7 +1,5 @@
 {
     "cmake.configureOnOpen": false,
-    "lldb.library": "/usr/libexec/swift/5.10.1/lib/liblldb.so",
-    "lldb.launch.expressions": "native",
     "latex-workshop.latex.outDir": "%TMPDIR%",
     "editor.rulers": [
         80

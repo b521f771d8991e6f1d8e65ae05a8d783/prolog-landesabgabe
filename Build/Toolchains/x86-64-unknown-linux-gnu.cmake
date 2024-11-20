@@ -33,7 +33,7 @@ add_compile_options(
     $<$<COMPILE_LANGUAGE:C,OBJC>:-Wno-error=stringop-overflow=>
     $<$<COMPILE_LANGUAGE:Swift>:-cxx-interoperability-mode=default>
     $<$<COMPILE_LANGUAGE:Swift>:-Xcc>
-    $<$<COMPILE_LANGUAGE:Swift>:-std=c++17>
+    $<$<COMPILE_LANGUAGE:Swift>:-std=c++20>
 )
 
 set(VCPKG_TARGET_ARCHITECTURE x64)

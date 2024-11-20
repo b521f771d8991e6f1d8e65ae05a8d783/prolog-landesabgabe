@@ -1,20 +1,13 @@
-#include <sys/syslog.h>
-#include <sys/ptrace.h>
-#include <sys/syscall.h>
-#include <unistd.h>
-#include <syslog.h>
-
 #include <assert.h>
 #include <stdlib.h>
 
 #include <mutex>
 #include <algorithm>
-#include <unistd.h>
-#include <vector>
 #include <string>
 #include <fstream>
 #include <filesystem>
 #include <functional>
+#include <iostream>
 
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/filesystem.hpp>
@@ -27,11 +20,6 @@
 #include <SWIPrologHome.h>
 
 #include "LogicKit.h++"
-
-#ifdef __linux__
-#include <linux/seccomp.h>
-#include <linux/filter.h>
-#endif
 
 namespace looe::LegalXML::LogicKit
 {
@@ -62,8 +50,8 @@ public:
 LaunchOnStartup i([]() -> void {
   static std::once_flag flag;
   std::call_once(flag, []() -> void {
-    syslog(LOG_DEBUG, "Stored archive of size %i from ('%s')\n",
-           lx_rawdata_SwiPrologHomeSize, SWI_PROLOG_HOME_STORE);
+    ::std::clog << "Stored archive of size " << lx_rawdata_SwiPrologHomeSize
+                << " from (" << SWI_PROLOG_HOME_STORE << ")\n";
 
     static const std::filesystem::path rootDir(
       std::filesystem::temp_directory_path()
@@ -71,7 +59,7 @@ LaunchOnStartup i([]() -> void {
 
     if(std::filesystem::exists(rootDir))
       {
-        syslog(LOG_DEBUG, "'%s' already exists, deleting it.", rootDir.c_str());
+        std::clog << "'" << rootDir.c_str() << "' already exists, deleting it.";
         std::filesystem::remove(rootDir);
       }
 
@@ -88,12 +76,11 @@ LaunchOnStartup i([]() -> void {
       std::ofstream s(dumpTarPath, std::ios::binary);
       s.write(lx_rawdata_SwiPrologHomeData, lx_rawdata_SwiPrologHomeSize);
       s.close();
-      printf("Dumped tar to: %s", dumpTarPath.c_str());
+      printf("Dumped tar to: %s\n", dumpTarPath.c_str());
     }
 #endif
 
     struct archive *archive = archive_read_new();
-    assert(archive);
 
     archive_read_support_format_tar(archive);
 
@@ -101,60 +88,33 @@ LaunchOnStartup i([]() -> void {
                              lx_rawdata_SwiPrologHomeSize);
 
     struct archive_entry *entry(nullptr);
-    int r(0);
+    int entryNumber(0);
 
-    if(chdir(rootDir.c_str()) == -1)
-      {
-        syslog(LOG_ERR, "Could not change dir: %s", strerror(errno));
-      }
+    std::filesystem::current_path(rootDir.c_str());
 
-#ifdef SECURITY_JAIL
-    if(getuid() == 0)
+    while((entryNumber = archive_read_next_header(archive, &entry))
+          == ARCHIVE_OK)
       {
-        if(chroot(".") == -1)
-          {
-            syslog(LOG_ERR, "Could not chroot to .: %s", strerror(errno));
-          }
-        else
-          {
-            syslog(LOG_DEBUG, "Successfully set up chroot.");
-          }
-      }
-#endif
+        const std::filesystem::path currentFile(archive_entry_pathname(entry));
 
-#if defined(__linux__) && defined(SECURITY_JAIL)
-    if(syscall(SYS_seccomp, SECCOMP_SET_MODE_STRICT, 0, NULL) != 0)
-      {
-        syslog(LOG_ERR, "Could not execute secomp syscall ('%s')",
-               strerror(errno));
-      }
-    else
-      {
-        syslog(LOG_INFO, "Successfully set up seccomp (hic sunt dracones 🐉).").
-      }
-#endif
-
-    while((r = archive_read_next_header(archive, &entry)) == ARCHIVE_OK)
-      {
-        std::string currentFile(archive_entry_pathname(entry));
-        syslog(LOG_DEBUG, "Extracting: %s", currentFile.c_str());
+        std::clog << "Extracting: " << currentFile.c_str() << std::endl;
 
         if(archive_entry_filetype(entry) == AE_IFDIR)
           {
-            if(mkdir(currentFile.c_str(), 0755) != 0)
+            if(!std::filesystem::create_directory(currentFile.c_str()))
               {
-                syslog(LOG_ERR, "Failed to create directory: %s",
-                       currentFile.c_str());
+                std::cerr << "Failed to create directory: "
+                          << currentFile.c_str() << std::endl;
               }
             continue;
           }
         else
           {
             std::ofstream outFile(currentFile, std::ios::out);
+
             if(!outFile)
               {
-                syslog(LOG_ERR, "Failed to create file: %s",
-                       currentFile.c_str());
+                std::cerr << "Failed to create file: " << currentFile.c_str();
                 continue;
               }
 
@@ -190,9 +150,9 @@ map(std::vector<A> &container, T (*const f)(A &))
 
 // TODO: replace this by the embedded swipl-home-dir
 PrologVM::PrologVM(const std::string &argv0)
-    : args({ argv0, "--home=./home" }), // TODO rename this directory to a
-                                        // more meaningful choice, e.g.
-                                        // System/Library/SWI-Prolog/home
+    : args({ argv0, "--home=." }), // TODO rename this directory to a
+                                   // more meaningful choice, e.g.
+                                   // System/Library/SWI-Prolog/home
       cArgs(map(
         this->args, +[](std::string &i) -> char * { return &i[0]; })),
       engine(boost::numeric_cast<int>(this->cArgs.size()), this->cArgs.data())
@@ -210,7 +170,7 @@ PrologVM::~PrologVM(void)
 {
   if(PL_is_initialised(nullptr, nullptr))
     {
-      syslog(LOG_DEBUG, "shutting down SWI Prolog");
+      std::cerr << "shutting down SWI Prolog" << std::endl;
       PL_halt(0);
     }
 }

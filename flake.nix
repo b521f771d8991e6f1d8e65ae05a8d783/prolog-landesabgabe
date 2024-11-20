@@ -1,6 +1,6 @@
 # alternative to the devcontainer infrastructure
 {
-  description = "LegalXML";
+  description = "LX";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/63dacb46bf939521bdc93981b4cbb7ecb58427a0";
@@ -14,8 +14,8 @@
     flake-utils.lib.system.aarch64-linux
 
     # supported darwin systems
-    flake-utils.lib.system.x86_64-darwin
-    flake-utils.lib.system.aarch64-darwin
+    #flake-utils.lib.system.x86_64-darwin
+    #flake-utils.lib.system.aarch64-darwin
   ] ( system:
     let
       pkgs = import nixpkgs {
@@ -30,9 +30,9 @@
           xz
 
           # Low-level (Objective) C/++ toolchain
-          clangStdenv
-          clang_18
+          gcc14
           clang-tools
+          clang_18
       ] ++
         (if stdenv.isDarwin then [
           darwin.libobjc
@@ -62,13 +62,7 @@
           nodejs_22
       ];
 
-      shellEnvironment = ''
-          export CC=${pkgs.clang_18.out}/bin/clang
-          export OBJC=${pkgs.clang_18.out}/bin/clang
-          export CXX=${pkgs.clang_18.out}/bin/clang++
-          export OBJCXX=${pkgs.clang_18.out}/bin/clang++
-          export SWIFTC=${pkgs.swift}/bin/swiftc
-      '' + (if pkgs.stdenv.isLinux then ''
+      shellEnvironment = (if pkgs.stdenv.isLinux then ''
           export OBJCFLAGS="$CFLAGS $(gnustep-config --objc-flags) $(gnustep-config --base-libs)"
           export OBJCXXFLAGS="$CFLAGS $(gnustep-config --objc-flags) $(gnustep-config --base-libs)"
           export LDFLAGS="$LDFLAGS $(gnustep-config --objc-flags) $(gnustep-config --base-libs)"

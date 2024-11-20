@@ -67,9 +67,11 @@ PUBLIC
 )
 target_link_libraries(LogicKitTests PUBLIC
   GTest::GTest
+  Boost::numeric_conversion
   LogicKit
   ActKit
   BuildInformation
+  ${CURSES_LIBRARIES} # why do we need this?
 )
 add_test(
   NAME LogicKitTests

@@ -4,6 +4,8 @@
         "zlib",
         "boost-filesystem",
         "boost-numeric-conversion",
-        "gtest"
+        "gtest",
+        "ncurses",
+        "rmqcpp"
     ]
 }

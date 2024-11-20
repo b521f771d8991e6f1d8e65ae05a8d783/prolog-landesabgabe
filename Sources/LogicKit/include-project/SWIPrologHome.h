@@ -20,7 +20,7 @@ extern "C"
 {
 #endif
 
-  INCBIN_EXTERN(char *, SwiPrologHome);
+  INCBIN_EXTERN(char, SwiPrologHome);
 
 #ifdef __cplusplus
 }

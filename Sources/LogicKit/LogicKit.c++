@@ -24,6 +24,16 @@
 namespace looe::LegalXML::LogicKit
 {
 
+void
+createSwiplHomeRunPath(const std::filesystem::path &root)
+{
+  std::filesystem::create_directories(root / "Library");
+  std::filesystem::create_directories(root / "Library" / "SWIPL");
+  std::filesystem::create_directories(root / "Library" / "SWIPL" / "home");
+}
+
+const std::string swiplHomeRunPath("Library/SWIPL/home");
+
 class LaunchOnStartup final
 {
 private:
@@ -91,13 +101,17 @@ LaunchOnStartup i([]() -> void {
     int entryNumber(0);
 
     std::filesystem::current_path(rootDir.c_str());
+    createSwiplHomeRunPath(rootDir);
 
     while((entryNumber = archive_read_next_header(archive, &entry))
           == ARCHIVE_OK)
       {
-        const std::filesystem::path currentFile(archive_entry_pathname(entry));
+        const std::string entryPath(
+          std::string(archive_entry_pathname(entry)).substr(2));
+        const std::filesystem::path currentFile(rootDir / swiplHomeRunPath
+                                                / entryPath);
 
-        std::clog << "Extracting: " << currentFile.c_str() << std::endl;
+        std::clog << "Extracting to '" << currentFile << "'" << std::endl;
 
         if(archive_entry_filetype(entry) == AE_IFDIR)
           {
@@ -148,11 +162,9 @@ map(std::vector<A> &container, T (*const f)(A &))
   return output;
 }
 
-// TODO: replace this by the embedded swipl-home-dir
 PrologVM::PrologVM(const std::string &argv0)
-    : args({ argv0, "--home=." }), // TODO rename this directory to a
-                                   // more meaningful choice, e.g.
-                                   // System/Library/SWI-Prolog/home
+    : args(std::vector<std::string>{ argv0, std::string("--home=")
+                                              + swiplHomeRunPath }),
       cArgs(map(
         this->args, +[](std::string &i) -> char * { return &i[0]; })),
       engine(boost::numeric_cast<int>(this->cArgs.size()), this->cArgs.data())

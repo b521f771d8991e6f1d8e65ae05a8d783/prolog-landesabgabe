@@ -2,9 +2,8 @@
     "dependencies": [
         "libarchive",
         "zlib",
-        "boost",
-        "gtest",
-        "ncurses",
-        "openssl"
+        "boost-filesystem",
+        "boost-numeric-conversion",
+        "gtest"
     ]
 }

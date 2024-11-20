@@ -2,7 +2,7 @@
 # else or git submodules
 
 # in system repos:
-find_package(Boost REQUIRED COMPONENTS filesystem)
+find_package(Boost REQUIRED COMPONENTS filesystem numeric_conversion)
 find_package(GTest REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(LibArchive REQUIRED)
@@ -31,12 +31,8 @@ ExternalProject_Add(swi-prolog
     #-DBUILD_TESTING=ON
     #-DINSTALL_TESTS=ON
     -DCMAKE_BUILD_TYPE=Release
-    -DSWIPL_PACKAGE_LIST=cpp;zlib;openssl # seperate this by ;
+    -DSWIPL_PACKAGE_LIST=cpp;zlib # seperate this by ;
     -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR}/root
-    -DCURSES_INCLUDE_DIRS=${CURSES_INCLUDE_DIRS}
-    -DCURSES_LIBRARIES=${CURSES_LIBRARIES}
-    -DOPENSSL_INCLUDE_DIRS=${OPENSSL_INCLUDE_DIRS}
-    -DOPENSSL_LIBRARIES=${OPENSSL_LIBRARIES}
   BUILD_BYPRODUCTS 
     ${CMAKE_CURRENT_BINARY_DIR}/root/lib/swipl/lib/x86_64-linux/libswipl_static.a
 )

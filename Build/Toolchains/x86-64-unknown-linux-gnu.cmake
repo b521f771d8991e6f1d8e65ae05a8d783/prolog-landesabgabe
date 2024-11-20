@@ -2,8 +2,8 @@ set(CMAKE_SYSTEM_NAME Linux)
 set(CMAKE_SYSTEM_PROCESSOR x86_64)
 
 # Set the compiler and its path
-find_program(GCC_EXE NAMES "gcc")
-find_program(GXX_EXE NAMES "g++")
+find_program(GCC_EXE NAMES "gcc-14" "gcc")
+find_program(GXX_EXE NAMES "g++-14" "g++")
 find_program(SWIFTC_EXE NAMES "swiftc")
 
 set(CMAKE_C_COMPILER "${GCC_EXE}")
@@ -18,14 +18,8 @@ set(CMAKE_OBJC_COMPILER_TARGET ${CMAKE_C_COMPILER_TARGET})
 set(CMAKE_OBJCXX_COMPILER_TARGET ${CMAKE_C_COMPILER_TARGET})
 set(CMAKE_Swift_COMPILER_TARGET ${CMAKE_C_COMPILER_TARGET})
 
-# Set the flags for the newest preprocessor instructions
 set(EXTERNAL_PROJECT_OPTIONS
     -fPIC
-    #-m64
-    #-O3
-    #-march=native
-    #-mtune=native
-    #-fhardened
 )
 add_compile_options(
     $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-march=native>
@@ -34,6 +28,7 @@ add_compile_options(
     $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-O3>
     $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-fPIC>
     $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-fhardened>
+    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-Wno-error=hardened>
     $<$<COMPILE_LANGUAGE:C,OBJC>:-Wno-error=incompatible-pointer-types>
     $<$<COMPILE_LANGUAGE:C,OBJC>:-Wno-error=stringop-overflow=>
     $<$<COMPILE_LANGUAGE:Swift>:-cxx-interoperability-mode=default>

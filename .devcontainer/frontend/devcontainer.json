@@ -1,10 +1,7 @@
 {
     "name": "Frontend",
-    "build": {
-        "dockerfile": "../../Containers/Frontend.dockerfile",
-        "context": "../..",
-        "target": "dev"
-    },
+    "dockerComposeFile": "../../Infrastructure/docker-compose.dev.yml",
+    "service": "frontend",
     "customizations": {
         "vscode": {
             "terminal.integrated.shell.linux": "/bin/zsh",

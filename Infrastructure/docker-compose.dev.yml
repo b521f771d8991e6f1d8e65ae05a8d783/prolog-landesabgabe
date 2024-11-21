@@ -1,0 +1,20 @@
+name: lx
+services:
+  frontend:
+    build:
+      dockerfile: Infrastructure/Frontend.dockerfile
+      target: dev
+      context: ..
+    tty: true
+  worker:
+    build:
+      dockerfile: Infrastructure/Worker.dockerfile
+      target: dev
+      context: ..
+    ports:
+      - 3000:3000
+    tty: true
+
+networks:
+  default:
+    name: "lx"

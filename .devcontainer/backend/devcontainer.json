@@ -1,10 +1,7 @@
 {
     "name": "Backend",
-    "build": {
-        "dockerfile": "../../Containers/Backend.dockerfile",
-        "context": "../..",
-        "target": "run"
-    },
+    "dockerComposeFile": "../../Infrastructure/docker-compose.dev.yml",
+    "service": "worker",
     "customizations": {
         "vscode": {
             "terminal.integrated.shell.linux": "/bin/zsh",

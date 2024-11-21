@@ -24,7 +24,7 @@ RUN apt install -y g++-14
 RUN apt install -y gobjc++-14
 
 # for musl builds
-RUN apt install -y clang-14
+RUN apt install -y clang
 
 WORKDIR /
 
@@ -46,6 +46,13 @@ FROM dev AS build
 
 # build it into a static binary
 
+RUN mkdir /build
+RUN mkdir /source
+COPY . /source
+RUN cmake -S/source -B/build -G Ninja  --preset release-x86-64-unknown-linux-gnu
+
 FROM alpine:3
 
+RUN mkdir /app
+RUN /app/LX
 # copy and run it here

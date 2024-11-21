@@ -29,6 +29,7 @@ add_test(
 add_library(LogicKit
   Sources/LogicKit/SWIPrologHome.c
   Sources/LogicKit/LogicKit.c++
+  Sources/LogicKit/LogicKit.swift
 )
 add_dependencies(LogicKit swi-prolog-home)
 target_include_directories(LogicKit
@@ -84,6 +85,7 @@ PRIVATE
 )
 target_link_libraries(LX
 PRIVATE
+  ${CURSES_LIBRARIES}
   LogicKit
   ActKit
   BuildInformation

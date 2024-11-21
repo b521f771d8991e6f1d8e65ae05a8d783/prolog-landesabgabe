@@ -59,4 +59,4 @@ set(VCPKG_CXX_FLAGS
     -fhardened
 )
 
-include(/workspace/Dependencies/vcpkg/scripts/buildsystems/vcpkg.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/../../Dependencies/vcpkg/scripts/buildsystems/vcpkg.cmake)

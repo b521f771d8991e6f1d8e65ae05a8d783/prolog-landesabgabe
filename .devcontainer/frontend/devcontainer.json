@@ -1,8 +1,8 @@
 {
-    "name": "LegalXML",
+    "name": "Frontend",
     "build": {
-        "dockerfile": "../Dockerfile",
-        "context": "..",
+        "dockerfile": "../../Containers/Frontend.dockerfile",
+        "context": "../..",
         "target": "dev"
     },
     "customizations": {

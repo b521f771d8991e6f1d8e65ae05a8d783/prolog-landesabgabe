@@ -17,14 +17,13 @@ RUN apt install -y gdb
 RUN apt install -y clangd
 RUN apt install -y zip
 
-# for gnu builds
+# for GNU builds
 RUN apt install -y gcc-14
 RUN apt install -y gobjc-14
 RUN apt install -y g++-14
 RUN apt install -y gobjc++-14
 
-# for musl builds
-RUN apt install -y clang
+# we do not need to install clang since it is included in the swift:noble image
 
 WORKDIR /
 
@@ -44,15 +43,19 @@ RUN git config --global --add safe.directory /workspace
 
 FROM dev AS build
 
-# build it into a static binary
+# TODO: build it to a static binary
 
 RUN mkdir /build
 RUN mkdir /source
-COPY . /source
-RUN cmake -S/source -B/build -G Ninja  --preset release-x86-64-unknown-linux-gnu
 
-FROM alpine:3
+COPY . /source
+
+RUN cmake -S /source -B /build -G Ninja --preset release-x86-64-unknown-linux-gnu
+RUN ninja -C /build
+
+# TODO switch to alpine:latest once we can build it statically
+FROM swift:noble AS run
 
 RUN mkdir /app
-RUN /app/LX
-# copy and run it here
+COPY --from=build /build/LX /app
+CMD [ "/app/LX" ]

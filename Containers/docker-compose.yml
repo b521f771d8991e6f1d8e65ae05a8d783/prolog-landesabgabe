@@ -1,0 +1,13 @@
+name: lx
+services:
+  frontend:
+    build:
+      dockerfile: Frontend.dockerfile
+  backend:
+    build:
+      dockerfile: Backend.dockerfile
+
+
+networks:
+  default:
+    name: "lx"

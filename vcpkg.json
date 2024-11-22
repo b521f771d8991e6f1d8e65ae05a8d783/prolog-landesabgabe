@@ -5,7 +5,6 @@
         "boost-filesystem",
         "boost-numeric-conversion",
         "gtest",
-        "ncurses",
-        "rmqcpp"
+        "ncurses"
     ]
 }

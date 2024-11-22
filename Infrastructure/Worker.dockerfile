@@ -16,6 +16,7 @@ RUN apt install -y ninja-build
 RUN apt install -y gdb
 RUN apt install -y clangd
 RUN apt install -y zip
+RUN apt install -y python3
 
 # for GNU builds
 RUN apt install -y gcc-14

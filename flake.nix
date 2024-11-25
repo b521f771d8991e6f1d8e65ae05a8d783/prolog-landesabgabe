@@ -27,12 +27,10 @@
           # system tools
           zsh
           git
-          xz
 
           # Low-level (Objective) C/++ toolchain
           gcc14
           clang-tools
-          clang_18
       ] ++
         (if stdenv.isDarwin then [
           darwin.libobjc

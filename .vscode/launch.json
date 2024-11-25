@@ -27,6 +27,24 @@
                     "ignoreFailures": true
                 }
             ]
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:workspace}",
+            "name": "Debug LX",
+            "program": "${workspaceFolder:workspace}/.build/debug/LX",
+            "preLaunchTask": "swift: Build Debug LX"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:workspace}",
+            "name": "Release LX",
+            "program": "${workspaceFolder:workspace}/.build/release/LX",
+            "preLaunchTask": "swift: Build Release LX"
         }
     ]
 }

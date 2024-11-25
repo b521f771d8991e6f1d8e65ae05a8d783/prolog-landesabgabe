@@ -7,89 +7,10 @@ include(Dependencies/Dependencies.cmake)
 
 # configuration for our targets
 
-# ActKit
-add_library(ActKit
-  Sources/ActKit/LegalElements.swift
-  Sources/ActKit/LegalElementsBuilders.swift
-  Sources/ActKit/Code.swift
-)
-
-add_executable(ActKitTests
-  Sources/ActKit/Testing/Tests.swift
-)
-target_link_libraries(ActKitTests PUBLIC
-  ActKit
-)
-add_test(
-  NAME ActKitTests
-  COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ActKitTests
-)
-
-# LogicKit
-add_library(LogicKit
-  Sources/LogicKit/SWIPrologHome.c
-  Sources/LogicKit/LogicKit.c++
-  Sources/LogicKit/LogicKit.swift
-)
-add_dependencies(LogicKit swi-prolog-home)
-target_include_directories(LogicKit
-PUBLIC
-  Sources/LogicKit/include
-  ${DEPENDENCY_INCLUDE_DIRS}
-PRIVATE
-  Sources/LogicKit/include-project
-)
-target_compile_definitions(LogicKit PRIVATE
-  SWI_PROLOG_HOME_STORE="${SWI_PROLOG_HOME_STORE_PATH}"
-)
-target_link_libraries(LogicKit PUBLIC
-  ActKit
-  ${DEPENDENCY_LIBRARIES_DIRS}
-  ZLIB::ZLIB
-  LibArchive::LibArchive
-  Boost::filesystem
-  Boost::headers
-  incbin
-  BuildInformation
-)
-
-add_executable(LogicKitTests
-  Sources/LogicKit/Testing/Testing.c++
-  Sources/LogicKit/Testing/main.swift
-)
-target_include_directories(LogicKitTests
-PUBLIC
-  Sources/LogicKit/Testing/include
-)
-target_link_libraries(LogicKitTests PUBLIC
-  GTest::GTest
-  Boost::numeric_conversion
-  LogicKit
-  ActKit
-  BuildInformation
-  ${CURSES_LIBRARIES} # why do we need this?
-)
-add_test(
-  NAME LogicKitTests
-  COMMAND ${CMAKE_CURRENT_BINARY_DIR}/LogicKitTests
-)
-
-# LX executable
-add_executable(LX
-  Sources/LX/main.swift
-  Sources/LX/RabbitMQListener.c++
-)
-target_include_directories(LX
-PRIVATE
-  Sources/LX/IncludeProjectPrivate
-)
-target_link_libraries(LX
-PRIVATE
-  ${CURSES_LIBRARIES}
-  LogicKit
-  ActKit
-  BuildInformation
-)
+add_subdirectory(Sources/ActKit)
+add_subdirectory(Sources/LogicKit)
+add_subdirectory(Sources/LX)
+add_subdirectory(Sources/Corpus)
 
 # configuration for all targets
 set(TARGETS
@@ -100,6 +21,7 @@ set(TARGETS
   LX
 )
 
+# additional configuration
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
     OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set(SWIFT_TESTABLE
@@ -141,8 +63,8 @@ foreach(TARGET ${TARGETS})
 
     CMAKE_OBJCXX_STANDARD 20
     CMAKE_CXX_STANDARD 20
-    CMAKE_OBJC_STANDARD 11
-    CMAKE_C_STANDARD 11
+    CMAKE_OBJC_STANDARD 17
+    CMAKE_C_STANDARD 17
 
     CMAKE_OBJCXX_STANDARD_REQUIRED ON
     CMAKE_CXX_STANDARD_REQUIRED ON

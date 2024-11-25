@@ -1,0 +1,10 @@
+add_executable(LX
+  main.swift
+)
+target_link_libraries(LX
+PRIVATE
+  ${CURSES_LIBRARIES}
+  LogicKit
+  ActKit
+  BuildInformation
+)

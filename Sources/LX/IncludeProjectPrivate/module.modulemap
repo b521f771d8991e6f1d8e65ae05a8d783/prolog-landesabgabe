@@ -1,7 +1,0 @@
-module LXC {
-    requires cplusplus
-    
-    header "RabbitMQListener.h++"
-
-    export *
-}

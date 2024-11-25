@@ -21,10 +21,5 @@
             ]
         }
     },
-    "mounts": [
-        "type=bind,source=${localWorkspaceFolder},target=/workspace",
-        "type=bind,source=${localEnv:HOME}/.ssh,target=/root/.ssh,readonly",
-        "type=bind,source=${localEnv:HOME}/.gnupg,target=/root/.gnupg,readonly"
-    ],
     "workspaceFolder": "/workspace"
 }

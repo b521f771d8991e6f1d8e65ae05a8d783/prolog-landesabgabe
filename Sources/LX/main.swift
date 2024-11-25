@@ -1,9 +1,10 @@
-import Foundation
 import ActKit
-import LogicKit
 import BuildInformation
-import LXC
+import Foundation
+import LogicKit
+import Vapor
 
-print("Running digital law server in version: ",
+print(
+    "Running digital law server in version: ",
     String(nobs.BuildInformation.getCurrentVersionAsString())
 )

@@ -41,7 +41,11 @@ configure_file(
   @ONLY
 )
 
-execute_process(COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/Build/module.modulemap  ${CMAKE_CURRENT_BINARY_DIR}/BuildInformation)
+execute_process(
+  COMMAND ${CMAKE_COMMAND}
+          -E copy ${CMAKE_CURRENT_SOURCE_DIR}/Build/module.modulemap
+          ${CMAKE_CURRENT_BINARY_DIR}/BuildInformation
+)
 
 add_library(BuildInformation
   ${CMAKE_CURRENT_BINARY_DIR}/BuildInformation/BuildInformation.c++

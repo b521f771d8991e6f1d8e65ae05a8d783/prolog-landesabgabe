@@ -9,7 +9,6 @@ include(Dependencies/Dependencies.cmake)
 
 add_subdirectory(Sources/ActKit)
 add_subdirectory(Sources/LogicKit)
-add_subdirectory(Sources/LX)
 add_subdirectory(Sources/Corpus)
 
 # configuration for all targets
@@ -18,8 +17,25 @@ set(TARGETS
   ActKitTests
   LogicKit
   LogicKitTests
-  LX
 )
+
+# Swift-Targets
+find_program(SWIFT NAMES "swift")
+find_program(CLANG NAMES "clang")
+find_program(CLANGXX NAMES "clang++")
+
+add_custom_target(SwiftPackage
+  COMMAND
+    "CC=${CLANG}" "CXX=${CLANGXX}"
+    ${SWIFT} "build"
+    --configuration debug
+    --package-path ${CMAKE_CURRENT_SOURCE_DIR}
+    #-I${CMAKE_CURRENT_BINARY_DIR}/Sources/ActKit
+    #-I${CMAKE_CURRENT_BINARY_DIR}/Sources/LogicKit
+    #-L${CMAKE_CURRENT_BINARY_DIR}/Sources/ActKit
+    #-L${CMAKE_CURRENT_BINARY_DIR}/Sources/LogicKit
+)
+add_dependencies(SwiftPackage ${TARGETS})
 
 # additional configuration
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"

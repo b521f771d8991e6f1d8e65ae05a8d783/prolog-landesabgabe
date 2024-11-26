@@ -19,7 +19,7 @@
 
 #include "LogicKit.h++"
 
-namespace looe::LogicKit
+namespace looe::LogicKitC
 {
 
 void
@@ -32,126 +32,113 @@ createSwiplHomeRunPath(const std::filesystem::path &root)
 
 const std::string swiplHomeRunPath("Library/SWIPL/home");
 
-class LaunchOnStartup final
-{
-private:
-  std::function<void(void)> executeOnExit;
-
-public:
-  LaunchOnStartup(
-    const std::function<void(void)> &fun,
-    const std::function<void(void)> &onExit = [] {})
-      : executeOnExit(onExit)
-  {
-    try
-      {
-        fun();
-      }
-    catch(...)
-      {
-      }
-  }
-
-  ~LaunchOnStartup(void) { this->executeOnExit(); }
-};
-
 void
-dumpTarIfDebug(void) {
-#ifndef DEBUG
-    {
-      const std::filesystem::path dumpTarPath(
-        std::filesystem::temp_directory_path() / "tar-dump.tar");
-      if(std::filesystem::exists(dumpTarPath))
-        {
-          std::filesystem::remove(dumpTarPath);
-        }
-      std::ofstream s(dumpTarPath, std::ios::binary);
-      s.write(lx_rawdata_SwiPrologHomeData, lx_rawdata_SwiPrologHomeSize);
-      s.close();
-      printf("Dumped tar to: %s\n", dumpTarPath.c_str());
-    }
+dumpTarIfDebug(void)
+{
+#ifdef DEBUG
+  std::clog << "dumping tar" << std::endl;
+  {
+    const std::filesystem::path dumpTarPath(
+      std::filesystem::temp_directory_path() / "tar-dump.tar");
+    if(std::filesystem::exists(dumpTarPath))
+      {
+        std::filesystem::remove(dumpTarPath);
+      }
+    std::ofstream s(dumpTarPath, std::ios::binary);
+    s.write(lx_rawdata_SwiPrologHomeData, lx_rawdata_SwiPrologHomeSize);
+    s.close();
+    printf("Dumped tar to: %s\n", dumpTarPath.c_str());
+  }
 #endif
 }
 
-LaunchOnStartup i([]() -> void {
-  static std::once_flag flag;
-  std::call_once(flag, []() -> void {
-    ::std::clog << "Stored archive of size " << lx_rawdata_SwiPrologHomeSize
-                << " from (" << SWI_PROLOG_HOME_STORE << ")\n";
-
-    static const std::filesystem::path rootDir(
-      std::filesystem::temp_directory_path()
-      / boost::filesystem::unique_path("%%%%-%%%%-%%%%-%%%%").c_str());
-
-    if(std::filesystem::exists(rootDir))
+void createEmptyRootDir(const std::filesystem::path & rootDir) {
+if(std::filesystem::exists(rootDir))
       {
         std::clog << "'" << rootDir.c_str() << "' already exists, deleting it.";
         std::filesystem::remove(rootDir);
       }
 
     std::filesystem::create_directory(rootDir);
+}
 
-    dumpTarIfDebug();
+void extractArchiveToDirectory(const std::filesystem::path & rootDir, const void* buffer, const size_t &size) {
+  struct archive *archive = archive_read_new();
 
-    struct archive *archive = archive_read_new();
+  archive_read_support_format_tar(archive);
 
-    archive_read_support_format_tar(archive);
+  archive_read_open_memory(archive, buffer, size);
 
-    archive_read_open_memory(archive, lx_rawdata_SwiPrologHomeData,
-                             lx_rawdata_SwiPrologHomeSize);
+  struct archive_entry *entry(nullptr);
+  int entryNumber(0);
 
-    struct archive_entry *entry(nullptr);
-    int entryNumber(0);
+  // platform independent chdir(2)
+  std::filesystem::current_path(rootDir.c_str());
 
-    std::filesystem::current_path(rootDir.c_str());
-    createSwiplHomeRunPath(rootDir);
+  createSwiplHomeRunPath(rootDir);
 
-    while((entryNumber = archive_read_next_header(archive, &entry))
-          == ARCHIVE_OK)
-      {
-        const std::string entryPath(
-          std::string(archive_entry_pathname(entry)).substr(2));
-        const std::filesystem::path currentFile(rootDir / swiplHomeRunPath
-                                                / entryPath);
+  while((entryNumber = archive_read_next_header(archive, &entry))
+        == ARCHIVE_OK)
+    {
+      const std::string entryPath(
+        std::string(archive_entry_pathname(entry)).substr(2));
+      const std::filesystem::path currentFile(rootDir / swiplHomeRunPath
+                                              / entryPath);
 
-        std::clog << "Extracting to '" << currentFile << "'" << std::endl;
+      std::clog << "Extracting to '" << currentFile << "'" << std::endl;
 
-        if(archive_entry_filetype(entry) == AE_IFDIR)
-          {
-            if(!std::filesystem::create_directory(currentFile.c_str()))
-              {
-                std::cerr << "Failed to create directory: "
-                          << currentFile.c_str() << std::endl;
-              }
-            continue;
-          }
-        else
-          {
-            std::ofstream outFile(currentFile, std::ios::out);
+      if(archive_entry_filetype(entry) == AE_IFDIR)
+        {
+          if(!std::filesystem::create_directory(currentFile.c_str()))
+            {
+              std::cerr << "Failed to create directory: "
+                        << currentFile.c_str() << std::endl;
+            }
+          continue;
+        }
+      else
+        {
+          std::ofstream outFile(currentFile, std::ios::out);
 
-            if(!outFile)
-              {
-                std::cerr << "Failed to create file: " << currentFile.c_str();
-                continue;
-              }
+          if(!outFile)
+            {
+              std::cerr << "Failed to create file: " << currentFile.c_str();
+              continue;
+            }
 
-            std::array<char, 4096> buffer;
-            ssize_t bytesRead(0);
+          std::array<char, 4096> buffer;
+          ssize_t bytesRead(0);
 
-            while((bytesRead
-                   = archive_read_data(archive, buffer.data(), buffer.size()))
-                  > 0)
-              {
-                outFile.write(buffer.data(), bytesRead);
-              }
+          while((bytesRead
+                  = archive_read_data(archive, buffer.data(), buffer.size()))
+                > 0)
+            {
+              outFile.write(buffer.data(), bytesRead);
+            }
 
-            outFile.close();
-          }
-      }
+          outFile.close();
+        }
+    }
 
     archive_read_close(archive);
     archive_read_free(archive);
+}
+
+void initPrologHome() {
+  static std::once_flag flag;
+
+  std::call_once(flag, []() -> void {
+    std::clog << "Stored archive of size " << lx_rawdata_SwiPrologHomeSize
+                << " from (" << SWI_PROLOG_HOME_STORE << ")\n";
+
+    static const std::filesystem::path rootDir(
+      std::filesystem::temp_directory_path()
+      / boost::filesystem::unique_path("%%%%-%%%%-%%%%-%%%%").c_str());
+
+    createEmptyRootDir(rootDir);
+    dumpTarIfDebug();
+    extractArchiveToDirectory(rootDir, lx_rawdata_SwiPrologHomeData, lx_rawdata_SwiPrologHomeSize);
   });
-});
+};
 
 }

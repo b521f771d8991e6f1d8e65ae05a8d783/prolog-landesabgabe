@@ -15,11 +15,17 @@ public func configure(withApp app: Application, andLogicVM lvm: LogicVM) throws 
 
 func routes(withApp app: Application, andLogicVM lvm: LogicVM) throws {
     app.get("status") { req async -> String in
-        "OK"
+        return "OK"
     }
 
     app.get("version") { req async -> String in
         return version
+    }
+
+    app.get("🫖") { req async throws -> String in
+        // TODO: magical function that converts this computer into a teapot
+        print("Attention! This server is being converted into a teapot 🪄")
+        throw Abort(.imATeapot)
     }
 
     app.get { req async throws -> String in
@@ -27,7 +33,9 @@ func routes(withApp app: Application, andLogicVM lvm: LogicVM) throws {
             throw Abort(.badRequest)
         }
 
-        let result: String = lvm.process(query: query)
+        guard let result: String = lvm.process(query: query) else {
+            throw Abort(.internalServerError, reason: "error while executing query")
+        }
 
         return result
     }

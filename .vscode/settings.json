@@ -17,5 +17,9 @@
     },
     "cSpell.words": [
         "endforeach"
-    ]
+    ],
+    "clangd.arguments": [
+        "--compile-commands-dir=/workspace/out/build/debug-x86-64-unknown-linux-gnu"
+    ],
+    "C_Cpp.intelliSenseEngine": "disabled"
 }

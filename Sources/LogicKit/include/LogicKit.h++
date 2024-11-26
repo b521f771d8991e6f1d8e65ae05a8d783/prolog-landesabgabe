@@ -3,9 +3,10 @@
 
 #include <string>
 
-namespace looe::LogicKit {
+namespace looe::LogicKitC {
 
 extern const std::string swiplHomeRunPath;
+extern void initPrologHome();
 
 }
 

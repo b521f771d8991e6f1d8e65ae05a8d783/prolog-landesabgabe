@@ -3,12 +3,14 @@
 
 # in system repos:
 find_package(Boost REQUIRED COMPONENTS filesystem numeric_conversion)
+find_package(nlohmann_json CONFIG REQUIRED)
 find_package(GTest REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(LibArchive REQUIRED)
 find_package(Curses REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(Curses REQUIRED)
+find_package(tl-expected CONFIG REQUIRED)
 
 # from git submodules:
 

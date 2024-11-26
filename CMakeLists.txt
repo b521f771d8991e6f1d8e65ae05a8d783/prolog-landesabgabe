@@ -104,7 +104,9 @@ foreach(lib ${ALL_TARGET_DEPENDECIES})
     list(APPEND SWIFTC_DEPENDENCY_LIBRARIES -Xcc "-l${lib}")
     list(APPEND SWIFTC_DEPENDENCY_LIBRARIES -Xcxx "-l${lib}")
   else()
-    if(NOT ${lib} STREQUAL "Boost::headers") # TODO filter this out properly
+    if((NOT ${lib} STREQUAL "Boost::headers")
+      AND (NOT ${lib} STREQUAL "nlohmann_json::nlohmann_json")
+      AND (NOT ${lib} STREQUAL "tl::expected")) # TODO filter this out properly
       list(APPEND SWIFTC_DEPENDENCY_LIBRARIES -Xswiftc "-l$<TARGET_LINKER_FILE:${lib}>")
       list(APPEND SWIFTC_DEPENDENCY_LIBRARIES -Xcc "-l$<TARGET_LINKER_FILE:${lib}>")
       list(APPEND SWIFTC_DEPENDENCY_LIBRARIES -Xcxx "-l$<TARGET_LINKER_FILE:${lib}>")

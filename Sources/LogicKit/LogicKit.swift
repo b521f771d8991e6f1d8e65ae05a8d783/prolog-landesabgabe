@@ -4,14 +4,18 @@ import Foundation
 import LogicKitC
 
 public final class LogicVM: Sendable {
-    let prologVM: looe.LogicKit.PrologVM
-
     public init() {
         let argv0 = CommandLine.arguments[0]
-        prologVM = looe.LogicKit.PrologVM(std.string(argv0))
+        looe.LogicKitC.startPrologVM(std.string(argv0))
     }
 
-    public func process(query: String) -> String {
-        return "Hi"
+    public func process(query: String) -> String? {
+        let result = looe.LogicKitC.runQuery(std.string(query))
+
+        if result == "" {
+            return String(result)
+        } else {
+            return Optional.none
+        }
     }
 }

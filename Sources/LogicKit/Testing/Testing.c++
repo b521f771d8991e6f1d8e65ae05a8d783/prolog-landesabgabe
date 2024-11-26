@@ -10,7 +10,7 @@
 
 #include <BuildInformation.h>
 
-using namespace looe::LogicKit;
+using namespace looe::LogicKitC;
 
 std::vector<std::string> arguments;
 
@@ -20,8 +20,13 @@ TEST(PrologVM, testStartUp)
     << "Running Tests in version: "
     << BuildInformation::VersionString::getCurrentVersion().toString()
     << std::endl;
-  PrologVM pvm(arguments[0]);
-  ASSERT_TRUE(pvm.isInitialised());
+  startPrologVM(arguments[0]);
+  ASSERT_TRUE(isInitialised());
+}
+
+TEST(PrologVM, testPrologQuery)
+{
+  const std::string prologPredicate = "true";
 }
 
 namespace looe::LX::TestingC

@@ -16,12 +16,15 @@ target_compile_definitions(LogicKit PRIVATE
 target_link_libraries(LogicKit PUBLIC
   ActKit
   ${DEPENDENCY_LIBRARIES_DIRS}
-  ZLIB::ZLIB
-  LibArchive::LibArchive
-  Boost::filesystem
+PRIVATE
+  nlohmann_json::nlohmann_json
   Boost::headers
   incbin
   BuildInformation
+  tl::expected
+  ZLIB::ZLIB
+  LibArchive::LibArchive
+  Boost::filesystem
 )
 
 add_executable(LogicKitTests

@@ -10,6 +10,13 @@
 #include <PrologVM.h++>
 #include <LogicKit.h++>
 
+#include <SWI-Prolog.h>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+// this is brain-damaged, TODO: fix it upstream
+#include <SWI-cpp2.h>
+#pragma GCC diagnostic pop
+
 namespace looe::LogicKit
 {
 
@@ -29,7 +36,7 @@ PrologVM::PrologVM(const std::string &argv0)
                                               + swiplHomeRunPath }),
       cArgs(map(
         this->args, +[](std::string &i) -> char * { return &i[0]; })),
-      engine(boost::numeric_cast<int>(this->cArgs.size()), this->cArgs.data())
+      engine(std::make_unique<PlEngine>(boost::numeric_cast<int>(this->cArgs.size()), this->cArgs.data()))
 {
   assert(PL_is_initialised(nullptr, nullptr));
 }
@@ -37,7 +44,7 @@ PrologVM::PrologVM(const std::string &argv0)
 PrologVM::PrologVM(const PrologVM& pvm)
 : args(pvm.args)
 , cArgs(pvm.cArgs)
-, engine(boost::numeric_cast<int>(this->cArgs.size()), this->cArgs.data())
+, engine(std::make_unique<PlEngine>(boost::numeric_cast<int>(this->cArgs.size()), this->cArgs.data()))
 {}
 
 bool

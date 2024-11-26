@@ -121,9 +121,11 @@ add_custom_target(SwiftPackage
     -Xswiftc -I${CMAKE_CURRENT_BINARY_DIR}/Sources/ActKit
     -Xswiftc -I${CMAKE_CURRENT_BINARY_DIR}/Sources/LogicKit
     -Xswiftc -I${CMAKE_CURRENT_BINARY_DIR}/BuildInformation
+    -Xswiftc -I${CMAKE_CURRENT_BINARY_DIR}
     -Xswiftc -L${CMAKE_CURRENT_BINARY_DIR}/Sources/ActKit
     -Xswiftc -L${CMAKE_CURRENT_BINARY_DIR}/Sources/LogicKit
     -Xswiftc -L${CMAKE_CURRENT_BINARY_DIR}/BuildInformation
+    -Xswiftc -L${CMAKE_CURRENT_BINARY_DIR}
     ${SWIFTC_DEPENDENCY_LIBRARIES}
 )
 add_dependencies(SwiftPackage ${TARGETS})

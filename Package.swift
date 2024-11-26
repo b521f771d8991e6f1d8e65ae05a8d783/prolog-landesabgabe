@@ -10,7 +10,8 @@ let package = Package(
             targets: ["LX"])
     ],
     dependencies: [
-        .package(url: "https://github.com/vapor/vapor", from: "4.106.4")
+        .package(url: "https://github.com/vapor/vapor", from: "4.106.4"),
+        .package(url: "https://github.com/apple/swift-log", from: "1.6.1"),
     ],
     targets: [
         .executableTarget(

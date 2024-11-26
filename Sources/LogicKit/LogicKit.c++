@@ -2,14 +2,12 @@
 #include <stdlib.h>
 
 #include <mutex>
-#include <algorithm>
 #include <string>
 #include <fstream>
 #include <filesystem>
 #include <functional>
 #include <iostream>
 
-#include <boost/numeric/conversion/cast.hpp>
 #include <boost/filesystem.hpp>
 
 // swi-prolog is included in header
@@ -21,7 +19,7 @@
 
 #include "LogicKit.h++"
 
-namespace looe::LegalXML::LogicKit
+namespace looe::LogicKit
 {
 
 void
@@ -57,6 +55,24 @@ public:
   ~LaunchOnStartup(void) { this->executeOnExit(); }
 };
 
+void
+dumpTarIfDebug(void) {
+#ifndef DEBUG
+    {
+      const std::filesystem::path dumpTarPath(
+        std::filesystem::temp_directory_path() / "tar-dump.tar");
+      if(std::filesystem::exists(dumpTarPath))
+        {
+          std::filesystem::remove(dumpTarPath);
+        }
+      std::ofstream s(dumpTarPath, std::ios::binary);
+      s.write(lx_rawdata_SwiPrologHomeData, lx_rawdata_SwiPrologHomeSize);
+      s.close();
+      printf("Dumped tar to: %s\n", dumpTarPath.c_str());
+    }
+#endif
+}
+
 LaunchOnStartup i([]() -> void {
   static std::once_flag flag;
   std::call_once(flag, []() -> void {
@@ -75,20 +91,7 @@ LaunchOnStartup i([]() -> void {
 
     std::filesystem::create_directory(rootDir);
 
-#ifdef DEBUG
-    {
-      const std::filesystem::path dumpTarPath(
-        std::filesystem::temp_directory_path() / "tar-dump.tar");
-      if(std::filesystem::exists(dumpTarPath))
-        {
-          std::filesystem::remove(dumpTarPath);
-        }
-      std::ofstream s(dumpTarPath, std::ios::binary);
-      s.write(lx_rawdata_SwiPrologHomeData, lx_rawdata_SwiPrologHomeSize);
-      s.close();
-      printf("Dumped tar to: %s\n", dumpTarPath.c_str());
-    }
-#endif
+    dumpTarIfDebug();
 
     struct archive *archive = archive_read_new();
 
@@ -151,39 +154,4 @@ LaunchOnStartup i([]() -> void {
   });
 });
 
-template <typename T, typename A>
-std::vector<T>
-map(std::vector<A> &container, T (*const f)(A &))
-{
-  std::vector<T> output;
-  output.reserve(container.size());
-  std::transform(container.begin(), container.end(), std::back_inserter(output),
-                 f);
-  return output;
-}
-
-PrologVM::PrologVM(const std::string &argv0)
-    : args(std::vector<std::string>{ argv0, std::string("--home=")
-                                              + swiplHomeRunPath }),
-      cArgs(map(
-        this->args, +[](std::string &i) -> char * { return &i[0]; })),
-      engine(boost::numeric_cast<int>(this->cArgs.size()), this->cArgs.data())
-{
-  assert(PL_is_initialised(nullptr, nullptr));
-}
-
-bool
-PrologVM::isInitialised(void)
-{
-  return PL_is_initialised(nullptr, nullptr);
-}
-
-PrologVM::~PrologVM(void)
-{
-  if(PL_is_initialised(nullptr, nullptr))
-    {
-      std::cerr << "shutting down SWI Prolog" << std::endl;
-      PL_halt(0);
-    }
-}
 }

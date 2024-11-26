@@ -5,16 +5,15 @@ import LogicKit
 import Vapor
 
 let version = String(BuildInformation.getCurrentVersionAsString())
-//let version = ""
 
-print("Running digital law server in version: \(version)")
+print("Running digital law server in version: \(version) ✨🚀")
 
 // configures your application
-public func configure(_ app: Application) throws {
-    try routes(app)
+public func configure(withApp app: Application, andLogicVM lvm: LogicVM) throws {
+    try routes(withApp: app, andLogicVM: lvm)
 }
 
-func routes(_ app: Application) throws {
+func routes(withApp app: Application, andLogicVM lvm: LogicVM) throws {
     app.get("status") { req async -> String in
         "OK"
     }
@@ -28,13 +27,19 @@ func routes(_ app: Application) throws {
             throw Abort(.badRequest)
         }
 
-        let result: String = process(query: query)
+        let result: String = lvm.process(query: query)
 
         return result
     }
 }
 
+let lvm = LogicVM()
 let app = Application()
-defer { app.shutdown() }
-try configure(app)
+
+defer {
+    print("Exiting server ... Goodbye 🌙✨")
+    app.shutdown()
+}
+
+try configure(withApp: app, andLogicVM: lvm)
 try app.run()

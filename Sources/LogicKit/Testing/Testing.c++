@@ -6,10 +6,11 @@
 
 #include <Testing.h++>
 #include <LogicKit.h++>
+#include <PrologVM.h++>
 
 #include <BuildInformation.h>
 
-using namespace looe::LegalXML::LogicKit;
+using namespace looe::LogicKit;
 
 std::vector<std::string> arguments;
 

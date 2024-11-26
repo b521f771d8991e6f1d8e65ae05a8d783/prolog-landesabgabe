@@ -2,6 +2,7 @@ add_library(LogicKit
   SWIPrologHome.c
   LogicKit.c++
   LogicKit.swift
+  PrologVM.c++
 )
 add_dependencies(LogicKit swi-prolog-home)
 target_include_directories(LogicKit

@@ -22,58 +22,7 @@ set(TEST_TARGETS
   LogicKitTests 
 )
 
-# SPM-Targets
-find_program(SWIFT NAMES "swift")
-find_program(CLANG NAMES "clang")
-find_program(CLANGXX NAMES "clang++")
-
-set(ALL_TARGET_DEPENDECIES)
-
-foreach(lib ${TARGETS})
-  get_target_property(INTERFACE_LINK ${lib} INTERFACE_LINK_LIBRARIES)
-  get_target_property(LINK ${lib} LINK_LIBRARIES)
-  
-  if(LINK)
-    foreach(CURRENT ${LINK})
-      list(APPEND ALL_TARGET_DEPENDECIES ${CURRENT})
-    endforeach()
-  endif()
-endforeach()
-
-set(SWIFTC_DEPENDENCY_LIBRARIES)
-foreach(lib ${ALL_TARGET_DEPENDECIES})
-  if((EXISTS ${lib}) AND (IS_ABSOLUTE ${lib}))
-    list(APPEND SWIFTC_DEPENDENCY_LIBRARIES -Xswiftc "-l${lib}")
-    list(APPEND SWIFTC_DEPENDENCY_LIBRARIES -Xcc "-l${lib}")
-    list(APPEND SWIFTC_DEPENDENCY_LIBRARIES -Xcxx "-l${lib}")
-  else()
-    if(NOT ${lib} STREQUAL "Boost::headers") # TODO filter this out properly
-      list(APPEND SWIFTC_DEPENDENCY_LIBRARIES -Xswiftc "-l$<TARGET_LINKER_FILE:${lib}>")
-      list(APPEND SWIFTC_DEPENDENCY_LIBRARIES -Xcc "-l$<TARGET_LINKER_FILE:${lib}>")
-      list(APPEND SWIFTC_DEPENDENCY_LIBRARIES -Xcxx "-l$<TARGET_LINKER_FILE:${lib}>")
-    endif()
-  endif()
-endforeach()
-
-message("${SWIFTC_DEPENDENCY_LIBRARIES}")
-
-add_custom_target(SwiftPackage
-  COMMAND
-    "CC=${CLANG}" "CXX=${CLANGXX}"
-    ${SWIFT} "build"
-    --configuration debug
-    --package-path ${CMAKE_CURRENT_SOURCE_DIR}
-    -Xswiftc -I${CMAKE_CURRENT_BINARY_DIR}/Sources/ActKit
-    -Xswiftc -I${CMAKE_CURRENT_BINARY_DIR}/Sources/LogicKit
-    -Xswiftc -I${CMAKE_CURRENT_BINARY_DIR}/BuildInformation
-    -Xswiftc -L${CMAKE_CURRENT_BINARY_DIR}/Sources/ActKit
-    -Xswiftc -L${CMAKE_CURRENT_BINARY_DIR}/Sources/LogicKit
-    -Xswiftc -L${CMAKE_CURRENT_BINARY_DIR}/BuildInformation
-    ${SWIFTC_DEPENDENCY_LIBRARIES}
-)
-add_dependencies(SwiftPackage ${TARGETS})
-
-# additional configuration
+# add target configuration
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
     OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set(SWIFT_TESTABLE
@@ -129,3 +78,52 @@ foreach(TARGET ${TARGETS} ${TEST_TARGETS})
     CMAKE_C_EXTENSIONS OFF
   )
 endforeach()
+
+# SPM-Targets
+find_program(SWIFT NAMES "swift")
+find_program(CLANG NAMES "clang")
+find_program(CLANGXX NAMES "clang++")
+
+set(ALL_TARGET_DEPENDECIES)
+
+foreach(lib ${TARGETS})
+  get_target_property(INTERFACE_LINK ${lib} INTERFACE_LINK_LIBRARIES)
+  get_target_property(LINK ${lib} LINK_LIBRARIES)
+  
+  if(LINK)
+    foreach(CURRENT ${LINK})
+      list(APPEND ALL_TARGET_DEPENDECIES ${CURRENT})
+    endforeach()
+  endif()
+endforeach()
+
+set(SWIFTC_DEPENDENCY_LIBRARIES)
+foreach(lib ${ALL_TARGET_DEPENDECIES})
+  if(IS_ABSOLUTE ${lib})
+    list(APPEND SWIFTC_DEPENDENCY_LIBRARIES -Xswiftc "-l${lib}")
+    list(APPEND SWIFTC_DEPENDENCY_LIBRARIES -Xcc "-l${lib}")
+    list(APPEND SWIFTC_DEPENDENCY_LIBRARIES -Xcxx "-l${lib}")
+  else()
+    if(NOT ${lib} STREQUAL "Boost::headers") # TODO filter this out properly
+      list(APPEND SWIFTC_DEPENDENCY_LIBRARIES -Xswiftc "-l$<TARGET_LINKER_FILE:${lib}>")
+      list(APPEND SWIFTC_DEPENDENCY_LIBRARIES -Xcc "-l$<TARGET_LINKER_FILE:${lib}>")
+      list(APPEND SWIFTC_DEPENDENCY_LIBRARIES -Xcxx "-l$<TARGET_LINKER_FILE:${lib}>")
+    endif()
+  endif()
+endforeach()
+
+add_custom_target(SwiftPackage
+  COMMAND
+    "CC=${CLANG}" "CXX=${CLANGXX}"
+    ${SWIFT} "build"
+    --configuration debug
+    --package-path ${CMAKE_CURRENT_SOURCE_DIR}
+    -Xswiftc -I${CMAKE_CURRENT_BINARY_DIR}/Sources/ActKit
+    -Xswiftc -I${CMAKE_CURRENT_BINARY_DIR}/Sources/LogicKit
+    -Xswiftc -I${CMAKE_CURRENT_BINARY_DIR}/BuildInformation
+    -Xswiftc -L${CMAKE_CURRENT_BINARY_DIR}/Sources/ActKit
+    -Xswiftc -L${CMAKE_CURRENT_BINARY_DIR}/Sources/LogicKit
+    -Xswiftc -L${CMAKE_CURRENT_BINARY_DIR}/BuildInformation
+    ${SWIFTC_DEPENDENCY_LIBRARIES}
+)
+add_dependencies(SwiftPackage ${TARGETS})

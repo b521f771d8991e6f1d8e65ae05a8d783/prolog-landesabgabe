@@ -18,6 +18,7 @@ let package = Package(
             dependencies: [
                 .product(name: "Vapor", package: "Vapor")
             ],
-            exclude: ["CMakeLists.txt"])
-    ]
+            swiftSettings: [.interoperabilityMode(.Cxx)])
+    ],
+    cxxLanguageStandard: .cxx20
 )

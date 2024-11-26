@@ -5,30 +5,30 @@ extern "C"
   const char *
   getBuildType(void)
   {
-    return nobs::BuildInformation::buildType;
+    return BuildInformation::buildType;
   }
 
   const char *
   getGitHash(void)
   {
-    return nobs::BuildInformation::gitHash;
+    return BuildInformation::gitHash;
   }
 
   unsigned
   getBuildYear(void)
   {
-    return nobs::BuildInformation::buildYear;
+    return BuildInformation::buildYear;
   }
 
   unsigned
   getBuildMonth(void)
   {
-    return nobs::BuildInformation::buildMonth;
+    return BuildInformation::buildMonth;
   }
 
   unsigned
   getBuildDay(void)
   {
-    return nobs::BuildInformation::buildDay;
+    return BuildInformation::buildDay;
   }
 }

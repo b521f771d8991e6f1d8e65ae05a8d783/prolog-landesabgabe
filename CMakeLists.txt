@@ -14,15 +14,48 @@ add_subdirectory(Sources/Corpus)
 # configuration for all targets
 set(TARGETS
   ActKit
-  ActKitTests
   LogicKit
-  LogicKitTests
 )
 
-# Swift-Targets
+set(TEST_TARGETS
+  ActKitTests
+  LogicKitTests 
+)
+
+# SPM-Targets
 find_program(SWIFT NAMES "swift")
 find_program(CLANG NAMES "clang")
 find_program(CLANGXX NAMES "clang++")
+
+set(ALL_TARGET_DEPENDECIES)
+
+foreach(lib ${TARGETS})
+  get_target_property(INTERFACE_LINK ${lib} INTERFACE_LINK_LIBRARIES)
+  get_target_property(LINK ${lib} LINK_LIBRARIES)
+  
+  if(LINK)
+    foreach(CURRENT ${LINK})
+      list(APPEND ALL_TARGET_DEPENDECIES ${CURRENT})
+    endforeach()
+  endif()
+endforeach()
+
+set(SWIFTC_DEPENDENCY_LIBRARIES)
+foreach(lib ${ALL_TARGET_DEPENDECIES})
+  if((EXISTS ${lib}) AND (IS_ABSOLUTE ${lib}))
+    list(APPEND SWIFTC_DEPENDENCY_LIBRARIES -Xswiftc "-l${lib}")
+    list(APPEND SWIFTC_DEPENDENCY_LIBRARIES -Xcc "-l${lib}")
+    list(APPEND SWIFTC_DEPENDENCY_LIBRARIES -Xcxx "-l${lib}")
+  else()
+    if(NOT ${lib} STREQUAL "Boost::headers") # TODO filter this out properly
+      list(APPEND SWIFTC_DEPENDENCY_LIBRARIES -Xswiftc "-l$<TARGET_LINKER_FILE:${lib}>")
+      list(APPEND SWIFTC_DEPENDENCY_LIBRARIES -Xcc "-l$<TARGET_LINKER_FILE:${lib}>")
+      list(APPEND SWIFTC_DEPENDENCY_LIBRARIES -Xcxx "-l$<TARGET_LINKER_FILE:${lib}>")
+    endif()
+  endif()
+endforeach()
+
+message("${SWIFTC_DEPENDENCY_LIBRARIES}")
 
 add_custom_target(SwiftPackage
   COMMAND
@@ -30,10 +63,13 @@ add_custom_target(SwiftPackage
     ${SWIFT} "build"
     --configuration debug
     --package-path ${CMAKE_CURRENT_SOURCE_DIR}
-    #-I${CMAKE_CURRENT_BINARY_DIR}/Sources/ActKit
-    #-I${CMAKE_CURRENT_BINARY_DIR}/Sources/LogicKit
-    #-L${CMAKE_CURRENT_BINARY_DIR}/Sources/ActKit
-    #-L${CMAKE_CURRENT_BINARY_DIR}/Sources/LogicKit
+    -Xswiftc -I${CMAKE_CURRENT_BINARY_DIR}/Sources/ActKit
+    -Xswiftc -I${CMAKE_CURRENT_BINARY_DIR}/Sources/LogicKit
+    -Xswiftc -I${CMAKE_CURRENT_BINARY_DIR}/BuildInformation
+    -Xswiftc -L${CMAKE_CURRENT_BINARY_DIR}/Sources/ActKit
+    -Xswiftc -L${CMAKE_CURRENT_BINARY_DIR}/Sources/LogicKit
+    -Xswiftc -L${CMAKE_CURRENT_BINARY_DIR}/BuildInformation
+    ${SWIFTC_DEPENDENCY_LIBRARIES}
 )
 add_dependencies(SwiftPackage ${TARGETS})
 
@@ -63,7 +99,7 @@ set_target_properties(PROPERTIES
     C_CLANG_TIDY "${CLANG_TIDY_EXE};${CLANG_TIDY_OPTIONS}"
   )
 
-foreach(TARGET ${TARGETS})
+foreach(TARGET ${TARGETS} ${TEST_TARGETS})
   target_compile_options(${TARGET} PRIVATE
     ${SWIFT_TESTABLE}
     ${Wall}

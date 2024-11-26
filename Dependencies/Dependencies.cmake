@@ -8,6 +8,7 @@ find_package(ZLIB REQUIRED)
 find_package(LibArchive REQUIRED)
 find_package(Curses REQUIRED)
 find_package(OpenSSL REQUIRED)
+find_package(Curses REQUIRED)
 
 # from git submodules:
 
@@ -47,5 +48,12 @@ COMMAND
 )
 add_dependencies(swi-prolog-home swi-prolog)
 
-set(DEPENDENCY_INCLUDE_DIRS "${CMAKE_CURRENT_BINARY_DIR}/root/lib/swipl/include")
-set(DEPENDENCY_LIBRARIES_DIRS "${CMAKE_CURRENT_BINARY_DIR}/root/lib/swipl/lib/x86_64-linux/libswipl_static.a")
+set(DEPENDENCY_INCLUDE_DIRS
+  "${CMAKE_CURRENT_BINARY_DIR}/root/lib/swipl/include"
+  ${CURSES_INCLUDE_DIRS}
+)
+
+set(DEPENDENCY_LIBRARIES_DIRS
+  "${CMAKE_CURRENT_BINARY_DIR}/root/lib/swipl/lib/x86_64-linux/libswipl_static.a"
+  ${CURSES_LIBRARIES}
+)

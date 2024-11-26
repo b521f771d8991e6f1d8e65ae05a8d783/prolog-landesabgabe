@@ -49,6 +49,7 @@ execute_process(
 
 add_library(BuildInformation
   ${CMAKE_CURRENT_BINARY_DIR}/BuildInformation/BuildInformation.c++
+  #${CMAKE_CURRENT_SOURCE_DIR}/Build/BuildInformation.swift
 )
 target_include_directories(BuildInformation
 PUBLIC

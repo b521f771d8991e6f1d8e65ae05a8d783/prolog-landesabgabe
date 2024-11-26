@@ -1,12 +1,11 @@
-//import ActKit
-//import BuildInformation
+import ActKit
+import BuildInformation
 import Foundation
+import LogicKit
 import Vapor
 
-//import LogicKit
-
-//let version = String(nobs.BuildInformation.getCurrentVersionAsString())
-let version = "1.0"
+let version = String(BuildInformation.getCurrentVersionAsString())
+//let version = ""
 
 print("Running digital law server in version: \(version)")
 
@@ -28,7 +27,9 @@ func routes(_ app: Application) throws {
         guard let query: String = req.query[String.self, at: "query"] else {
             throw Abort(.badRequest)
         }
-        let result: String = "OK \(query)"
+
+        let result: String = process(query: query)
+
         return result
     }
 }

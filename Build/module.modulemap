@@ -1,5 +1,6 @@
 module BuildInformation {
-    requires cplusplus
+    requires cplusplus17
+
     header "BuildInformation.h"
 
     export *

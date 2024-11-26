@@ -17,7 +17,7 @@ TEST(PrologVM, testStartUp)
 {
   std::cout
     << "Running Tests in version: "
-    << nobs::BuildInformation::VersionString::getCurrentVersion().toString()
+    << BuildInformation::VersionString::getCurrentVersion().toString()
     << std::endl;
   PrologVM pvm(arguments[0]);
   ASSERT_TRUE(pvm.isInitialised());

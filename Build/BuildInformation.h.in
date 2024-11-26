@@ -18,7 +18,7 @@ extern "C"
 #include <string_view>
 #include <string>
 
-namespace nobs::BuildInformation
+namespace BuildInformation
 {
 
 // clang-format off
@@ -74,13 +74,13 @@ public:
 
   constexpr static VersionString getCurrentVersion(void) noexcept {
     return VersionString{
-      nobs::BuildInformation::gitHash,
-      nobs::BuildInformation::gitBranch,
-      nobs::BuildInformation::isDirty,
-      nobs::BuildInformation::buildType,
-      nobs::BuildInformation::buildYear,
-      nobs::BuildInformation::buildMonth,
-      nobs::BuildInformation::buildDay
+      BuildInformation::gitHash,
+      BuildInformation::gitBranch,
+      BuildInformation::isDirty,
+      BuildInformation::buildType,
+      BuildInformation::buildYear,
+      BuildInformation::buildMonth,
+      BuildInformation::buildDay
     };
   }
 
@@ -121,7 +121,7 @@ std::string getCurrentVersionAsString(void) {
 
 // clang-format on
 
-}
+} // namespace BuildInformation
 
 #endif
 

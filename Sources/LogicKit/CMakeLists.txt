@@ -37,7 +37,7 @@ target_link_libraries(LogicKitTests PUBLIC
   LogicKit
   ActKit
   BuildInformation
-  ${CURSES_LIBRARIES} # why do we need this?
+  ${DEPENDENCY_LIBRARIES_DIRS} # why do we need this?
 )
 add_test(
   NAME LogicKitTests

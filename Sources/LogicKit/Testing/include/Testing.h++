@@ -6,7 +6,7 @@
 
 namespace looe::LX::TestingC
 {
-int executeTests(std::string argv0);
+int execute_tests(std::string argv0);
 }
 
 #endif

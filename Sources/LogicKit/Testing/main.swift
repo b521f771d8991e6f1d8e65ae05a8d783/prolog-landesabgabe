@@ -6,11 +6,11 @@ import XCTest
 
 class CTests: XCTestCase {
     static let allTests = [
-        ("tests all embedded google Tests", test)
+        ("tests all embedded google tests", test)
     ]
 
     func test() {
-        XCTAssertEqual(looe.LX.TestingC.executeTests(std.string(CommandLine.arguments[0])), 0)
+        XCTAssertEqual(looe.LX.TestingC.execute_tests(std.string(CommandLine.arguments[0])), 0)
     }
 }
 

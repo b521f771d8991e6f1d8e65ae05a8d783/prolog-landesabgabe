@@ -6,11 +6,11 @@ import LogicKitC
 public final class LogicVM: Sendable {
     public init() {
         let argv0 = CommandLine.arguments[0]
-        looe.LogicKitC.startPrologVM(std.string(argv0))
+        looe.LogicKitC.start_prolog_VM(std.string(argv0))
     }
 
     public func process(query: String) -> String? {
-        let result = looe.LogicKitC.runQuery(std.string(query))
+        let result = looe.LogicKitC.run_query(std.string(query))
 
         if result == "" {
             return String(result)

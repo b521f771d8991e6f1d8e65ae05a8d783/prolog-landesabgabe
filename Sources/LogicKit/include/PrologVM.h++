@@ -1,10 +1,8 @@
 #ifndef PROLOGVM_H
 #define PROLOGVM_H
 
-#include <algorithm>
 #include <string>
 #include <vector>
-#include <memory>
 #include <variant>
 
 class PlEngine;
@@ -12,40 +10,40 @@ class PlEngine;
 namespace looe::LogicKitC
 {
 
-class PrologQuery final {
+class prolog_query final {
 public:
   struct Variable {
     char identifier;
   };
   
-  using ArgType = std::variant<Variable, std::string>;
+  using arg_type = std::variant<Variable, std::string>;
 
 private:
   std::string predicateName;
-  std::vector<ArgType> args;
+  std::vector<arg_type> args;
 
 public:
-  PrologQuery(const std::string &predicate
-            , const std::vector<ArgType> &args = {})
+  prolog_query(const std::string &predicate
+            , const std::vector<arg_type> &args = {})
     : predicateName(predicate)
     , args(args)
     { }
 
-  PrologQuery(const PrologQuery&) = default;
+  prolog_query(const prolog_query&) = default;
 
-  inline int getArity(void) const {
+  inline int get_arity(void) const {
     return this->args.size();
   }
 
-  inline std::string_view getPredicateName(void) const {
+  inline std::string_view get_predicate_name(void) const {
     return this->predicateName;
   }
 
-  inline const char* getPredicateNameAsCString(void) const {
+  inline const char* get_predicate_name_cstr(void) const {
     return this->predicateName.c_str();
   }
 
-  inline const std::vector<ArgType>& getParemeters(void) const {
+  inline const std::vector<arg_type>& get_parameters(void) const {
     return this->args;
   }
 
@@ -58,34 +56,34 @@ public:
   //}
 };
 
-class PrologResult {
+class prolog_result {
 public:
-  using Result = bool;
+  using result = bool;
 
 private:
-  std::vector<Result> results;
+  std::vector<result> results;
 
 public:
-  PrologResult(const std::vector<Result>& r)
+  prolog_result(const std::vector<result>& r)
   : results(r)
   { }
   
   
 
-  const std::vector<Result>& getResults(void) const {
+  const std::vector<result>& get_results(void) const {
     return this->results;
   }
 
-  size_t resultCount(void) const {
+  size_t result_count(void) const {
     return this->results.size();
   }
 };
 
-extern void startPrologVM(const std::string &argv0);
-extern std::string runQuery(const std::string &);
-extern std::vector<PrologQuery::ArgType> runQuery (const PrologQuery &);
-extern bool isInitialised(void);
-extern void stopPrologVm(void);
+extern void start_prolog_VM(const std::string &argv0);
+extern std::string run_query(const std::string &);
+extern std::vector<prolog_query::arg_type> run_query (const prolog_query &);
+extern bool is_initialised(void);
+extern void stop_prolog_VM(void);
 
 }
 

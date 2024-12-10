@@ -20,20 +20,20 @@ TEST(PrologVM, testStartUp)
     << "Running Tests in version: "
     << BuildInformation::VersionString::getCurrentVersion().toString()
     << std::endl;
-  startPrologVM(arguments[0]);
-  ASSERT_TRUE(isInitialised());
+  start_prolog_VM(arguments[0]);
+  ASSERT_TRUE(is_initialised());
 }
 
 TEST(PrologVM, testPrologQueryTrue)
 {
-  const PrologQuery prologQuery("true");
-  const std::vector<PrologQuery::ArgType> result = runQuery(prologQuery);
+  const prolog_query prologQuery("true");
+  const std::vector<prolog_query::arg_type> result = run_query(prologQuery);
 }
 
 TEST(PrologVM, testPrologQueryFalse)
 {
-  const PrologQuery prologQuery("false");
-  const std::vector<PrologQuery::ArgType> result = runQuery(prologQuery);
+  const prolog_query prologQuery("false");
+  const std::vector<prolog_query::arg_type> result = run_query(prologQuery);
   ASSERT_EQ(result.size(), 0);
 }
 
@@ -41,7 +41,7 @@ namespace looe::LX::TestingC
 {
 
 int
-executeTests(std::string argv0)
+execute_tests(std::string argv0)
 {
   arguments = { std::move(argv0) };
   testing::InitGoogleTest();

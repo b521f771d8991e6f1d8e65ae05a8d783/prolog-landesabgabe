@@ -42,10 +42,10 @@ map (std::vector<A> &container, T (*const f) (A &))
 }
 
 void
-startPrologVM (const std::string &argv0)
+start_prolog_VM (const std::string &argv0)
 {
-  if(!isInitialised()) {
-    initPrologHome();
+  if(!is_initialised()) {
+    init_prolog_home();
 
     args = std::vector<std::string> (
         { argv0, std::string ("--home=") + swiplHomeRunPath });
@@ -63,14 +63,14 @@ startPrologVM (const std::string &argv0)
 }
 
 bool
-isInitialised (void)
+is_initialised (void)
 {
   return PL_is_initialised (nullptr, nullptr);
 }
 
 tl::expected<std::pair<std::string, std::vector<std::string>>, std::string>
-parseQuery(const std::string &query) {
-  if(not isInitialised() or query == "") {
+parse_query(const std::string &query) {
+  if(not is_initialised() or query == "") {
     return tl::unexpected("");
   }
 
@@ -101,9 +101,9 @@ parseQuery(const std::string &query) {
 }
 
 std::string
-runQuery (const std::string &query)
+run_query (const std::string &query)
 {
-  const auto result = parseQuery(query);
+  const auto result = parse_query(query);
 
   if(not result.has_value()) {
     return result.error();
@@ -113,12 +113,12 @@ runQuery (const std::string &query)
 }
 
 predicate_t
-constructPredicateFromQuery(const PrologQuery &query, term_t a0) {
-  const predicate_t p = PL_predicate(query.getPredicateNameAsCString(), query.getArity(), NULL);
+construct_predicate_from_query(const prolog_query &query, term_t a0) {
+  const predicate_t p = PL_predicate(query.get_predicate_name_cstr(), query.get_arity(), NULL);
 
-  for(size_t counter = 0; counter < query.getParemeters().size();
+  for(size_t counter = 0; counter < query.get_parameters().size();
     counter++) {
-    const PrologQuery::ArgType& currentParemeter = query.getParemeters().at(counter);
+    const prolog_query::arg_type& currentParemeter = query.get_parameters().at(counter);
 
     if(std::holds_alternative<std::string>(currentParemeter)) {
       const char* const currentParameterText = std::get<std::string>(currentParemeter).c_str();
@@ -129,14 +129,14 @@ constructPredicateFromQuery(const PrologQuery &query, term_t a0) {
   return p;
 }
 
-std::vector<PrologQuery::ArgType>
-runQuery (const PrologQuery &query) 
+std::vector<prolog_query::arg_type>
+run_query (const prolog_query &query) 
 {
-  const term_t a0 = PL_new_term_refs(query.getArity());
-  const predicate_t p = constructPredicateFromQuery(query, a0);
+  const term_t a0 = PL_new_term_refs(query.get_arity());
+  const predicate_t p = construct_predicate_from_query(query, a0);
   const qid_t qid = PL_open_query(NULL, PL_Q_PASS_EXCEPTION, p, a0);
 
-  std::vector<PrologQuery::ArgType> arguments;
+  std::vector<prolog_query::arg_type> arguments;
 
   while(PL_next_solution(qid) != FALSE)
     {
@@ -150,7 +150,7 @@ runQuery (const PrologQuery &query)
 }
 
 void
-stopPrologVM (void)
+stop_prolog_VM (void)
 {
   if (PL_is_initialised (nullptr, nullptr))
     {

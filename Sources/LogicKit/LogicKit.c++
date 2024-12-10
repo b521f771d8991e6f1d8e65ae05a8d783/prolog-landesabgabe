@@ -23,7 +23,7 @@ namespace looe::LogicKitC
 {
 
 void
-createSwiplHomeRunPath(const std::filesystem::path &root)
+create_swipl_home_run_path(const std::filesystem::path &root)
 {
   std::filesystem::create_directories(root / "Library");
   std::filesystem::create_directories(root / "Library" / "SWIPL");
@@ -33,7 +33,7 @@ createSwiplHomeRunPath(const std::filesystem::path &root)
 const std::string swiplHomeRunPath("Library/SWIPL/home");
 
 void
-dumpTarIfDebug(void)
+dump_tar_if_debug(void)
 {
 #ifdef DEBUG
   std::clog << "dumping tar" << std::endl;
@@ -52,7 +52,7 @@ dumpTarIfDebug(void)
 #endif
 }
 
-void createEmptyRootDir(const std::filesystem::path & rootDir) {
+void create_empty_root_dir(const std::filesystem::path & rootDir) {
 if(std::filesystem::exists(rootDir))
       {
         std::clog << "'" << rootDir.c_str() << "' already exists, deleting it.";
@@ -62,7 +62,7 @@ if(std::filesystem::exists(rootDir))
     std::filesystem::create_directory(rootDir);
 }
 
-void extractArchiveToDirectory(const std::filesystem::path & rootDir, const void* buffer, const size_t &size) {
+void extract_archive_to_directory(const std::filesystem::path & rootDir, const void* buffer, const size_t &size) {
   struct archive *archive = archive_read_new();
 
   archive_read_support_format_tar(archive);
@@ -75,7 +75,7 @@ void extractArchiveToDirectory(const std::filesystem::path & rootDir, const void
   // platform independent chdir(2)
   std::filesystem::current_path(rootDir.c_str());
 
-  createSwiplHomeRunPath(rootDir);
+  create_swipl_home_run_path(rootDir);
 
   while((entryNumber = archive_read_next_header(archive, &entry))
         == ARCHIVE_OK)
@@ -124,7 +124,7 @@ void extractArchiveToDirectory(const std::filesystem::path & rootDir, const void
     archive_read_free(archive);
 }
 
-void initPrologHome() {
+void init_prolog_home() {
   static std::once_flag flag;
 
   std::call_once(flag, []() -> void {
@@ -135,9 +135,9 @@ void initPrologHome() {
       std::filesystem::temp_directory_path()
       / boost::filesystem::unique_path("%%%%-%%%%-%%%%-%%%%").c_str());
 
-    createEmptyRootDir(rootDir);
-    dumpTarIfDebug();
-    extractArchiveToDirectory(rootDir, lx_rawdata_SwiPrologHomeData, lx_rawdata_SwiPrologHomeSize);
+    create_empty_root_dir(rootDir);
+    dump_tar_if_debug();
+    extract_archive_to_directory(rootDir, lx_rawdata_SwiPrologHomeData, lx_rawdata_SwiPrologHomeSize);
   });
 };
 

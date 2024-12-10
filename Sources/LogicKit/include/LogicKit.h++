@@ -6,7 +6,7 @@
 namespace looe::LogicKitC {
 
 extern const std::string swiplHomeRunPath;
-extern void initPrologHome();
+extern void init_prolog_home();
 
 }
 

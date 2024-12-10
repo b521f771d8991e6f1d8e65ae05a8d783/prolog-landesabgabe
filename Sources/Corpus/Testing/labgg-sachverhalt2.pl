@@ -7,5 +7,6 @@ nachname(max_mustermann, "Mustermann").
 
 verbum(sachverhalt, bergbau(gewinnen, obertags, mineralische_rohstoffe)).
 objekt(sachverhalt, mein_gestein).
+gefoerdert(mein_gestein, 10, tonne).
 
-% Ausführen mit: abgabepflichtig_labbg(sachverhalt).
+% Ausführen mit: abgabepflichtig(labgg, sachverhalt).

@@ -9,6 +9,6 @@ alter(max_mustermann, 53).
 verbum(sachverhalt, bergbau(gewinnen, obertags, mineralische_rohstoffe)).
 objekt(sachverhalt, mein_gestein).
 
-kohle(mein_gestein).
+gestein_art(mein_gestein, kohle).
 
-% Ausführen mit: abgabepflichtig_labbg(sachverhalt).
+% Ausführen mit: abgabepflichtig(labbg, sachverhalt).

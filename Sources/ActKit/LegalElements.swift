@@ -4,7 +4,7 @@ public protocol LegalElement: Codable, Equatable {
     var commonName: String { get }
 }
 
-typealias LegalElementEnum = Codable&Equatable;
+typealias LegalElementEnum = Codable & Equatable
 
 public enum PossibleTopLevelMember: LegalElementEnum {
     case text(Text)
@@ -12,7 +12,7 @@ public enum PossibleTopLevelMember: LegalElementEnum {
     case image(Image)
 }
 
-public enum PossibleSubelementMembers : LegalElementEnum {
+public enum PossibleSubelementMembers: LegalElementEnum {
     case text(Text)
     case bullet(Bullet)
     case hyphen(Hyphen)
@@ -41,11 +41,11 @@ public struct Image: LegalElement {
     }
 }
 
-public struct Hyphen: LegalElement {    
+public struct Hyphen: LegalElement {
     public static let identifier: Character = "•"
     public let legalElements: [PossibleSubelementMembers]
 
-    public init(_ elements : [PossibleSubelementMembers]) {
+    public init(_ elements: [PossibleSubelementMembers]) {
         legalElements = elements
     }
 
@@ -54,7 +54,7 @@ public struct Hyphen: LegalElement {
     }
 }
 
-public struct Bullet: LegalElement {    
+public struct Bullet: LegalElement {
     public static let identifier: Character = "•"
     public let legalElements: [PossibleSubelementMembers]
 
@@ -68,7 +68,7 @@ public struct Bullet: LegalElement {
 }
 
 public struct Letter: LegalElement {
-    public let letter: String // String instead of Character to, frequently, laws can also use sytax like aa, bb, cc
+    public let letter: String  // String instead of Character to, frequently, laws can also use syntax like aa, bb, cc
     public let legalElements: [PossibleSubelementMembers]
 
     public init(withLetter letter: String, andElements elements: [PossibleSubelementMembers]) {
@@ -89,7 +89,7 @@ public struct Digit: LegalElement {
         self.digit = digit
         self.legalElements = elements
     }
-    
+
     public var commonName: String {
         return "digit"
     }
@@ -114,8 +114,10 @@ public struct Paragraph: LegalElement {
     public let title: String?
     public let legalElements: [PossibleSubelementMembers]
 
-    public init(withNumber number: UInt16, andTitle title: String, andElements elements: [PossibleSubelementMembers])
-    {
+    public init(
+        withNumber number: UInt16, andTitle title: String,
+        andElements elements: [PossibleSubelementMembers]
+    ) {
         self.number = number
         self.title = title
         self.legalElements = elements
@@ -157,9 +159,10 @@ public struct Act: LegalElement {
         self.legalElements = []
     }
 
-    public init(withTitle title: String
-              , andDate dateEnacted: Date
-              , andLegalElements elements: [PossibleTopLevelMember]) {
+    public init(
+        withTitle title: String, andDate dateEnacted: Date,
+        andLegalElements elements: [PossibleTopLevelMember]
+    ) {
         self.title = title
         self.dateEnacted = dateEnacted
         self.legalElements = elements
@@ -208,7 +211,7 @@ public struct Act: LegalElement {
             return nil
         }
     }
-    
+
     public mutating func add(legalElement element: PossibleTopLevelMember) {
         legalElements.append(element)
     }

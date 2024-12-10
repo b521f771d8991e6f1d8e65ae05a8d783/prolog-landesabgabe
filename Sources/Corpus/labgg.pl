@@ -1,17 +1,16 @@
-% BEGIN DIGITAL ACT
-
 file_search_path(stdlib, './stdlib').
 :- use_module(stdlib(stdlib)).
 
-langtitel(labgg, X) :-
-    string_concat("Landesgesetz über eine Landesabgabe für das obertägige",
-    "Gewinnen mineralischer Rohstoffe (Oö. Landschaftsabgabegesetz)", X).
+langtitel(labgg,
+    "Landesgesetz über eine Landesabgabe für das obertägige Gewinnen mineralischer Rohstoffe (Oö. Landschaftsabgabegesetz)").
 titel(labgg, "Oö. Landschaftsabgabegesetz").
 kurztitel(labgg, "LAbgG").
 
 % §1 Gegenstand der Abgabe:
 
-%% 1. Das Land erhebt eine Landschaftsabgabe für das obertägige Gewinnen mineralischer Rohstoffe in Oberoesterreich. 
+%% 1. Das Land erhebt eine Landschaftsabgabe für das obertägige Gewinnen mineralischer Rohstoffe in Oberösterreich.
+
+:- discontiguous abgabe_auf/4.
 
 abgabe_auf(labgg,
     landesabgabe,
@@ -56,43 +55,44 @@ ausnahme(labgg, X) :-
 :- discontiguous ausnahme/2.
 
 %% 3. Die Gemeinde, in der sich eine Gewinnungsstätte befindet, erhält einen Ertragsanteil in Höhe von 10 % der Landschaftsabgabe, die im Gemeindegebiet erhoben wurde
-%% 4. Der  Ertragsanteil  der  Gemeinde  gemäß  Abs. 3  entfällt  zur  Gänze,  wenn  sich  die  bzw.  der Abgabepflichtige  auf  Grund  von  zivilrechtlichen  Verträgen  verpflichtet  hat,  der  Gemeinde  gegenüber Leistungen zum Ausgleich der Nachteile aus den nach diesem Landesgesetz abgabenpflichtigen Tätigkeiten  zu  erbringen  und  diese  Leistungen  dem  Ertragsanteil  entsprechen  oder  diesen  übersteigen. Wenn  eine  derartige  zivilrechtliche  Leistungsverpflichtung  die  Höhe  des  Ertragsanteils  gemäß  Abs. 3 nicht erreicht, verringert sich der Ertragsanteil um die Höhe der vereinbarten zivilrechtlichen Leistung.
+
+%% (4) Die Landschaftsabgabe ist für Angelegenheiten des Natur- und Landschaftsschutzes sowie der
+%% Landschafts- und Ortsbildpflege, zur Verbesserung der ökologischen Infrastruktur, die Umweltbildung
+%% und Umwelterziehung sowie sonstige Maßnahmen im Bereich des Umweltschutzes zu verwenden. (Anm:
+%% LGBl.Nr. 96/2023)
+%% (5) Die der Gemeinde gemäß Abs. 3 zufließenden Mittel sind für Angelegenheiten des Natur- und
+%% Landschaftsschutzes sowie der Landschafts- und Ortsbildpflege, zur Verbesserung der ökologischen
+%% Infrastruktur, für naturnahe Erholungsformen in der Gemeinde, die Umweltbildung oder die
+%% Umwelterziehung zu verwenden. (Anm: LGBl.Nr. 96/2023)
+%% (6) Die Überweisung des Ertragsanteils an die Gemeinden hat jeweils spätestens am 30. Juni für das
+%% vorangegangene Kalenderjahr zu erfolgen. (Anm: LGBl.Nr. 96/2023)
 
 ertragsanteil(labgg
     , gemeinde
-    , \+ zivilrechtliche_leistungen
-    , 0.1).
+    , 0.2).
 
 ertragsanteil(labgg
     , land
-    , \+ zivilrechtliche_leistungen
-    , 0.9).
-
-ertragsanteil(labgg
-    , gemeinde
-    , zivilrechtliche_leistungen
-    , 0.0).
-
-ertragsanteil(labgg
-    , land
-    , zivilrechtliche_leistungen
-    , 0.9).
+    , 0.8).
 
 % §2 Begriffsbestimmungen:
 %% Im Sinn des Landesgesetzes ist:
-%%% 1. „Abraummaterial“:  jedes  beim  Gewinnen  anfallende,  nicht  verwertbare  Material  (zB  taubes Gestein,  Abschlämmbares)  sowie  Materialien,  die  zur  Böschungsherstellung,  Rekultivierung oder Geländegestaltung (zB Lärmschutz- oder Hochwasserschutzdämme) betriebsintern verwendet werden;
+%%% 1. „Abraummaterial“: jedes beim Gewinnen anfallende,
+%%%    nicht verwertbare Material (zB taubes Gestein, Abschlämmbares) sowie Materialien,
+%%%    die zur Böschungsherstellung, Rekultivierung oder Geländegestaltung
+%%%    (zB Lärmschutz- oder Hochwasserschutzdämme) betriebsintern verwendet werden;
 
-%#  it actually makes more sense to do omit this.
+%#  it actually makes more sense to omit this.
 %#abbraummaterial(X) :-
 %#    \+ verwertbar(X) ;
 %#    verwendet_fuer(boschungsherstellung, X) ;
-%#    verwendet_fuer(rekultivierung, X);
+%#    verwendet_fuer(rekultivierung, X) ;
 %#    verwendet_fuer(gelaendegestaltung, X).
 
 %%% 2. „Betreiberin“  bzw.  „Betreiber“:  jede  physische  und  juristische  Person  sowie  jeder  sonstige Rechtsträger, die bzw. der ein Gewinnen gewerblich oder berufsmaessig durchführt;
 
 betreiber(X) :-
-    (natuerliche_person(X);juristische_person(X);sonstiger_rechtstraeger(X)),
+    (natuerliche_person(X); juristische_person(X); sonstiger_rechtstraeger(X)),
     (gewerblich(X);berufsmaessig(X)).
 
 %%% 3. „Gewinnen“:  das  Lösen  oder  Freisetzen  (Abbau)  mineralischer  Rohstoffe  einschließlich  der durch dieselbe Betreiberin bzw. denselben Betreiber vorgenommenen damit zusammenhängenden vorbereitenden, begleitenden und nachfolgenden Tätigkeiten zur Aufbereitung des Naturmaterials;
@@ -121,12 +121,11 @@ abgabepfichtiger(labgg, X)
 % §4 Abgabenbefreiung:
 %% Von  der  Landschaftsabgabe befreit sind  Betreiberinnen  bzw.  Betreiber,  deren  Abgabenschuld  im jeweiligen Kalenderjahr weniger als 120 Euro beträgt.
 
-ausnahme(labgg,
-    preis(X, eur)) :-
+ausnahme(labgg, abgabenschuld(X, eur)) :-
     X < 120.
 
 % §5 Höhe der Abgabe:
-%% (1)  Die  Höhe  der  Landschaftsabgabe  beträgt  15,95  Cent  pro  Tonne  gewonnenen  und  verwerteten  mineralischen Rohstoffs.
+%% (1)  Die  Höhe  der  Landschaftsabgabe  beträgt  20,14  Cent  pro  Tonne  gewonnenen  und  verwerteten  mineralischen Rohstoffs.
 
 abgabe_hoehe(labgg, X, tonne, 15.95, eur_2017) :- %# eur_2017 ... this means that the levy is 15.94 in 2017's EUR
     (current_predicate(gewonnen/1), gewonnen(X));
@@ -207,11 +206,8 @@ inkrafttreten(labgg, 20180101).
 %% (3)  Abweichend  von  § 9  ist  die  Abgabenerklärung  für  das  erste  Halbjahr  2018  bis  längstens 31. Oktober 2018 einzureichen und auch die Abgabe für das erste Halbjahr 2018 bis längstens 31. Oktober 2018 zu entrichten.
 %# s.o.
 
-% END LEGAL ACT
-
 % utility functions
-abgabepflichtig_labbg(Sachverhalt) :-
-    % subjekt(Sachverhalt, Person),
-    (verbum(Sachverhalt, Verbum); objekt(Sachverhalt, Objekt); true),
+abgabepflichtig_labbg(SV) :-
+    (verbum(SV, Verbum); objekt(SV, Objekt); true),
     abgabe_auf(labgg, landesabgabe, oberoesterreich, Verbum),
     \+ ausnahme(labgg, Objekt).

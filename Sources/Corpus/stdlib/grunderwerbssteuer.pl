@@ -1,4 +1,4 @@
-:- module(grunderwerbssteuer, [abgabe_auf/4]).
+:- module(grunderwerbssteuer, []). %[abgabe_auf/4]).
 
 abgabe_auf(grunderwerbssteuer, bundesabgabe, oesterreich, X) :-
     ((current_predicate(zivilrecht_erwerb_entgeltlich/1), zivilrecht_erwerb_entgeltlich(X)) ;

@@ -24,9 +24,17 @@ TEST(PrologVM, testStartUp)
   ASSERT_TRUE(isInitialised());
 }
 
-TEST(PrologVM, testPrologQuery)
+TEST(PrologVM, testPrologQueryTrue)
 {
-  const std::string prologPredicate = "true";
+  const PrologQuery prologQuery("true");
+  const std::vector<PrologQuery::ArgType> result = runQuery(prologQuery);
+}
+
+TEST(PrologVM, testPrologQueryFalse)
+{
+  const PrologQuery prologQuery("false");
+  const std::vector<PrologQuery::ArgType> result = runQuery(prologQuery);
+  ASSERT_EQ(result.size(), 0);
 }
 
 namespace looe::LX::TestingC

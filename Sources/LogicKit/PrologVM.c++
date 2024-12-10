@@ -112,30 +112,41 @@ runQuery (const std::string &query)
   return query;
 }
 
-std::string
+predicate_t
+constructPredicateFromQuery(const PrologQuery &query, term_t a0) {
+  const predicate_t p = PL_predicate(query.getPredicateNameAsCString(), query.getArity(), NULL);
+
+  for(size_t counter = 0; counter < query.getParemeters().size();
+    counter++) {
+    const PrologQuery::ArgType& currentParemeter = query.getParemeters().at(counter);
+
+    if(std::holds_alternative<std::string>(currentParemeter)) {
+      const char* const currentParameterText = std::get<std::string>(currentParemeter).c_str();
+      PL_put_atom_chars(a0 + counter, currentParameterText);
+    }
+  }
+
+  return p;
+}
+
+std::vector<PrologQuery::ArgType>
 runQuery (const PrologQuery &query) 
 {
   const term_t a0 = PL_new_term_refs(query.getArity());
-  const predicate_t p = PL_predicate(query.getPredicateNameAsCString(), query.getArity(), NULL);
-
-  int counter = 0;
-  for(const std::variant<PrologQuery::Variable, std::string>& currentParemeter: query.getParemeters()) {
-    if(std::holds_alternative<std::string>(currentParemeter)) {
-      PL_put_atom_chars(a0 + counter, std::get<std::string>(currentParemeter).c_str());
-    }
-    counter++;
-  }
-
+  const predicate_t p = constructPredicateFromQuery(query, a0);
   const qid_t qid = PL_open_query(NULL, PL_Q_PASS_EXCEPTION, p, a0);
+
+  std::vector<PrologQuery::ArgType> arguments;
 
   while(PL_next_solution(qid) != FALSE)
     {
-        
+      // we found a solution, save it in the PrologQuery
+      
     }
   
   PL_close_query(qid);
 
-  return "";
+  return arguments;
 }
 
 void

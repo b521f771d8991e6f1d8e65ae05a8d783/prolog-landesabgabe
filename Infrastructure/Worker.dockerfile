@@ -8,6 +8,9 @@ RUN swift sdk install https://download.swift.org/swift-6.0.2-release/static-sdk/
 RUN apt update -y
 RUN apt upgrade -y
 
+RUN apt install -y unminimize
+RUN yes | unminimize
+
 RUN apt install -y zsh
 RUN apt install -y curl
 RUN apt install -y git
@@ -16,6 +19,8 @@ RUN apt install -y cmake
 RUN apt install -y ninja-build
 RUN apt install -y gdb
 RUN apt install -y clangd
+RUN apt install -y clang-format
+RUN apt install -y clang-tidy
 RUN apt install -y zip
 RUN apt install -y python3
 

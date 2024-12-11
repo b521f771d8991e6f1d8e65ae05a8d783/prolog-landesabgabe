@@ -8,9 +8,6 @@ RUN swift sdk install https://download.swift.org/swift-6.0.2-release/static-sdk/
 RUN apt update -y
 RUN apt upgrade -y
 
-RUN apt install -y unminimize
-RUN yes | unminimize
-
 RUN apt install -y zsh
 RUN apt install -y curl
 RUN apt install -y git
@@ -18,6 +15,7 @@ RUN apt install -y gpg
 RUN apt install -y cmake
 RUN apt install -y ninja-build
 RUN apt install -y gdb
+# clang is already included in the base image
 RUN apt install -y clangd
 RUN apt install -y clang-format
 RUN apt install -y clang-tidy
@@ -61,11 +59,12 @@ RUN mkdir /source
 COPY . /source
 
 RUN cmake -S /source -B /build -G Ninja --preset release-x86-64-unknown-linux-gnu
-RUN ninja -C /build
+RUN ninja -C /build SwiftPackage
+RUN strip /build/SPM/x86_64-unknown-linux-gnu/debug/LX
 
 # TODO switch to alpine:latest once we can build it statically
 FROM swift:noble AS run
 
 RUN mkdir /app
-COPY --from=build /build/LX /app
+COPY --from=build /build/SPM/x86_64-unknown-linux-gnu/debug/LX /app
 CMD [ "/app/LX" ]

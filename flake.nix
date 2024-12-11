@@ -27,6 +27,7 @@
           # system tools
           zsh
           git
+          curl
 
           # Low-level (Objective) C/++ toolchain
           gcc14

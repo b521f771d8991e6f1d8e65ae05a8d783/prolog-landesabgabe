@@ -80,10 +80,6 @@ foreach(TARGET ${TARGETS} ${TEST_TARGETS})
 endforeach()
 
 # SPM-Targets
-find_program(SWIFT NAMES "swift")
-find_program(CLANG NAMES "clang")
-find_program(CLANGXX NAMES "clang++")
-
 set(ALL_TARGET_DEPENDECIES)
 
 foreach(lib ${TARGETS})
@@ -116,9 +112,11 @@ endforeach()
 
 add_custom_target(SwiftPackage
   COMMAND
-    "CC=${CLANG}" "CXX=${CLANGXX}"
-    ${SWIFT} "build"
+    "CC=${CLANG_EXE}" "CXX=${CLANGXX_EXE}"
+    ${SWIFT_EXE} "build"
+    -v
     --configuration debug
+    --build-path ${CMAKE_CURRENT_BINARY_DIR}/SPM
     --package-path ${CMAKE_CURRENT_SOURCE_DIR}
     -Xswiftc -I${CMAKE_CURRENT_BINARY_DIR}/Sources/ActKit
     -Xswiftc -I${CMAKE_CURRENT_BINARY_DIR}/Sources/LogicKit

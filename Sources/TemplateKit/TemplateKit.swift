@@ -1,36 +1,58 @@
 import Foundation
 import RegexBuilder
 
-typealias IdentifierType = String
-typealias TextType = String
+public typealias TextType = String
 
-public class Placeholder {
-    let placeholderIdentifier: IdentifierType
-    let regex = Regex {
-        ""
-        Capture {
-            OneOrMore(.word)
-        }
-    }
+public struct Placeholder {
+    let placeholderName: String
+    let pattern: Regex<AnyRegexOutput>
 
-    init(placeholderIdentifier: IdentifierType) {
-        self.placeholderIdentifier = placeholderIdentifier
+    public init<T>(placeholderIdentifier: String, regex: Regex<T>) {
+        self.placeholderName = placeholderIdentifier
+        self.pattern = Regex(regex)
     }
 }
 
 public enum TemplateElement {
     case text(String)
     case placeholder(Placeholder)
+
+    enum MatchResult: Equatable {
+        case noMatch
+        case matchFound(Int, [String])
+
+        var offset: Int {
+            switch self {
+            case .noMatch:
+                return 0
+            case let .matchFound(i, _):
+                return i
+            }
+        }
+    }
+
+    func match(_ input: String) -> MatchResult {
+        switch self {
+        case let .placeholder(regex):
+            if let match = try! regex.pattern.prefixMatch(in: input) {
+                let startIndex = input.index(match.range.upperBound, offsetBy: 0)
+                return MatchResult.matchFound(
+                    startIndex.encodedOffset, match.output.map({ "\($0.value!)" }))
+            } else {
+                return MatchResult.noMatch
+            }
+        case let .text(text):
+            if input.starts(with: text) {
+                let endIndex = text.endIndex
+                return MatchResult.matchFound(endIndex.encodedOffset, [])
+            } else {
+                return MatchResult.noMatch
+            }
+        }
+    }
 }
 
 public struct Template {
-    enum MatchResult {
-        case match
-        case noMatch
-    }
-
-    typealias MatchResults = [MatchResult]
-
     private let parts: [TemplateElement]
 
     public init(withParts parts: [TemplateElement]) {
@@ -47,22 +69,11 @@ public struct Template {
         }
     }
 
-    var identifiers: [IdentifierType] {
-        return self.placeholders.map { $0.placeholderIdentifier }
+    var identifiers: [String] {
+        return self.placeholders.map { $0.placeholderName }
     }
 
-    func match(withText text: String) -> MatchResults {
-        var index = 0
-        var matchResults: MatchResults = []
-
-        for i in self.parts {
-
-        }
-
-        return matchResults
-    }
-
-    subscript(identifier: IdentifierType) -> TextType? {
+    subscript(identifier: String) -> TextType? {
         get {
             if !self.identifiers.contains(identifier) {
                 return nil

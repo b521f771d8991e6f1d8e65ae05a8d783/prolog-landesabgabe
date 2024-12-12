@@ -16,7 +16,10 @@ alter(reinrich_raudinger, 30).
 verbum(sachverhalt, bergbau(gewinnen, obertags, mineralische_rohstoffe)).
 objekt(sachverhalt, mein_gestein).
 gefoerdert(mein_gestein, 1, tonne).
+verwertet_am(mein_gestein, date(2024, 11, 12, 0, 0, 0, Off, TZ, DST)).
 
 % Wer ist Betreiber? betreiber(X)
 % abgabe_hoehe(labgg, sachverhalt, Y).
-% abgabepflichtig(labbg, la)
+% abgabepflichtig(labbg, sachverhalt).
+% abgabenschuld_zeitpunkt(labgg, sachverhalt, X).
+% aufzeichnungspflicht(labgg, X).

@@ -21,5 +21,7 @@
     "clangd.arguments": [
         "--compile-commands-dir=/workspace/out/build/debug-x86-64-unknown-linux-gnu"
     ],
-    "C_Cpp.intelliSenseEngine": "disabled"
+    "C_Cpp.intelliSenseEngine": "disabled",
+    "swift.autoGenerateLaunchConfigurations": false,
+    "swift.sourcekit-lsp.backgroundIndexing": "off"
 }

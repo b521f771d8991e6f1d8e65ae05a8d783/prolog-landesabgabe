@@ -154,18 +154,19 @@ abgabe_hoehe_runden(labgg,
 % §6 Entstehen der Abgabeschuld:
 %% Die Abgabenschuld entsteht zu dem Zeitpunkt, in dem das gewonnene Material verwertet wird.
 
-abgabeschuld(labgg,
-    verwertung_gewonnenes_material).
+abgabenschuld_zeitpunkt(labgg, SV, X) :-
+    objekt(SV, A),
+    current_predicate(verwertet_am/2),
+    verwertet_am(A, X).
 
 % §7 Aufzeichnungspflicht:
 %% Die bzw. der Abgabepflichtige ist verpflichtet, zur Feststellung der Abgabe und der Grundlagen ihrer Berechnung Aufzeichnungen zu führen. 
 
 aufzeichnungspflicht(labgg, X) :-
-    abgabepfichtiger(X).
+    abgabepfichtiger(labgg, X).
 
 % §8 Anzeigepflicht:
 %% Die  bzw.  der  Abgabepflichtige  hat  den  Beginn  und  das  Ende  eines  abgabepflichtigen  Gewinnens binnen vier Wochen der Abgabenbehörde anzuzeigen.
-%% HINT: try anzeigepflicht(labgg, X).
 
 anzeigepflicht(labgg, X) :-
     abgabepfichtiger(labgg, X).
@@ -207,7 +208,6 @@ abgabenbehoerde(labgg, landesregierung_ooe).
 inkrafttreten(labgg, 20180101).
 
 %% (2) Personen, die zum Zeitpunkt des Inkrafttretens dieses Landesgesetzes bereits eine Gewinnungsstätte eines abgabepflichtigen Materials betreiben, haben ihre  Tätigkeit binnen vier Wochen nach Inkrafttreten dieses Landesgesetzes der Abgabenbehörde anzuzeigen.
-
 
 %% (3)  Abweichend  von  § 9  ist  die  Abgabenerklärung  für  das  erste  Halbjahr  2018  bis  längstens 31. Oktober 2018 einzureichen und auch die Abgabe für das erste Halbjahr 2018 bis längstens 31. Oktober 2018 zu entrichten.
 %# s.o.

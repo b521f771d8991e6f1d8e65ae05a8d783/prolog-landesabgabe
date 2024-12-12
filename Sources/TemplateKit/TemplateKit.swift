@@ -13,23 +13,23 @@ public struct Placeholder {
     }
 }
 
+enum MatchResult: Equatable {
+    case noMatch
+    case matchFound(Int, [String])
+
+    var offset: Int {
+        switch self {
+        case .noMatch:
+            return 0
+        case let .matchFound(i, _):
+            return i
+        }
+    }
+}
+
 public enum TemplateElement {
     case text(String)
     case placeholder(Placeholder)
-
-    enum MatchResult: Equatable {
-        case noMatch
-        case matchFound(Int, [String])
-
-        var offset: Int {
-            switch self {
-            case .noMatch:
-                return 0
-            case let .matchFound(i, _):
-                return i
-            }
-        }
-    }
 
     func match(_ input: String) -> MatchResult {
         switch self {
@@ -52,11 +52,13 @@ public enum TemplateElement {
     }
 }
 
-public struct Template {
-    private let parts: [TemplateElement]
+public struct TemplateEngine {
+    public let parts: [TemplateElement]
+    public let text: String
 
-    public init(withParts parts: [TemplateElement]) {
+    public init(withParts parts: [TemplateElement], andText text: String) {
         self.parts = parts
+        self.text = text
     }
 
     var placeholders: [Placeholder] {
@@ -71,6 +73,18 @@ public struct Template {
 
     var identifiers: [String] {
         return self.placeholders.map { $0.placeholderName }
+    }
+
+    var matches: [MatchResult] {
+        var totalOffset = 0
+        return self.parts.map { (te: TemplateElement) -> MatchResult in
+            let currentPartStart = self.text.index(self.text.startIndex, offsetBy: totalOffset)
+            let currentPartEnd = self.text.endIndex
+            let currentPart = self.text[currentPartStart..<currentPartEnd]
+            let ret = te.match(String(currentPart))
+            totalOffset += ret.offset
+            return ret
+        }
     }
 
     subscript(identifier: String) -> TextType? {

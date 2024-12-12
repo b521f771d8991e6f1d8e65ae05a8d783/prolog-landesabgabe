@@ -8,6 +8,7 @@ class TemplateKitTests: XCTestCase {
     static let allTests = [
         ("testTemplateElementText", testTemplateElementText),
         ("testTemplateElementPlaceholder", testTemplateElementPlaceholder),
+        ("testTemplateEngine", testTemplateEngine),
     ]
 
     func testTemplateElementText() {
@@ -42,6 +43,28 @@ class TemplateKitTests: XCTestCase {
         XCTAssertEqual(m1.match("aaa{0001}aaa"), .noMatch)
         XCTAssertEqual(m1.match("{0001}aaa"), .matchFound(6, ["{0001}"]))
         XCTAssertEqual(m1.match("{0001}{0001}"), .matchFound(6, ["{0001}"]))
+    }
+
+    func testTemplateEngine() {
+        let templateElement = TemplateElement.placeholder(
+            Placeholder(
+                placeholderIdentifier: "digits",
+                regex: Regex {
+                    "{"
+                    OneOrMore(.digit)
+                    "}"
+                }
+            )
+        )
+
+        let templateEngine = TemplateEngine(
+            withParts: [TemplateElement.text("aa"), templateElement, templateElement],
+            andText: "aa{0001}{0001}"
+        )
+
+        for i in templateEngine.matches {
+
+        }
     }
 }
 

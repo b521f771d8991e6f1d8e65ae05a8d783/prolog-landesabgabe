@@ -1,12 +1,5 @@
 name: lx
 services:
-  frontend:
-    build:
-      dockerfile: Infrastructure/Frontend.dockerfile
-      context: ..
-    tty: true
-    volumes:
-      - ..:/workspace
   worker:
     build:
       dockerfile: Infrastructure/Worker.dockerfile

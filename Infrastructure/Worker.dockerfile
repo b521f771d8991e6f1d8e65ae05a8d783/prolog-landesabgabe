@@ -28,6 +28,11 @@ RUN apt install -y gobjc-14
 RUN apt install -y g++-14
 RUN apt install -y gobjc++-14
 
+# Haskell & Rust tools
+# RUN apt install -y cargo
+# RUN apt install -y rustc
+# RUN apt install -y ghc
+
 # tools
 RUN apt install -y swi-prolog
 

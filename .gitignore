@@ -3,3 +3,7 @@ build*
 result
 .build*
 vcpkg_installed
+
+# Added by cargo
+
+/target

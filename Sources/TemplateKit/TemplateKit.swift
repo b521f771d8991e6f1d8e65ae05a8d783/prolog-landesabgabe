@@ -75,9 +75,10 @@ public struct TemplateEngine {
         return self.placeholders.map { $0.placeholderName }
     }
 
-    var matches: [MatchResult] {
+    var matches: [MatchResult]? {
         var totalOffset = 0
-        return self.parts.map { (te: TemplateElement) -> MatchResult in
+
+        let ret = self.parts.map { (te: TemplateElement) -> MatchResult in
             let currentPartStart = self.text.index(self.text.startIndex, offsetBy: totalOffset)
             let currentPartEnd = self.text.endIndex
             let currentPart = self.text[currentPartStart..<currentPartEnd]
@@ -85,15 +86,16 @@ public struct TemplateEngine {
             totalOffset += ret.offset
             return ret
         }
+
+        return ret.contains(.noMatch) ? nil : ret
     }
 
-    subscript(identifier: String) -> TextType? {
-        get {
-            if !self.identifiers.contains(identifier) {
-                return nil
-            }
-
-            return ""
+    subscript(identifier: String) -> [TextType]? {
+        if !self.identifiers.contains(identifier) {
+            return nil
         }
+
+        let matches = self.matches
+        return []
     }
 }

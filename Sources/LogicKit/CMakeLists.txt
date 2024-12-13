@@ -4,7 +4,7 @@ add_library(LogicKit
   LogicKit.swift
   PrologVM.c++
 )
-add_dependencies(LogicKit swi-prolog-home)
+add_dependencies(LogicKit swi_prolog_home_tar)
 target_include_directories(LogicKit
 PUBLIC
   include

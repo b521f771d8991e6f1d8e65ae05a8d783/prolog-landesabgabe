@@ -63,7 +63,7 @@ foreach(TARGET ${TARGETS} ${TEST_TARGETS})
   set_target_properties(${TARGET} PROPERTIES
     COMPILE_WARNING_AS_ERROR ON
     
-    CMAKE_Swift_LANGUAGE_VERSION 4
+    CMAKE_Swift_LANGUAGE_VERSION 6
 
     CMAKE_OBJCXX_STANDARD 20
     CMAKE_CXX_STANDARD 20
@@ -113,12 +113,14 @@ foreach(lib ${ALL_TARGET_DEPENDECIES})
   endif()
 endforeach()
 
+string(TOLOWER "${CMAKE_BUILD_TYPE}" SWIFT_BUILD_TYPE)
+
 add_custom_target(SwiftPackage
   COMMAND
     "CC=${CLANG_EXE}" "CXX=${CLANGXX_EXE}"
     ${SWIFT_EXE} "build"
     -v
-    --configuration debug
+    --configuration ${SWIFT_BUILD_TYPE}
     --build-path ${CMAKE_CURRENT_BINARY_DIR}/SPM
     --package-path ${CMAKE_CURRENT_SOURCE_DIR}
     -Xswiftc -I${CMAKE_CURRENT_BINARY_DIR}/Sources/ActKit

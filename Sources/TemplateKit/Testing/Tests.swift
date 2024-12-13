@@ -62,9 +62,9 @@ class TemplateKitTests: XCTestCase {
             andText: "aa{0001}{0001}"
         )
 
-        for i in templateEngine.matches {
-
-        }
+        XCTAssertEqual(
+            templateEngine.matches,
+            [.matchFound(2, []), .matchFound(6, ["{0001}"]), .matchFound(6, ["{0001}"])])
     }
 }
 

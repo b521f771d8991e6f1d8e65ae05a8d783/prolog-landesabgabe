@@ -11,6 +11,7 @@ kurztitel(labgg, "LAbgG").
 %% 1. Das Land erhebt eine Landschaftsabgabe für das obertägige Gewinnen mineralischer Rohstoffe in Oberösterreich.
 
 :- discontiguous abgabe_auf/4.
+:- discontiguous ausnahme/4.
 
 abgabe_auf(labgg,
     landesabgabe,
@@ -20,50 +21,42 @@ abgabe_auf(labgg,
 %% 2. Von der Erhebung ausgenommen sind:
 %%% - Abraummaterial,
 
-ausnahme(labgg, SV) :-
-    objekt(SV, A),
+ausnahme(labgg, Person, Verbum, Objekt) :-
     current_predicate(abraummaterial/1),
-    abraummaterial(A).
+    abraummaterial(Objekt).
 
 %%% - Material aus Fließgewässern, das aus flussbaulichen Gründen wieder in Fließgewässer eingebracht wird,
 
-ausnahme(labgg, SV) :-
-    objekt(SV, A),
+ausnahme(labgg, Person, Verbum, Objekt) :-
     current_predicate(entstammt_fliessgewaesser/1),
-    entstammt_fliessgewaesser(A).
+    entstammt_fliessgewaesser(Objekt).
 
 %%% - bundeseigene mineralische Rohstoffe gemäß § 4 Abs. 1 Mineralrohstoffgesetz (MinroG), BGBl. I Nr. 38/1999, in der Fassung des Bundesgesetzes BGBl. I Nr. 95/2016,  
 
-ausnahme(labgg, SV) :-
+ausnahme(labgg, Person, Verbum, Objekt) :-
 %# bundeseigener_rohstoff defined in mineralrohstoffgesetz.pl
-    objekt(SV, A),
     current_predicate(gestein_art/2),
-    gestein_art(A, B),
+    gestein_art(Objekt, B),
     current_predicate(bundeseigener_rohstoff/1),
     bundeseigener_rohstoff(B).
 
 %%% - Kohle,
 
-ausnahme(labgg, SV) :-
-    objekt(SV, A),
+ausnahme(labgg, Person, Verbum, Objekt) :-
     current_predicate(gestein_art/2),
-    gestein_art(A, kohle).
+    gestein_art(Objekt, kohle).
 
 %%% - Material aus Seitenentnahmen und
 
-ausnahme(labgg, SV) :-
-    objekt(SV, A),
+ausnahme(labgg, Person, Verbum, Objekt) :-
     current_predicate(entstammt_seitentnahme/1),
-    entstammt_seitentnahme(A).
+    entstammt_seitentnahme(Objekt).
 
 %%% - Rohstoffe,  deren  Verwendung  Maßnahmen  zur  Abwehr  einer  unmittelbaren  Gefahr  für  das Leben  oder  die  Gesundheit  von  Menschen  oder  zur  unmittelbaren  Abwehr  von  Katastrophen dient.
 
-ausnahme(labgg, SV) :-
-    objekt(SV, A),
+ausnahme(labgg, Person, Verbum, Objekt) :-
     current_predicate(rohstoff_zur_abwehr_von_gefahren/1),
-    rohstoff_zur_abwehr_von_gefahren(A).
-
-:- discontiguous ausnahme/2.
+    rohstoff_zur_abwehr_von_gefahren(Objekt).
 
 %% 3. Die Gemeinde, in der sich eine Gewinnungsstätte befindet, erhält einen Ertragsanteil in Höhe von 10 % der Landschaftsabgabe, die im Gemeindegebiet erhoben wurde
 
@@ -102,12 +95,12 @@ ertragsanteil(labgg
 
 %%% 2. „Betreiberin“  bzw.  „Betreiber“:  jede  physische  und  juristische  Person  sowie  jeder  sonstige Rechtsträger, die bzw. der ein Gewinnen gewerblich oder berufsmaessig durchführt;
 
-betreiber(X) :-
-    ((current_predicate(natuerliche_person/1), natuerliche_person(X));
-     (current_predicate(juristische_person/1), juristische_person(X));
-     (current_predicate(sonstiger_rechtstraeger/1), sonstiger_rechtstraeger(X))),
-    ((current_predicate(gewerblich/1), gewerblich(X));
-     (current_predicate(berufsmaessig/1), berufsmaessig(X))
+betreiber(Person) :-
+    ((current_predicate(natuerliche_person/1), natuerliche_person(Person));
+     (current_predicate(juristische_person/1), juristische_person(Person));
+     (current_predicate(sonstiger_rechtstraeger/1), sonstiger_rechtstraeger(Person))),
+    ((current_predicate(gewerblich/1), gewerblich(Person));
+     (current_predicate(berufsmaessig/1), berufsmaessig(Person))
     ).
 
 %%% 3. „Gewinnen“:  das  Lösen  oder  Freisetzen  (Abbau)  mineralischer  Rohstoffe  einschließlich  der durch dieselbe Betreiberin bzw. denselben Betreiber vorgenommenen damit zusammenhängenden vorbereitenden, begleitenden und nachfolgenden Tätigkeiten zur Aufbereitung des Naturmaterials;
@@ -119,46 +112,36 @@ betreiber(X) :-
 % §3 Abgabepflichtige bzw. Abgabepflichtiger
 %% Abgabepflichtige bzw. Abgabepflichtiger ist die Betreiberin bzw. der Betreiber einer Gewinnungsstätte eines abgabepflichtigen Materials
 
-abgabepfichtiger(labgg, X)
-    :- betreiber(X).
+abgabepfichtiger(labgg, Person)
+    :- betreiber(Person).
 
 % §4 Abgabenbefreiung:
 %% Von  der  Landschaftsabgabe befreit sind  Betreiberinnen  bzw.  Betreiber,  deren  Abgabenschuld  im jeweiligen Kalenderjahr weniger als 120 Euro beträgt.
 
-ausnahme(labgg, X) :-
-    abgabe_hoehe(labgg, X, A),
+ausnahme(labgg, Person, Verbum, Objekt) :-
+    abgabe_hoehe(labgg, Objekt, A),
     A < 120. 
 
 % §5 Höhe der Abgabe:
 %% (1)  Die  Höhe  der  Landschaftsabgabe  beträgt  20,14  Cent  pro  Tonne  gewonnenen  und  verwerteten  mineralischen Rohstoffs.
 
-abgabe_hoehe(labgg, SV, X) :-
-    objekt(SV, A),
+abgabe_hoehe(labgg, Objekt, X) :-
     current_predicate(gefoerdert/3),
-    gefoerdert(A, B, tonne),
+    gefoerdert(Objekt, B, tonne),
     X is B * 20.14.
 
 %% (2) Der im Abs. 1 festgesetzte Tarif ändert sich jeweils zum 1. Jänner entsprechend den durchschnittlichen Änderungen des von der Bundesanstalt „Statistik Austria“ für das zweitvorangegangene Jahr verlautbarten Verbraucherpreisindex 2015 oder eines an seine Stelle tretenden Index, soweit sich die Indexzahl um mehr als 5 % geändert hat. Bezugsgröße für die erstmalige Änderung ist  der  durchschnittliche  Indexwert  für  das  Jahr  2017;  Bezugsgröße  für  jede  weitere  Änderung  ist  der durchschnittliche Indexwert desjenigen Kalenderjahres, das für die letzte Änderung maßgeblich war. Ein sich  aus  dieser  Berechnung  ergebender  neuer  Betrag  ist  auf  einen  vollen  Zehntel-Centbetrag  zu  runden, wobei Beträge  bis einschließlich 0,05 Cent abgerundet und Beträge  über 0,05 Cent aufgerundet  werden. Eine  solchermaßen  ermittelte  Änderung  des  Tarifs  wird  nur  dann  wirksam,  wenn  der  geänderte  Betrag von der Landesregierung vor dem Stichtag 1. Jänner im Landesgesetzblatt für Oberoesterreich kundgemacht wurde. 
 
-abgabe_hoehe_index(labgg,
-    statistik_austria_vpi).
-
-abgabe_hoehe_index_angapassen_wenn(labgg,
-    aenderung,
-    groesser,
-    5,
-    percent).
-
-abgabe_hoehe_runden(labgg,
-    symmetrisch_IEEE_754_ohne_regel_3).
+abgabe_hoehe_index(labgg, statistik_austria_vpi).
+abgabe_hoehe_index_angapassen_wenn(labgg, aenderung, groesser, 5, percent).
+abgabe_hoehe_runden(labgg, symmetrisch_IEEE_754_ohne_regel_3).
 
 % §6 Entstehen der Abgabeschuld:
 %% Die Abgabenschuld entsteht zu dem Zeitpunkt, in dem das gewonnene Material verwertet wird.
 
-abgabenschuld_zeitpunkt(labgg, SV, X) :-
-    objekt(SV, A),
+abgabenschuld_zeitpunkt(labgg, Objekt, X) :-
     current_predicate(verwertet_am/2),
-    verwertet_am(A, X).
+    verwertet_am(Objekt, X).
 
 % §7 Aufzeichnungspflicht:
 %% Die bzw. der Abgabepflichtige ist verpflichtet, zur Feststellung der Abgabe und der Grundlagen ihrer Berechnung Aufzeichnungen zu führen. 
@@ -178,27 +161,14 @@ anzeigepflicht(labgg, X) :-
 zur_abgabenbemessung_verpflichtet(labgg, X) :-
     abgabepflichtiger(labgg, X).
 
-abgabenerklaerung_einzureichen_bis(labgg,
-    allgemein,
-    0430).
-
-abgabenerklaerung_einzureichen_bis(labgg,
-    erstes_halbjahr_2018,
-    1031).
+abgabenerklaerung_einzureichen_bis(labgg, allgemein, 0430).
+abgabenerklaerung_einzureichen_bis(labgg, erstes_halbjahr_2018, 1031).
 
 %% (2)  Die  Abgabenerklärung  ist  nach  Gemeinden  und  nach  Gewinnungsstätten  aufzugliedern  und  hat gegebenenfalls auch Angaben über zivilrechtliche Verträge im Sinn des § 1 Abs. 4 zu machen, die einen entsprechend niedrigeren Abgabenbetrag rechtfertigen. Die bzw. der Abgabepflichtige hat den Abgabenbetrag zu berechnen und die Abgabe am Fälligkeitstag zu entrichten.
 
-abgabenerklaerung_aufbau(labgg,
-    gewinnungsstaette,
-    zivilrechtliche_leistungen).
-
-abgabenschuld_zu_entrichten_bis(labgg,
-    allgemein,
-    0430).
-
-abgabenschuld_zu_entrichten_bis(labgg,
-    erstes_halbjahr_2018,
-    1031).
+abgabenerklaerung_aufbau(labgg, gewinnungsstaette, zivilrechtliche_leistungen).
+abgabenschuld_zu_entrichten_bis(labgg, allgemein, 0430).
+abgabenschuld_zu_entrichten_bis(labgg, erstes_halbjahr_2018, 1031).
 
 % §10 Behörde:
 %% Abgabenbehörde ist die Landesregierung.
@@ -214,7 +184,9 @@ inkrafttreten(labgg, 20180101).
 %# s.o.
 
 % utility functions
-abgabepflichtig(labgg, Sachverhalt) :-
-    verbum(Sachverhalt, Verbum),
+abgabepflichtig(labgg, Sachverhalt, Person) :-
+    subjekt(Sacherhalt, Person),
+    verbum(Sachverhalt, Person, Verbum),
+    objekt(Sachverhalt, Person, Verbum, Objekt),
     abgabe_auf(labgg, landesabgabe, oberoesterreich, Verbum),
-    \+ ausnahme(labgg, Sachverhalt).
+    \+ ausnahme(labgg, Person, Verbum, Objekt).

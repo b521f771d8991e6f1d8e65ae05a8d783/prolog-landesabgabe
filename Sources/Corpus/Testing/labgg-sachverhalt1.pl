@@ -11,5 +11,5 @@ objekt(sachverhalt, mein_gestein).
 
 gestein_art(mein_gestein, kohle).
 
-% Ausführen mit: abgabepflichtig(labbg, sachverhalt).
-% Wieso? ausnahme(labgg, sachverhalt).
+% Ausführen mit: abgabepflichtig(labgg, sachverhalt, max_mustermann). --> false
+% Besteht eine Ausnahme: ausnahme(labgg, max_mustermann, bergbau(gewinnen, obertags, mineralische_rohstoffe), mein_gestein). --> true

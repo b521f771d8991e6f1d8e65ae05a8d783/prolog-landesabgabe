@@ -134,6 +134,7 @@ ausnahme(labgg, X) :-
 
 abgabe_hoehe(labgg, SV, X) :-
     objekt(SV, A),
+    current_predicate(gefoerdert/3),
     gefoerdert(A, B, tonne),
     X is B * 20.14.
 

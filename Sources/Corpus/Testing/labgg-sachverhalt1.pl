@@ -12,3 +12,4 @@ objekt(sachverhalt, mein_gestein).
 gestein_art(mein_gestein, kohle).
 
 % Ausführen mit: abgabepflichtig(labbg, sachverhalt).
+% Wieso? ausnahme(labgg, sachverhalt).

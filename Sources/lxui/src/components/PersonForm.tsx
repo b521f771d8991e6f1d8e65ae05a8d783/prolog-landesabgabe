@@ -1,12 +1,22 @@
 import { LandesabgabePerson, LandesabgabeSachverhalt } from "@/model/prologTemplates";
 import { Input, Text, Button, Paper, Center, NumberInput, Flex } from "@mantine/core";
 import { useState } from "react";
+import { HandlungForm } from "./HandlungForm";
 
 export function PersonForm({ sachverhalt }: { sachverhalt: LandesabgabeSachverhalt }) {
     const [vorname, setVorname] = useState<string>();
     const [nachname, setNachname] = useState<string>();
     const [alter, setAlter] = useState<number>();
-    const [handlungen, setHandlungen] = useState<JSX.Element[]>([])
+    const [handlungen, setHandlungen] = useState<JSX.Element[]>([]);
+
+    function generateNewHandlungForm() {
+        const person = new LandesabgabePerson(sachverhalt, vorname!, nachname!, alter!);
+        return <HandlungForm person={person} />;
+    }
+
+    function addButtonClicked() {
+        setHandlungen([...handlungen, generateNewHandlungForm()]);
+    }
 
     return <Paper shadow="xs" p="xl" m="sm">
         <Flex
@@ -65,8 +75,15 @@ export function PersonForm({ sachverhalt }: { sachverhalt: LandesabgabeSachverha
                 />
             </Flex>
         </Flex>
-        <Center>
-            <Button>Hinzufügen</Button>
+
+        <Center p={"xs"}>
+            <Button
+                disabled={vorname === undefined || nachname === undefined || alter === undefined}
+                onClick={addButtonClicked}>
+                Person hinzufügen
+            </Button>
         </Center>
+
+        {handlungen}
     </Paper>;
 }

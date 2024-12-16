@@ -5,9 +5,7 @@ import { Button, Paper, Center } from "@mantine/core";
 
 export function SachverhaltForm() {
     function generateNewPersonForm() {
-        return <>
-            <PersonForm sachverhalt={sachverhalt}></PersonForm>
-        </>;
+        return <PersonForm sachverhalt={sachverhalt} />;
     }
 
     const [sachverhalt, setSachverhalt] = useState(new LandesabgabeSachverhalt());
@@ -22,7 +20,7 @@ export function SachverhaltForm() {
 
         <Center>
             <Button onClick={addButtonClicked}>
-                Hinzufügen
+                Sachverhalt hinzufügen
             </Button>
         </Center>
     </Paper>;

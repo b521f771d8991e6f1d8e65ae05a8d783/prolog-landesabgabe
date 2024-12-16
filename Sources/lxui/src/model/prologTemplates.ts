@@ -29,15 +29,13 @@ export class LandesabgabeSachverhalt implements PrologFragment {
 }
 
 export class LandesabgabeHandlung implements PrologFragment {
-    private _sachverhalt: LandesabgabeSachverhalt;
     private _person: LandesabgabePerson;
     private _gefördert?: number;
     private _date: Date;
     private _einheit: string = "tonne";
     private _uuidWithPrefix: string;
 
-    constructor(sachverhalt_id: LandesabgabeSachverhalt, person: LandesabgabePerson, date: Date, gefördert?: number) {
-        this._sachverhalt = sachverhalt_id;
+    constructor(person: LandesabgabePerson, date: Date, gefördert?: number) {
         this._person = person;
         this._gefördert = gefördert;
         this._date = date;
@@ -45,7 +43,7 @@ export class LandesabgabeHandlung implements PrologFragment {
     }
 
     public get sachverhalt(): LandesabgabeSachverhalt {
-        return this._sachverhalt;
+        return this.person.sachverhalt;
     }
 
     public get gefördert(): number | undefined {

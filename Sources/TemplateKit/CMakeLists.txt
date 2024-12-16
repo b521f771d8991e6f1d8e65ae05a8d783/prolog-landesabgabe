@@ -1,5 +1,6 @@
 add_library(TemplateKit
     TemplateKit.swift
+    LabggTemplates.swift
 )
 
 add_executable(TemplateKitTests

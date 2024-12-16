@@ -5,8 +5,6 @@ services:
       dockerfile: Infrastructure/Worker.dockerfile
       target: dev
       context: ..
-    ports:
-      - 3000:3000
     tty: true
     volumes:
       - ..:/workspace

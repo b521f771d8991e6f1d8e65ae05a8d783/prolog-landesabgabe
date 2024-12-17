@@ -12,21 +12,35 @@ function HandlungViewer({ handlung }: { handlung: LandesabgabeHandlung }) {
 }
 
 export function HandlungForm({ person }: { person: LandesabgabePerson }) {
-    const [handlungen, setHandlungen] = useState<JSX.Element[]>([]);
-    const [date, setDate] = useState<Date | null>();
-    const [gefördert, setGefördert] = useState<number | null>();
+    const [handlungen, setHandlungen] = useState<[LandesabgabeHandlung, JSX.Element][]>([]);
+    const [date, setDate] = useState<Date | null>(null);
+    const [gefördert, setGefördert] = useState<number | null>(null);
     const dateRef = useRef<HTMLInputElement | null>(null);
     const gefördertRef = useRef<HTMLInputElement | null>(null);
 
-    function generateNewHandlungViewer() {
+    function generateNewHandlungViewer(): [LandesabgabeHandlung, JSX.Element] {
         const handlung = new LandesabgabeHandlung(person, date!, gefördert!);
-        return <HandlungViewer handlung={handlung} />;
+        return [handlung, <HandlungViewer handlung={handlung} />];
     }
 
     function addButtonClicked() {
         setHandlungen([...handlungen, generateNewHandlungViewer()]);
         dateRef.current!.innerHTML = "";
         gefördertRef.current!.innerHTML = "";
+    }
+
+    function generatePrologButtonClicked() {
+        const serializedPrologCode: string = `
+            ${person.serialize2Prolog()}
+            ${handlungen.reduce((previousValue: string, currentValue: [LandesabgabeHandlung, JSX.Element]): string => {
+            return `
+                ${previousValue}
+                ${currentValue[0].serialize2Prolog()}
+            `;
+        }, "")}
+        `;
+
+        console.log(serializedPrologCode);
     }
 
     return <Paper
@@ -41,7 +55,10 @@ export function HandlungForm({ person }: { person: LandesabgabePerson }) {
 
         <Divider my="md" />
 
-        <Table stickyHeader stickyHeaderOffset={60} variant="vertical">
+        <Table
+            stickyHeader
+            stickyHeaderOffset={60}
+            variant="vertical">
             <Table.Thead>
                 <Table.Tr>
                     <Table.Th>Datum</Table.Th>
@@ -51,7 +68,7 @@ export function HandlungForm({ person }: { person: LandesabgabePerson }) {
             </Table.Thead>
 
             <Table.Tbody>
-                {handlungen}
+                {handlungen.map((x) => x[1])}
 
                 <Table.Tr>
                     <Table.Td>
@@ -76,5 +93,7 @@ export function HandlungForm({ person }: { person: LandesabgabePerson }) {
                 </Table.Tr >
             </Table.Tbody>
         </Table>
+
+        <Button onClick={generatePrologButtonClicked}>Prolog generieren</Button>
     </Paper>;
 }

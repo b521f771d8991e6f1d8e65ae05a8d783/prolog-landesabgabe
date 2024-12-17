@@ -1,7 +1,7 @@
 import { LandesabgabePerson, LandesabgabeSachverhalt } from "@/model/prologTemplates";
 import { useState } from "react";
 import { PersonForm } from "./PersonForm";
-import { Button, Paper, Center, Code, Flex } from "@mantine/core";
+import { Button, Paper, Center, Code, Flex, Text } from "@mantine/core";
 
 export function SachverhaltForm({ sachverhalt }: { sachverhalt: LandesabgabeSachverhalt }) {
     const [persons, setPersons] = useState<JSX.Element[]>([generateNewPersonForm()]);
@@ -21,7 +21,6 @@ export function SachverhaltForm({ sachverhalt }: { sachverhalt: LandesabgabeSach
 
         <Code>
             $ lx
-            wrfgw
         </Code>
     </Paper>;
 }

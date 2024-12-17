@@ -1,15 +1,13 @@
 import { LandesabgabePerson, LandesabgabeSachverhalt } from "@/model/prologTemplates";
 import { Input, Text, Button, Paper, Center, NumberInput, Flex, Divider } from "@mantine/core";
-import { useId, useRef, useState } from "react";
+import { useId, useState } from "react";
 import { HandlungForm } from "./HandlungForm";
 
 export function PersonForm({ sachverhalt }: { sachverhalt: LandesabgabeSachverhalt }) {
     const [vorname, setVorname] = useState<string>();
     const [nachname, setNachname] = useState<string>();
     const [alter, setAlter] = useState<number>();
-    const alterRef = useRef<HTMLInputElement | null>(null);
     const [handlungen, setHandlungen] = useState<JSX.Element[]>([]);
-    const ageInput = useId();
 
     function generateNewHandlungForm() {
         const person = new LandesabgabePerson(sachverhalt, vorname!, nachname!, alter!);
@@ -21,7 +19,6 @@ export function PersonForm({ sachverhalt }: { sachverhalt: LandesabgabeSachverha
         setVorname("");
         setNachname("");
         setAlter(undefined); // somehow, this does not suffice
-        alterRef.current!.innerHTML = ""; // this does not work, either? TODO fix this
     }
 
     return <>
@@ -71,7 +68,6 @@ export function PersonForm({ sachverhalt }: { sachverhalt: LandesabgabeSachverha
                 <Text mb={4}>Alter</Text>
 
                 <NumberInput
-                    ref={alterRef}
                     value={alter}
                     onChange={(event) => {
                         if (typeof event === "number") {

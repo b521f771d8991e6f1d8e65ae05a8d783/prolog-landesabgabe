@@ -1,5 +1,4 @@
-import { PersonForm } from '@/components/PersonForm';
-import { Center, Code, Flex, Title } from '@mantine/core';
+import { Flex, Title } from '@mantine/core';
 import { SachverhaltForm } from '@/components/SachverhaltEditorForm';
 import { LandesabgabeSachverhalt } from '@/model/prologTemplates';
 
@@ -7,6 +6,7 @@ export function HomePage() {
   const sachverhalt = new LandesabgabeSachverhalt();
 
   return <Flex
+    className={"select-none"}
     mih={50}
     gap="xs"
     justify="center"

@@ -1,3 +1,4 @@
+import { labbgPl } from "@/model/prologFileset";
 import { LandesabgabeHandlung, LandesabgabePerson } from "@/model/prologTemplates";
 import { Text, Paper, Button, Center, Flex, Title, NumberInput, Table, Divider } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
@@ -12,11 +13,9 @@ function HandlungViewer({ handlung }: { handlung: LandesabgabeHandlung }) {
 }
 
 export function HandlungForm({ person }: { person: LandesabgabePerson }) {
-    const [handlungen, setHandlungen] = useState<[LandesabgabeHandlung, JSX.Element][]>([]);
+    const [handlungen, setHandlungen] = useState<[LandesabgabeHandlung, JSX.Element][]>([]); // TODO save this
     const [date, setDate] = useState<Date | null>(null);
     const [gefördert, setGefördert] = useState<number | null>(null);
-    const dateRef = useRef<HTMLInputElement | null>(null);
-    const gefördertRef = useRef<HTMLInputElement | null>(null);
 
     function generateNewHandlungViewer(): [LandesabgabeHandlung, JSX.Element] {
         const handlung = new LandesabgabeHandlung(person, date!, gefördert!);
@@ -25,29 +24,32 @@ export function HandlungForm({ person }: { person: LandesabgabePerson }) {
 
     function addButtonClicked() {
         setHandlungen([...handlungen, generateNewHandlungViewer()]);
-        dateRef.current!.innerHTML = "";
-        gefördertRef.current!.innerHTML = "";
     }
 
-    function generatePrologButtonClicked() {
-        const serializedPrologCode: string = `
+    function generateProlog(): string {
+        return `${person.sachverhalt.serialize2Prolog()}
             ${person.serialize2Prolog()}
             ${handlungen.reduce((previousValue: string, currentValue: [LandesabgabeHandlung, JSX.Element]): string => {
             return `
                 ${previousValue}
                 ${currentValue[0].serialize2Prolog()}
             `;
-        }, "")}
-        `;
+        }, "")}`;
+    }
 
-        console.log(serializedPrologCode);
+    function generateClicked() {
+        const prolog = generateProlog();
     }
 
     return <Paper
         shadow="xs"
         p="xl"
         m="sm">
-        <Title>Abgabenakt von "{person.vorname}"</Title>
+        <Center>
+            <Title>
+                Abgabenakt von "{person.vorname}"
+            </Title>
+        </Center>
 
         <Text>Name: {person.vorname}</Text>
         <Text>Vorname: {person.nachname}</Text>
@@ -73,27 +75,25 @@ export function HandlungForm({ person }: { person: LandesabgabePerson }) {
                 <Table.Tr>
                     <Table.Td>
                         <DateInput
-                            ref={dateRef}
                             onChange={setDate} />
                     </Table.Td>
 
                     <Table.Td>
                         <NumberInput
-                            ref={gefördertRef}
                             onChange={setGefördert} />
                     </Table.Td>
 
                     <Table.Td>
                         <Button
-                            disabled={date === undefined || gefördert === undefined}
+                            disabled={date === undefined || date === null || gefördert === undefined || gefördert === 0 || gefördert === null}
                             onClick={addButtonClicked}>
                             Eintrag hinzufügen
                         </Button>
                     </Table.Td>
                 </Table.Tr >
             </Table.Tbody>
-        </Table>
 
-        <Button onClick={generatePrologButtonClicked}>Prolog generieren</Button>
+            <Button onClick={generateClicked}>Auswerten</Button>
+        </Table>
     </Paper>;
 }

@@ -1,14 +1,21 @@
 import { PersonForm } from '@/components/PersonForm';
-import { Center } from '@mantine/core';
-import { SachverhaltForm } from '@/components/SachverhaltForm';
+import { Center, Code, Flex, Title } from '@mantine/core';
+import { SachverhaltForm } from '@/components/SachverhaltEditorForm';
+import { LandesabgabeSachverhalt } from '@/model/prologTemplates';
 
 export function HomePage() {
-  return (
-    <>
-      <Center>
-        <SachverhaltForm>
-        </SachverhaltForm>
-      </Center>
-    </>
-  );
+  const sachverhalt = new LandesabgabeSachverhalt();
+
+  return <Flex
+    mih={50}
+    gap="xs"
+    justify="center"
+    align="center"
+    direction="column"
+    wrap="wrap">
+    <Title>Sachverhalts-Editor</Title>
+
+    <SachverhaltForm sachverhalt={sachverhalt}>
+    </SachverhaltForm>
+  </Flex>;
 }

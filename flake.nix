@@ -1,9 +1,8 @@
-# alternative to the devcontainer infrastructure
 {
   description = "LX";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/63dacb46bf939521bdc93981b4cbb7ecb58427a0";
+    nixpkgs.url = "github:NixOS/nixpkgs/8b27c1239e5c421a2bbc2c65d52e4a6fbf2ff296";
     flake-utils.url = "github:numtide/flake-utils/04c1b180862888302ddfb2e3ad9eaa63afc60cf8";
   };
 
@@ -32,22 +31,16 @@
           # Low-level (Objective) C/++ toolchain
           gcc14
           clang-tools
-      ] ++
-        (if stdenv.isDarwin then [
-          darwin.libobjc
-        ] else if stdenv.isLinux then [
-          gnustep.stdenv
-          gnustep.make
-          gnustep.base
-          gnustep.libobjc
-        ] else [])
-      ++ [
           # High-level swift toolchain
-          swift
-          swiftPackages.Foundation
+          # TODO add swift here once the nix version is updated to 6, for now, we have to use debian
+          # swift
+          #swiftPackages.Foundation
+
+          # to run the web app
+          nodejs_23
 
           # toolchain needed for webassembly
-          emscripten # keep version in sync with Dockerfile !!! https://search.nixos.org/packages?show=emscripten&from=0&size=50&sort=relevance&type=packages&query=emscripten
+          emscripten
 
           # build tools
           cmake
@@ -60,12 +53,6 @@
           # for the web part
           nodejs_22
       ];
-
-      shellEnvironment = (if pkgs.stdenv.isLinux then ''
-          export OBJCFLAGS="$CFLAGS $(gnustep-config --objc-flags) $(gnustep-config --base-libs)"
-          export OBJCXXFLAGS="$CFLAGS $(gnustep-config --objc-flags) $(gnustep-config --base-libs)"
-          export LDFLAGS="$LDFLAGS $(gnustep-config --objc-flags) $(gnustep-config --base-libs)"
-      '' else "");
     in {
       devShells = {
         default = pkgs.mkShell.override
@@ -106,10 +93,12 @@
               neovim
 
               # useful for development
-              swiProlog
+              swi-prolog
             ];
 
-            shellHook = shellEnvironment + ''
+            shellHook = ''
+                echo "Since nix does not have a recent swift version, we need to include it via apt"
+                sudo apt install -y swiftlang
                 export DONT_PROMPT_WSL_INSTALL=y
             '';
           };
@@ -122,7 +111,6 @@
           sourceFiles = fs.unions [
             ./CMakeLists.txt
             ./Sources
-            ./Testing
             ./Dependencies
           ];
         in
@@ -137,9 +125,8 @@
 
           cmakeFlags = [
             "-GNinja"
-          ];          
-
-          shellHook = shellEnvironment;
+            "--preset release-x86-64-unknown-linux-gnu"
+          ];
         };
       };
     }

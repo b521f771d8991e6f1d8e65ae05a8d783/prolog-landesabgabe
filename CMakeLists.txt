@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.28)
-project(LX LANGUAGES Swift OBJCXX CXX OBJC C)
+project(LX LANGUAGES Swift CXX C)
 
 include(CTest)
 include(Build/BuildInformation.cmake)

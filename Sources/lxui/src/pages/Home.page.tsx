@@ -1,6 +1,6 @@
 import { Flex, Title } from '@mantine/core';
 import { SachverhaltForm } from '@/components/SachverhaltEditorForm';
-import { LandesabgabeSachverhalt } from '@/model/prologTemplates';
+import { LandesabgabeSachverhalt } from '@/model/PrologTemplates';
 
 export function HomePage() {
   const sachverhalt = new LandesabgabeSachverhalt();

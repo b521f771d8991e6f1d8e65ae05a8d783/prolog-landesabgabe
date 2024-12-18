@@ -1,5 +1,5 @@
-import { labbgPl } from "@/model/prologFileset";
-import { LandesabgabeHandlung, LandesabgabePerson } from "@/model/prologTemplates";
+import { labbgPl } from "@/model/PrologFileset";
+import { LandesabgabeHandlung, LandesabgabePerson } from "@/model/PrologTemplates";
 import { Text, Paper, Button, Center, Flex, Title, NumberInput, Table, Divider } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { useRef, useState } from "react";

@@ -1,4 +1,4 @@
-import { LandesabgabePerson, LandesabgabeSachverhalt } from "@/model/prologTemplates";
+import { LandesabgabePerson, LandesabgabeSachverhalt } from "@/model/PrologTemplates";
 import { Input, Text, Button, Paper, Center, NumberInput, Flex, Divider } from "@mantine/core";
 import { useId, useState } from "react";
 import { HandlungForm } from "./HandlungForm";

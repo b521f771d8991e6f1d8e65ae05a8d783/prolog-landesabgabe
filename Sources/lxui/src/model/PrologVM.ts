@@ -1,5 +1,5 @@
 import SWIPL from "swipl-wasm";
-import { getRechtsbestand } from "./PrologFileset";
+import { getRechtsbestand } from "./PrologFileSystem";
 
 export class PrologVM {
     private swipl: Promise<SWIPL.SWIPLModule>;
@@ -21,7 +21,9 @@ export class PrologVM {
                     arguments: ["-q"]
                 });
 
-                resolve(swipl);
+                swipl.then((swipl) => {
+                    resolve(swipl);
+                }).catch((e) => reject(e));
             }).catch((e) => reject(e));
         });
     }

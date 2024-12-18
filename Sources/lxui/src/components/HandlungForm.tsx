@@ -1,4 +1,4 @@
-import { labbgPl } from "@/model/PrologFileset";
+import { labbgPl } from "@/model/PrologFileSystem";
 import { LandesabgabeHandlung, LandesabgabePerson } from "@/model/PrologTemplates";
 import { Text, Paper, Button, Center, Flex, Title, NumberInput, Table, Divider } from "@mantine/core";
 import { DateInput } from "@mantine/dates";

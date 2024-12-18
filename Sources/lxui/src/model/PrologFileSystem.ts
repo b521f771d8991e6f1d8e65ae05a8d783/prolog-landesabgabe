@@ -2,9 +2,14 @@
 
 export const labbgPl = new URL("../static/labgg.pl", import.meta.url);
 
-export interface PrologFile {
-    name: string;
-    content: string;
+export class PrologFile {
+    public name: string;
+    public content: string;
+
+    constructor(name: string, content: string) {
+        this.name = name;
+        this.content = content;
+    }
 }
 
 export const defaultFileSet: [URL] = [labbgPl];

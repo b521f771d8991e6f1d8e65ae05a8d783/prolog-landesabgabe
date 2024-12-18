@@ -1,5 +1,6 @@
 import { labbgPl } from "@/model/PrologFileSystem";
 import { LandesabgabeHandlung, LandesabgabePerson } from "@/model/PrologTemplates";
+import { PrologVM } from "@/model/PrologVM";
 import { Text, Paper, Button, Center, Flex, Title, NumberInput, Table, Divider } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { useRef, useState } from "react";
@@ -12,10 +13,11 @@ function HandlungViewer({ handlung }: { handlung: LandesabgabeHandlung }) {
     </Table.Tr >;
 }
 
-export function HandlungForm({ person }: { person: LandesabgabePerson }) {
+export function HandlungForm({ person, prologVM }: { person: LandesabgabePerson, prologVM: PrologVM }) {
     const [handlungen, setHandlungen] = useState<[LandesabgabeHandlung, JSX.Element][]>([]); // TODO save this
     const [date, setDate] = useState<Date | null>(null);
     const [gefördert, setGefördert] = useState<number | null>(null);
+    const [uniqueFactSetName, setUniqueFactSetName] = useState<string>(PrologVM.getUniqueFilename());
 
     function generateNewHandlungViewer(): [LandesabgabeHandlung, JSX.Element] {
         const handlung = new LandesabgabeHandlung(person, date!, gefördert!);
@@ -24,6 +26,13 @@ export function HandlungForm({ person }: { person: LandesabgabePerson }) {
 
     function addButtonClicked() {
         setHandlungen([...handlungen, generateNewHandlungViewer()]);
+
+        prologVM.removeFactBaseIfExists(uniqueFactSetName);
+        const prolog = generateProlog();
+        prologVM.addFactBase({
+            name: uniqueFactSetName,
+            content: prolog
+        });
     }
 
     function generateProlog(): string {
@@ -35,10 +44,6 @@ export function HandlungForm({ person }: { person: LandesabgabePerson }) {
                 ${currentValue[0].serialize2Prolog()}
             `;
         }, "")}`;
-    }
-
-    function generateClicked() {
-        const prolog = generateProlog();
     }
 
     return <Paper
@@ -92,8 +97,6 @@ export function HandlungForm({ person }: { person: LandesabgabePerson }) {
                     </Table.Td>
                 </Table.Tr >
             </Table.Tbody>
-
-            <Button onClick={generateClicked}>Auswerten</Button>
         </Table>
     </Paper>;
 }

@@ -12,7 +12,7 @@ export function PersonForm({ sachverhalt, prologVM }: { sachverhalt: Landesabgab
 
     function generateNewHandlungForm() {
         const person = new LandesabgabePerson(sachverhalt, vorname!, nachname!, alter!);
-        return <HandlungForm person={person} />;
+        return <HandlungForm person={person} prologVM={prologVM} />;
     }
 
     function addButtonClicked() {

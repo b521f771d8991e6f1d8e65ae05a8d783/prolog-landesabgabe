@@ -1,61 +1,96 @@
-import SWIPL from "swipl-wasm";
+import SWIPL, { Prolog } from "swipl-wasm";
 import { getRechtsbestand, PrologFile } from "./PrologFileSystem";
+import { v4 as uuid } from 'uuid';
 
 export class PrologVM {
-    private swipl: Promise<SWIPL.SWIPLModule>;
+    private swipl: SWIPL.SWIPLModule;
+    private factBase: PrologFile[];
 
-    constructor() {
-        this.swipl = new Promise((resolve, reject) => {
-            const swipl: Promise<SWIPL.SWIPLModule> = SWIPL({
-                arguments: ["-q"]
-            });
-
-            swipl.then((swipl) => resolve(swipl))
-                .catch((e) => reject(e));
-        });
-
-        this.swipl.then()
+    constructor(swipl: SWIPL.SWIPLModule) {
+        this.swipl = swipl;
+        this.factBase = [];
     }
 
     // language designers should consider using paradigms such as ObjC init more, they would make stuff like this MUCH easier
     // https://developer.apple.com/documentation/objectivec/nsobject/1418639-initialize?language=objc
-    public static async init(rechtsbestand: Promise<PrologFile>[] = getRechtsbestand()): Promise<PrologVM> {
-        const pfs: PrologFile[] = await Promise.all(rechtsbestand);
-        const swipl = new PrologVM();
-        await swipl.addFacts(pfs);
+    public static async init(rechtsbestand: (Promise<PrologFile> | PrologFile)[] = getRechtsbestand()): Promise<PrologVM> {
+        const rechtsbestandPromises: Promise<PrologFile>[] = rechtsbestand.filter((x) => x instanceof Promise);
+        const rechtsbestandFiles: PrologFile[] = rechtsbestand.filter((x) => x instanceof PrologFile);
+        const rechtsbestandPromisesResolved = await Promise.all(rechtsbestandPromises);
+
+        const pfs: PrologFile[] = [
+            ...rechtsbestandPromisesResolved,
+            ...rechtsbestandFiles
+        ];
+
+        const swipl = new PrologVM(await SWIPL({
+            arguments: ["-q"]
+        }));
+
+        await swipl.addFactBases(pfs);
         return swipl;
     }
 
-    async addFact(pf: PrologFile): Promise<void> {
+    addFactBase(pf: PrologFile) {
+        console.log(`Trying to add ${pf.name} with content ${pf.content}`)
         // see here: https://github.com/JanWielemaker/swi-prolog-wasm?tab=readme-ov-file#usage
-        const swipl = await this.swipl;
-
         // TODO make this more generic
-        swipl.FS.mkdir("src");
-        swipl.FS.mkdir("src/static");
-        swipl.FS.writeFile(pf.name, pf.content);
+        this.swipl.FS.mkdir("src");
+        this.swipl.FS.mkdir("src/static");
+        this.swipl.FS.writeFile(pf.name, pf.content);
 
-        const query: SWIPL.Query = swipl.prolog.query("consult(File)", {
+        // https://www.swi-prolog.org/pldoc/doc_for?object=load_files/1
+        const query: SWIPL.Query = this.swipl.prolog.query("load_files(File)", {
             // variable bindings go here
             "File": pf.name
         });
 
         console.assert(query.once().success === true);
         console.log(`Loaded prolog file: ${pf.name}`);
+
+        this.factBase.push(pf);
     }
 
-    async addFacts(pfs: PrologFile[]): Promise<void> {
+    addFactBases(pfs: PrologFile[]) {
         for (const pf of pfs) {
-            await this.addFact(pf);
+            this.addFactBase(pf);
         }
     }
 
-    async executeQuery(query: string, input?: Record<string, unknown>): Promise<SWIPL.Query> {
-        const swipl = await this.swipl;
-        return swipl.prolog.query(query, input);
+    removeFactBase(filename: string) {
+        const query: SWIPL.Query = this.swipl.prolog.query("unload_file(File)", {
+            "File": filename
+        });
+
+        console.assert(query.once().success === true);
+        this.swipl.FS.unlink(filename);
     }
 
-    async evaluate() {
+    removeFactBaseIfExists(filename: string) {
+        if (this.hasFactBase(filename)) {
+            this.hasFactBase(filename);
+        }
+    }
+
+    hasFactBase(filename: string): boolean {
+        return this.factBase.some((x: PrologFile) => x.name === filename);
+    }
+
+    // untested
+    async reboot() {
+        const temporaryPrologVM = await PrologVM.init(this.factBase);
+        this.swipl = temporaryPrologVM.swipl;
+    }
+
+    executeQuery(query: string, input?: Record<string, unknown>): SWIPL.Query {
+        return this.swipl.prolog.query(query, input);
+    }
+
+    evaluate() {
         return "";
+    }
+
+    public static getUniqueFilename() {
+        return `input_${uuid().replaceAll('-', '_')}.pl`;
     }
 }

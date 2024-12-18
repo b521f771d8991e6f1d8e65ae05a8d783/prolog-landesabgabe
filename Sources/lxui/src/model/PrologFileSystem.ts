@@ -2,19 +2,19 @@
 
 export const labbgPl = new URL("../static/labgg.pl", import.meta.url);
 
-interface File {
+export interface PrologFile {
     name: string;
     content: string;
 }
 
 export const defaultFileSet: [URL] = [labbgPl];
 
-export async function getRechtsbestand(fileSet: URL[] = defaultFileSet): Promise<File[]> {
-    return Promise.all(fileSet.map(async (url: URL): Promise<File> => {
+export function getRechtsbestand(fileSet: URL[] = defaultFileSet): Promise<PrologFile>[] {
+    return fileSet.map(async (url: URL): Promise<PrologFile> => {
         const response = await fetch(url);
         return {
             name: url.pathname,
             content: await response.text()
         }
-    }));
+    });
 }

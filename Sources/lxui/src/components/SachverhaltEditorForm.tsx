@@ -18,16 +18,6 @@ export function SachverhaltForm({ sachverhalt }: { sachverhalt: LandesabgabeSach
         setPersons([...persons, generateNewPersonForm()]);
     }
 
-    useEffect(() => {
-        getRechtsbestand()
-            .then((rechtsbestand: string) => {
-                setCode("");
-            })
-            .catch(e => {
-                console.error(e);
-            });
-    });
-
     return <Paper>
         {persons}
         <Divider my="md" />

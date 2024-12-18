@@ -1,4 +1,3 @@
-import { labbgPl } from "@/model/PrologFileSystem";
 import { LandesabgabeHandlung, LandesabgabePerson } from "@/model/PrologTemplates";
 import { PrologVM } from "@/model/PrologVM";
 import { Text, Paper, Button, Center, Flex, Title, NumberInput, Table, Divider } from "@mantine/core";
@@ -66,37 +65,58 @@ export function HandlungForm({ person, prologVM }: { person: LandesabgabePerson,
             stickyHeader
             stickyHeaderOffset={60}
             variant="vertical">
-            <Table.Thead>
-                <Table.Tr>
-                    <Table.Th>Datum</Table.Th>
-                    <Table.Th>Menge</Table.Th>
-                    <Table.Th>Einheit</Table.Th>
-                </Table.Tr>
-            </Table.Thead>
-
-            <Table.Tbody>
-                {handlungen.map((x) => x[1])}
-
-                <Table.Tr>
-                    <Table.Td>
-                        <DateInput
-                            onChange={setDate} />
-                    </Table.Td>
-
-                    <Table.Td>
-                        <NumberInput
-                            onChange={setGefördert} />
-                    </Table.Td>
-
-                    <Table.Td>
-                        <Button
-                            disabled={date === undefined || date === null || gefördert === undefined || gefördert === 0 || gefördert === null}
-                            onClick={addButtonClicked}>
-                            Eintrag hinzufügen
-                        </Button>
-                    </Table.Td>
-                </Table.Tr >
-            </Table.Tbody>
+            <TableHeader></TableHeader>
+            <HandlungenTableBody
+                handlungen={handlungen}
+                setDate={setDate}
+                setGefördert={setGefördert}
+                date={date}
+                gefördert={gefördert}
+                addButtonClicked={addButtonClicked}>
+            </HandlungenTableBody>
         </Table>
     </Paper>;
+}
+
+function HandlungenTableBody({ handlungen, setDate, setGefördert, date, gefördert, addButtonClicked }: {
+    handlungen: [LandesabgabeHandlung, JSX.Element][],
+    setDate: any,
+    setGefördert: any,
+    date: any,
+    gefördert: any,
+    addButtonClicked: any
+}) {
+    return <Table.Tbody>
+        {handlungen.map((x) => x[1])}
+
+        <Table.Tr>
+            <Table.Td>
+                <DateInput
+                    onChange={setDate} />
+            </Table.Td>
+
+            <Table.Td>
+                <NumberInput
+                    onChange={setGefördert} />
+            </Table.Td>
+
+            <Table.Td>
+                <Button
+                    disabled={date === undefined || date === null || gefördert === undefined || gefördert === 0 || gefördert === null}
+                    onClick={addButtonClicked}>
+                    Eintrag hinzufügen
+                </Button>
+            </Table.Td>
+        </Table.Tr >
+    </Table.Tbody>
+}
+
+function TableHeader() {
+    return <Table.Thead>
+        <Table.Tr>
+            <Table.Th>Datum</Table.Th>
+            <Table.Th>Menge</Table.Th>
+            <Table.Th>Einheit</Table.Th>
+        </Table.Tr>
+    </Table.Thead>;
 }

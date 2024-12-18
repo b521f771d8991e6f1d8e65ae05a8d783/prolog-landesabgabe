@@ -23,12 +23,15 @@ export class PrologVM {
             ...rechtsbestandFiles
         ];
 
-        const swipl = new PrologVM(await SWIPL({
-            arguments: ["-q"]
-        }));
-
+        const swipl = new PrologVM(await PrologVM.initializePrologModule());
         await swipl.addFactBases(pfs);
         return swipl;
+    }
+
+    private static async initializePrologModule(): Promise<SWIPL.SWIPLModule> {
+        return await SWIPL({
+            arguments: ["-q"]
+        });
     }
 
     addFactBase(pf: PrologFile) {
@@ -77,7 +80,7 @@ export class PrologVM {
     }
 
     // untested
-    async reboot() {
+    async reboot(): Promise<void> {
         const temporaryPrologVM = await PrologVM.init(this.factBase);
         this.swipl = temporaryPrologVM.swipl;
     }

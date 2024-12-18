@@ -1,8 +1,9 @@
 import { Flex, Title } from '@mantine/core';
 import { SachverhaltForm } from '@/components/SachverhaltEditorForm';
 import { LandesabgabeSachverhalt } from '@/model/PrologTemplates';
+import { PrologVM } from '@/model/PrologVM';
 
-export function HomePage() {
+export function HomePage({ prologVM }: { prologVM: PrologVM }) {
   const sachverhalt = new LandesabgabeSachverhalt();
 
   return <Flex
@@ -15,7 +16,7 @@ export function HomePage() {
     wrap="wrap">
     <Title>Sachverhalts-Editor</Title>
 
-    <SachverhaltForm sachverhalt={sachverhalt}>
+    <SachverhaltForm sachverhalt={sachverhalt} prologVM={prologVM}>
     </SachverhaltForm>
   </Flex>;
 }

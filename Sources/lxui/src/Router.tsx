@@ -1,13 +1,12 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { HomePage } from './pages/Home.page';
+import { PrologVM } from './model/PrologVM';
 
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <HomePage />,
-  },
-]);
-
-export function Router() {
-  return <RouterProvider router={router} />;
+export function Router({ prologVM }: { prologVM: PrologVM }) {
+  return <RouterProvider router={createBrowserRouter([
+    {
+      path: '/',
+      element: <HomePage prologVM={prologVM} />,
+    },
+  ])} />;
 }

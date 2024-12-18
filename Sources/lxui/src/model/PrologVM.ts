@@ -54,4 +54,8 @@ export class PrologVM {
         const swipl = await this.swipl;
         return swipl.prolog.query(query, input);
     }
+
+    async evaluate() {
+        return "";
+    }
 }

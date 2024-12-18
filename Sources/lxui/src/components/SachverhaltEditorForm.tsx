@@ -5,18 +5,22 @@ import { Paper, Code, Divider } from "@mantine/core";
 import { getRechtsbestand } from "@/model/PrologFileSystem";
 import { PrologVM } from "../model/PrologVM";
 
-export function SachverhaltForm({ sachverhalt }: { sachverhalt: LandesabgabeSachverhalt }) {
-    const pvm = PrologVM.init();
+export function SachverhaltForm({ sachverhalt, prologVM }: { sachverhalt: LandesabgabeSachverhalt, prologVM: PrologVM }) {
     const [code, setCode] = useState<string>();
     const [persons, setPersons] = useState<JSX.Element[]>([generateNewPersonForm()]);
 
     function generateNewPersonForm() {
-        return <PersonForm sachverhalt={sachverhalt} prologVM={pvm} />;
+        return <PersonForm sachverhalt={sachverhalt} prologVM={prologVM} />;
     }
 
-    function addButtonClicked() {
-        setPersons([...persons, generateNewPersonForm()]);
-    }
+    useEffect(() => {
+        async function f() {
+            const result = await prologVM.evaluate();
+            setCode(result);
+        }
+
+        f();
+    }, [sachverhalt, persons]);
 
     return <Paper>
         {persons}

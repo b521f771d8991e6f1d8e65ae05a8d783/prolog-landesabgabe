@@ -6,13 +6,13 @@ import { getRechtsbestand } from "@/model/PrologFileSystem";
 import { PrologVM } from "../model/PrologVM";
 
 export function SachverhaltForm({ sachverhalt }: { sachverhalt: LandesabgabeSachverhalt }) {
-    function generateNewPersonForm() {
-        return <PersonForm sachverhalt={sachverhalt} />;
-    }
-
+    const pvm = PrologVM.init();
     const [code, setCode] = useState<string>();
     const [persons, setPersons] = useState<JSX.Element[]>([generateNewPersonForm()]);
-    const pvm = new PrologVM();
+
+    function generateNewPersonForm() {
+        return <PersonForm sachverhalt={sachverhalt} prologVM={pvm} />;
+    }
 
     function addButtonClicked() {
         setPersons([...persons, generateNewPersonForm()]);

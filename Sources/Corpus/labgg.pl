@@ -185,7 +185,7 @@ inkrafttreten(labgg, 20180101).
 
 % utility functions
 abgabepflichtig(labgg, Sachverhalt, Person) :-
-    subjekt(Sacherhalt, Person),
+    subjekt(Sachverhalt, Person),
     verbum(Sachverhalt, Person, Verbum),
     objekt(Sachverhalt, Person, Verbum, Objekt),
     abgabe_auf(labgg, landesabgabe, oberoesterreich, Verbum),

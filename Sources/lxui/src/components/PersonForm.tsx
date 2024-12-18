@@ -2,8 +2,9 @@ import { LandesabgabePerson, LandesabgabeSachverhalt } from "@/model/PrologTempl
 import { Input, Text, Button, Paper, Center, NumberInput, Flex, Divider } from "@mantine/core";
 import { useId, useState } from "react";
 import { HandlungForm } from "./HandlungForm";
+import { PrologVM } from "@/model/PrologVM";
 
-export function PersonForm({ sachverhalt }: { sachverhalt: LandesabgabeSachverhalt }) {
+export function PersonForm({ sachverhalt, prologVM }: { sachverhalt: LandesabgabeSachverhalt, prologVM: PrologVM }) {
     const [vorname, setVorname] = useState<string>();
     const [nachname, setNachname] = useState<string>();
     const [alter, setAlter] = useState<number>();

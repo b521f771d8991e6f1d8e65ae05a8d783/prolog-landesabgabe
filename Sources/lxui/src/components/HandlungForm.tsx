@@ -1,22 +1,14 @@
 import { LandesabgabeHandlung, LandesabgabePerson } from "@/model/PrologTemplates";
 import { PrologVM } from "@/model/PrologVM";
-import { Text, Paper, Button, Center, Flex, Title, NumberInput, Table, Divider } from "@mantine/core";
+import { Text, Paper, Button, Title, NumberInput, Table, Divider } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
-import { useRef, useState } from "react";
-
-function HandlungViewer({ handlung }: { handlung: LandesabgabeHandlung }) {
-    return <Table.Tr>
-        <Table.Td>{handlung.date.toISOString()}</Table.Td>
-        <Table.Td>{handlung.gefördert}</Table.Td>
-        <Table.Td>{handlung.einheit}</Table.Td>
-    </Table.Tr >;
-}
+import { useState } from "react";
 
 export function HandlungForm({ person, prologVM }: { person: LandesabgabePerson, prologVM: PrologVM }) {
     const [handlungen, setHandlungen] = useState<[LandesabgabeHandlung, JSX.Element][]>([]); // TODO save this
     const [date, setDate] = useState<Date | null>(null);
     const [gefördert, setGefördert] = useState<number | null>(null);
-    const [uniqueFactSetName, setUniqueFactSetName] = useState<string>(PrologVM.getUniqueFilename());
+    const [uniqueFactSetName] = useState<string>(PrologVM.getUniqueFilename());
 
     function generateNewHandlungViewer(): [LandesabgabeHandlung, JSX.Element] {
         const handlung = new LandesabgabeHandlung(person, date!, gefördert!);
@@ -63,6 +55,14 @@ export function HandlungForm({ person, prologVM }: { person: LandesabgabePerson,
             gefördert={gefördert}
             addButtonClicked={addButtonClicked} />
     </Paper>;
+}
+
+function HandlungViewer({ handlung }: { handlung: LandesabgabeHandlung }) {
+    return <Table.Tr>
+        <Table.Td>{handlung.date.toISOString()}</Table.Td>
+        <Table.Td>{handlung.gefördert}</Table.Td>
+        <Table.Td>{handlung.einheit}</Table.Td>
+    </Table.Tr >;
 }
 
 function PersonDetail({ person }: { person: LandesabgabePerson }) {

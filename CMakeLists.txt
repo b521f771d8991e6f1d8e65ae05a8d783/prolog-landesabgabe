@@ -122,7 +122,7 @@ add_custom_target(SwiftPackage
     ${SWIFT_EXE} "build"
     -v
     --configuration ${SWIFT_BUILD_TYPE}
-    --build-path ${CMAKE_CURRENT_SOURCE_DIR}/.build
+    --build-path ${CMAKE_CURRENT_BINARY_DIR}/.build
     --package-path ${CMAKE_CURRENT_SOURCE_DIR}
     -Xswiftc -I${CMAKE_CURRENT_BINARY_DIR}/Sources/ActKit
     -Xswiftc -I${CMAKE_CURRENT_BINARY_DIR}/Sources/LogicKit

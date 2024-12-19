@@ -23,73 +23,64 @@ export function PersonForm({ sachverhalt, prologVM }: { sachverhalt: Landesabgab
     }
 
     return <>
-        <Flex
-            mih={50}
-            gap="xs"
-            justify="flex-start"
-            align="center"
-            direction="row"
-            wrap="wrap">
-            <Flex
-                mih={50}
-                justify="flex-start"
-                align="flex-start"
-                direction="column"
-                wrap="wrap">
-                <Text mb={4}>Vorname</Text>
-                <Input
-                    value={vorname}
-                    onChange={(event) => setVorname(event.target.value)}
-                    placeholder="Geben Sie Ihren Vornamen ein"
-                />
-            </Flex>
-
-            <Flex
-                mih={50}
-                justify="flex-start"
-                align="flex-start"
-                direction="column"
-                wrap="wrap">
-                <Text mb={4}>Nachname</Text>
-                <Input
-                    value={nachname}
-                    onChange={(event) => setNachname(event.target.value)}
-                    placeholder="Geben Sie Ihren Nachnamen ein"
-                />
-            </Flex>
-
-            <Divider my="md" />
-
-            <Flex
-                mih={50}
-                justify="flex-start"
-                align="flex-start"
-                direction="column"
-                wrap="wrap">
-                <Text mb={4}>Alter</Text>
-
-                <NumberInput
-                    value={alter}
-                    onChange={(event) => {
-                        if (typeof event === "number") {
-                            setAlter(event);
-                        }
-                        else {
-                            console.error("Unknown type");
-                        }
-                    }}
-                    placeholder="Geben Sie Ihren Nachnamen ein"
-                />
-            </Flex>
-
-            <Button
-                disabled={vorname === undefined || nachname === undefined || alter === undefined}
-                onClick={addButtonClicked}
-                mt={"lg"}>
-                Person hinzufügen
-            </Button>
-        </Flex>
+        <Toolbar vorname={vorname}
+            setVorname={setVorname}
+            nachname={nachname}
+            setNachname={setNachname}
+            alter={alter}
+            setAlter={setAlter}
+            addButtonClicked={addButtonClicked} />
 
         {handlungen}
     </>;
 }
+
+function Toolbar({ vorname, setVorname, nachname, setNachname, alter, setAlter, addButtonClicked }: {
+    vorname: string | unknown,
+    setVorname: any,
+    nachname: string | unknown,
+    setNachname: any,
+    alter: number | unknown,
+    setAlter: any,
+    addButtonClicked: any
+}) {
+    return <Flex
+        mih={50}
+        gap="xs"
+        justify="flex-start"
+        align="center"
+        direction="row"
+        wrap="wrap">
+        <Text mb={4}>Vorname:</Text>
+        <Input
+            value={vorname}
+            onChange={(event) => setVorname(event.target.value)}
+            placeholder="Geben Sie Ihren Vornamen ein" />
+
+        <Text mb={4}>Nachname:</Text>
+        <Input
+            value={nachname}
+            onChange={(event) => setNachname(event.target.value)}
+            placeholder="Geben Sie Ihren Nachnamen ein" />
+
+        <Text mb={4}>Alter:</Text>
+
+        <NumberInput
+            value={alter}
+            onChange={(event) => {
+                if (typeof event === "number") {
+                    setAlter(event);
+                }
+                else {
+                    console.error("Unknown type");
+                }
+            }}
+            placeholder="Geben Sie Ihren Nachnamen ein" />
+
+        <Button disabled={vorname === undefined || nachname === undefined || alter === undefined}
+            onClick={addButtonClicked}>
+            Person hinzufügen
+        </Button>
+    </Flex>;
+}
+

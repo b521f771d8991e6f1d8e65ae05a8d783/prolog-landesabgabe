@@ -50,7 +50,7 @@ COPY . /source
 
 RUN cmake -S /source -B /build -G Ninja --preset release-x86-64-unknown-linux-gnu
 RUN ninja -C /build SwiftPackage
-RUN strip /build/SPM/x86_64-unknown-linux-gnu/debug/LX
+RUN strip /build/.build/x86_64-unknown-linux-gnu/debug/LX
 
 # TODO switch to alpine:latest once we can build it statically
 FROM swift:noble AS run

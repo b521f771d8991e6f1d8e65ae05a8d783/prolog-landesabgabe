@@ -6,6 +6,14 @@ services:
       target: dev
       context: ..
     tty: true
+    volumes:
+      - ..:/workspace
+  frontend:
+    build:
+      dockerfile: Infrastructure/Frontend.dockerfile
+      target: dev
+      context: ..
+    tty: true
     ports:
       - "5173:5173"
     volumes:

@@ -25,9 +25,6 @@ RUN apt install -y python3
 # tools
 RUN apt install -y swi-prolog
 
-# Node modules
-RUN apt install -y npm
-
 # we do not need to install clang since it is included in the swift:noble image
 
 WORKDIR /

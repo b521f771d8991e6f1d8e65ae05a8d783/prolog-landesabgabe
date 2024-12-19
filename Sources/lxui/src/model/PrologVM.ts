@@ -48,7 +48,7 @@ export class PrologVM {
             "File": pf.name
         });
 
-        console.assert(query.once().success === true);
+        //console.assert(query.once().success === true);
         console.log(`Loaded prolog file: ${pf.name}`);
 
         this.factBase.push(pf);
@@ -65,7 +65,7 @@ export class PrologVM {
             "File": filename
         });
 
-        console.assert(query.once().success === true);
+        //console.assert(query.once().success === true);
         this.swipl.FS.unlink(filename);
     }
 

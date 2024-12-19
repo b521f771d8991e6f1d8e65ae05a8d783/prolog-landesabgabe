@@ -1,5 +1,6 @@
 FROM swift:noble AS dev
 # TOOD replace this with nixos/nix once nix has swift 6 support
+# FROM nixos/nix
 # https://github.com/NixOS/nixpkgs/issues/343210#issuecomment-2424134735
 
 # install swift static SDK
@@ -8,7 +9,6 @@ RUN swift sdk install https://download.swift.org/swift-6.0.2-release/static-sdk/
 RUN apt update -y
 RUN apt upgrade -y
 
-RUN apt install -y zsh
 RUN apt install -y curl
 RUN apt install -y git
 RUN apt install -y gpg
@@ -22,17 +22,6 @@ RUN apt install -y clang-tidy
 RUN apt install -y zip
 RUN apt install -y python3
 
-# for GNU builds
-RUN apt install -y gcc-14
-RUN apt install -y gobjc-14
-RUN apt install -y g++-14
-RUN apt install -y gobjc++-14
-
-# Haskell & Rust tools
-RUN apt install -y cargo
-RUN apt install -y rustc
-RUN apt install -y ghc
-
 # tools
 RUN apt install -y swi-prolog
 
@@ -45,15 +34,10 @@ WORKDIR /
 
 # configure this
 
-ENV CC=/usr/bin/gcc-14
-ENV CXX=/usr/bin/g++-14
-ENV OBJCC=/usr/bin/gcc-14
-ENV OBJCXX=/usr/bin/g++-14
-
-ENV CMAKE_C_COMPILER=/usr/bin/gcc-14
-ENV CMAKE_CXX_COMPILER=/usr/bin/g++-14
-ENV CMAKE_OBJC_COMPILER=/usr/bin/gcc-14
-ENV CMAKE_OBJCXX_COMPILER=/usr/bin/g++-14
+ENV CC=/usr/bin/clang
+ENV CXX=/usr/bin/clang++
+ENV OBJCC=/usr/bin/clang
+ENV OBJCXX=/usr/bin/clang++
 
 RUN git config --global --add safe.directory /workspace
 

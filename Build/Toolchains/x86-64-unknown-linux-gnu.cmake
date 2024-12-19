@@ -2,19 +2,15 @@ set(CMAKE_SYSTEM_NAME Linux)
 set(CMAKE_SYSTEM_PROCESSOR x86_64)
 
 # Set the compiler and its path
-find_program(GCC_EXE NAMES "gcc-14" "gcc")
-find_program(GXX_EXE NAMES "g++-14" "g++")
-find_program(CLANG_EXE NAMES "clang")
-find_program(CLANGXX_EXE NAMES "clang++")
-find_program(SWIFTC_EXE NAMES "swiftc")
-find_program(SWIFT_EXE NAMES "swift")
+find_program(CLANG_EXE NAMES $ENV{CC} "clang" "gcc" "cc" REQUIRED)
+find_program(CLANGXX_EXE NAMES $ENV{CXX} "clang++" "g++" "c++" REQUIRED)
+find_program(SWIFTC_EXE NAMES "swiftc" REQUIRED)
+find_program(SWIFT_EXE NAMES "swift" REQUIRED)
 
-set(CMAKE_C_COMPILER "${GCC_EXE}")
-set(CC "${GCC_EXE}")
-set(CMAKE_CXX_COMPILER "${GXX_EXE}")
-set(CXX "${GXX_EXE}")
-set(CMAKE_OBJC_COMPILER "${GCC_EXE}")
-set(CMAKE_OBJCXX_COMPILER "${GXX_EXE}")
+set(CMAKE_C_COMPILER "${CLANG_EXE}")
+set(CMAKE_CXX_COMPILER "${CLANGXX_EXE}")
+set(CMAKE_OBJC_COMPILER "${CLANG_EXE}")
+set(CMAKE_OBJCXX_COMPILER "${CLANGXX_EXE}")
 set(CMAKE_Swift_COMPILER "${SWIFTC_EXE}")
 
 set(CMAKE_C_COMPILER_TARGET x86_64-unknown-linux-gnu)
@@ -32,10 +28,6 @@ add_compile_options(
     $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-m64>
     $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-O3>
     $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-fPIC>
-    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-fhardened>
-    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-Wno-error=hardened>
-    $<$<COMPILE_LANGUAGE:C,OBJC>:-Wno-error=incompatible-pointer-types>
-    $<$<COMPILE_LANGUAGE:C,OBJC>:-Wno-error=stringop-overflow=>
     $<$<COMPILE_LANGUAGE:Swift>:-cxx-interoperability-mode=default>
     $<$<COMPILE_LANGUAGE:Swift>:-Xcc>
     $<$<COMPILE_LANGUAGE:Swift>:-std=c++20>
@@ -53,7 +45,6 @@ set(VCPKG_C_FLAGS
     -O3
     -march=native
     -mtune=native
-    -fhardened
 )
 set(VCPKG_CXX_FLAGS
     -fPIC
@@ -61,7 +52,6 @@ set(VCPKG_CXX_FLAGS
     -O3
     -march=native
     -mtune=native
-    -fhardened
 )
 
 include(${CMAKE_CURRENT_LIST_DIR}/../../Dependencies/vcpkg/scripts/buildsystems/vcpkg.cmake)

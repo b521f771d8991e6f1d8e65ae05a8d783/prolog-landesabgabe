@@ -24,8 +24,17 @@ export class PrologVM {
         ];
 
         const swipl = new PrologVM(await PrologVM.initializePrologModule());
+
+        // TODO make this more generic
+        swipl.swipl.FS.mkdir("src");
+        swipl.swipl.FS.mkdir("src/static");
         await swipl.addFactBases(pfs);
         return swipl;
+    }
+
+    private savedFiles(): string[] {
+        const dir = this.swipl.FS.readdir("/");
+        return dir;
     }
 
     private static async initializePrologModule(): Promise<SWIPL.SWIPLModule> {
@@ -35,11 +44,7 @@ export class PrologVM {
     }
 
     addFactBase(pf: PrologFile) {
-        console.log(`Trying to add ${pf.name} with content ${pf.content}`)
         // see here: https://github.com/JanWielemaker/swi-prolog-wasm?tab=readme-ov-file#usage
-        // TODO make this more generic
-        this.swipl.FS.mkdir("src");
-        this.swipl.FS.mkdir("src/static");
         this.swipl.FS.writeFile(pf.name, pf.content);
 
         // https://www.swi-prolog.org/pldoc/doc_for?object=load_files/1
@@ -65,7 +70,7 @@ export class PrologVM {
             "File": filename
         });
 
-        //console.assert(query.once().success === true);
+        //console.assert('success' in query.once());
         this.swipl.FS.unlink(filename);
     }
 

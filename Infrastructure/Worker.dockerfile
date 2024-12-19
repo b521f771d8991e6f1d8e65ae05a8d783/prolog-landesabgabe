@@ -40,6 +40,7 @@ ENV OBJCC=/usr/bin/clang
 ENV OBJCXX=/usr/bin/clang++
 
 RUN git config --global --add safe.directory /workspace
+EXPOSE 5173
 
 FROM dev AS build
 

@@ -3,16 +3,19 @@ import { PrologVM } from "@/model/PrologVM";
 import { Text, Paper, Button, Title, NumberInput, Table, Divider } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { useState } from "react";
+import { UUIDTypes, v4 as uuidv4 } from 'uuid';
 
 export function HandlungForm({ person, prologVM }: { person: LandesabgabePerson, prologVM: PrologVM }) {
-    const [handlungen, setHandlungen] = useState<[LandesabgabeHandlung, JSX.Element][]>([]); // TODO save this
+    const [handlungen, setHandlungen] = useState<[LandesabgabeHandlung, string, JSX.Element][]>([]); // TODO save this
     const [date, setDate] = useState<Date | null>(null);
     const [gefördert, setGefördert] = useState<number | null>(null);
     const [uniqueFactSetName] = useState<string>(PrologVM.getUniqueFilename());
 
-    function generateNewHandlungViewer(): [LandesabgabeHandlung, JSX.Element] {
+    function generateNewHandlungViewer(): [LandesabgabeHandlung, string, JSX.Element] {
         const handlung = new LandesabgabeHandlung(person, date!, gefördert!);
-        return [handlung, <HandlungViewer handlung={handlung} />];
+        const uuid = uuidv4();
+        const form = <HandlungViewer key={uuid} handlung={handlung} />;
+        return [handlung, uuid, form];
     }
 
     function addButtonClicked() {
@@ -29,7 +32,7 @@ export function HandlungForm({ person, prologVM }: { person: LandesabgabePerson,
     function generateProlog(): string {
         return `${person.sachverhalt.serialize2Prolog()}
             ${person.serialize2Prolog()}
-            ${handlungen.reduce((previousValue: string, currentValue: [LandesabgabeHandlung, JSX.Element]): string => {
+            ${handlungen.reduce((previousValue: string, currentValue: [LandesabgabeHandlung, string, JSX.Element]): string => {
             return `
                 ${previousValue}
                 ${currentValue[0].serialize2Prolog()}
@@ -40,14 +43,9 @@ export function HandlungForm({ person, prologVM }: { person: LandesabgabePerson,
     return <Paper shadow="xs"
         p="xl"
         m="sm">
-        <Title>
-            Abgabenakt von "{person.vorname}"
-        </Title>
-
+        <Title>Abgabenakt von "{person.vorname}"</Title>
         <PersonDetail person={person} />
-
         <Divider my="md" />
-
         <DetailTable handlungen={handlungen}
             setDate={setDate}
             setGefördert={setGefördert}
@@ -74,7 +72,7 @@ function PersonDetail({ person }: { person: LandesabgabePerson }) {
 }
 
 function DetailTable({ handlungen, setDate, setGefördert, date, gefördert, addButtonClicked }: {
-    handlungen: [LandesabgabeHandlung, JSX.Element][],
+    handlungen: [LandesabgabeHandlung, string, JSX.Element][],
     setDate: any,
     setGefördert: any,
     date: any,
@@ -98,7 +96,7 @@ function DetailTable({ handlungen, setDate, setGefördert, date, gefördert, add
 }
 
 function HandlungenTableBody({ handlungen, setDate, setGefördert, date, gefördert, addButtonClicked }: {
-    handlungen: [LandesabgabeHandlung, JSX.Element][],
+    handlungen: [LandesabgabeHandlung, string, JSX.Element][],
     setDate: any,
     setGefördert: any,
     date: any,
@@ -106,7 +104,7 @@ function HandlungenTableBody({ handlungen, setDate, setGefördert, date, geförd
     addButtonClicked: any
 }) {
     return <Table.Tbody>
-        {handlungen.map((x) => x[1])}
+        {handlungen.map((x) => x[2])}
 
         <Table.Tr>
             <Table.Td>

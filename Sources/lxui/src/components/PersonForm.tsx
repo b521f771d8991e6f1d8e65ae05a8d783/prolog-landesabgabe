@@ -3,23 +3,22 @@ import { Input, Text, Button, Paper, Center, NumberInput, Flex, Divider } from "
 import { useId, useState } from "react";
 import { HandlungForm } from "./HandlungForm";
 import { PrologVM } from "@/model/PrologVM";
+import { v4 as uuidv4 } from 'uuid';
 
 export function PersonForm({ sachverhalt, prologVM }: { sachverhalt: LandesabgabeSachverhalt, prologVM: PrologVM }) {
     const [vorname, setVorname] = useState<string>();
     const [nachname, setNachname] = useState<string>();
     const [alter, setAlter] = useState<number>();
-    const [handlungen, setHandlungen] = useState<JSX.Element[]>([]);
+    const [handlungen, setHandlungen] = useState<[string, JSX.Element][]>([]);
 
-    function generateNewHandlungForm() {
+    function generateNewHandlungForm(): [string, JSX.Element] {
         const person = new LandesabgabePerson(sachverhalt, vorname!, nachname!, alter!);
-        return <HandlungForm person={person} prologVM={prologVM} />;
+        const uuid = uuidv4();
+        return [uuid, <HandlungForm key={uuid} person={person} prologVM={prologVM} />];
     }
 
     function addButtonClicked() {
         setHandlungen([...handlungen, generateNewHandlungForm()]);
-        setVorname("");
-        setNachname("");
-        setAlter(undefined); // somehow, this does not suffice
     }
 
     return <>
@@ -31,7 +30,7 @@ export function PersonForm({ sachverhalt, prologVM }: { sachverhalt: Landesabgab
             setAlter={setAlter}
             addButtonClicked={addButtonClicked} />
 
-        {handlungen}
+        {handlungen.map((x) => x[1])}
     </>;
 }
 

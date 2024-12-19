@@ -6,8 +6,7 @@ import { PrologVM } from '@/model/PrologVM';
 export function HomePage({ prologVM }: { prologVM: PrologVM }) {
   const sachverhalt = new LandesabgabeSachverhalt();
 
-  return <Flex
-    className={"select-none"}
+  return <Flex className={"select-none"}
     mih={50}
     gap="xs"
     justify="center"
@@ -15,8 +14,6 @@ export function HomePage({ prologVM }: { prologVM: PrologVM }) {
     direction="column"
     wrap="wrap">
     <Title>Sachverhalts-Editor</Title>
-
-    <SachverhaltForm sachverhalt={sachverhalt} prologVM={prologVM}>
-    </SachverhaltForm>
+    <SachverhaltForm sachverhalt={sachverhalt} prologVM={prologVM} />
   </Flex>;
 }

@@ -72,11 +72,12 @@ export class PrologVM {
 
         //console.assert('success' in query.once());
         this.swipl.FS.unlink(filename);
+        console.log(`Removed fact base ${filename}`)
     }
 
     removeFactBaseIfExists(filename: string) {
         if (this.hasFactBase(filename)) {
-            this.hasFactBase(filename);
+            this.removeFactBase(filename);
         }
     }
 

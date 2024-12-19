@@ -45,37 +45,56 @@ export function HandlungForm({ person, prologVM }: { person: LandesabgabePerson,
         }, "")}`;
     }
 
-    return <Paper
-        shadow="xs"
+    return <Paper shadow="xs"
         p="xl"
         m="sm">
-        <Center>
-            <Title>
-                Abgabenakt von "{person.vorname}"
-            </Title>
-        </Center>
+        <Title>
+            Abgabenakt von "{person.vorname}"
+        </Title>
 
-        <Text>Name: {person.vorname}</Text>
-        <Text>Vorname: {person.nachname}</Text>
-        <Text>Alter: {person.alter}</Text>
+        <PersonDetail person={person} />
 
         <Divider my="md" />
 
-        <Table
-            stickyHeader
-            stickyHeaderOffset={60}
-            variant="vertical">
-            <TableHeader></TableHeader>
-            <HandlungenTableBody
-                handlungen={handlungen}
-                setDate={setDate}
-                setGefördert={setGefördert}
-                date={date}
-                gefördert={gefördert}
-                addButtonClicked={addButtonClicked}>
-            </HandlungenTableBody>
-        </Table>
+        <DetailTable handlungen={handlungen}
+            setDate={setDate}
+            setGefördert={setGefördert}
+            date={date}
+            gefördert={gefördert}
+            addButtonClicked={addButtonClicked} />
     </Paper>;
+}
+
+function PersonDetail({ person }: { person: LandesabgabePerson }) {
+    return <>
+        <Text>Name: {person.vorname}</Text>
+        <Text>Vorname: {person.nachname}</Text>
+        <Text>Alter: {person.alter}</Text>
+    </>;
+}
+
+function DetailTable({ handlungen, setDate, setGefördert, date, gefördert, addButtonClicked }: {
+    handlungen: [LandesabgabeHandlung, JSX.Element][],
+    setDate: any,
+    setGefördert: any,
+    date: any,
+    gefördert: any,
+    addButtonClicked: any
+}) {
+    return <Table
+        stickyHeader
+        stickyHeaderOffset={60}
+        variant="vertical">
+        <TableHeader></TableHeader>
+        <HandlungenTableBody
+            handlungen={handlungen}
+            setDate={setDate}
+            setGefördert={setGefördert}
+            date={date}
+            gefördert={gefördert}
+            addButtonClicked={addButtonClicked}>
+        </HandlungenTableBody>
+    </Table>;
 }
 
 function HandlungenTableBody({ handlungen, setDate, setGefördert, date, gefördert, addButtonClicked }: {
@@ -91,18 +110,15 @@ function HandlungenTableBody({ handlungen, setDate, setGefördert, date, geförd
 
         <Table.Tr>
             <Table.Td>
-                <DateInput
-                    onChange={setDate} />
+                <DateInput onChange={setDate} />
             </Table.Td>
 
             <Table.Td>
-                <NumberInput
-                    onChange={setGefördert} />
+                <NumberInput onChange={setGefördert} />
             </Table.Td>
 
             <Table.Td>
-                <Button
-                    disabled={date === undefined || date === null || gefördert === undefined || gefördert === 0 || gefördert === null}
+                <Button disabled={date === undefined || date === null || gefördert === undefined || gefördert === 0 || gefördert === null}
                     onClick={addButtonClicked}>
                     Eintrag hinzufügen
                 </Button>

@@ -6,10 +6,9 @@ import { DateInput } from "@mantine/dates";
 import { useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 
-export function HandlungForm({ person, faceBase, setFactBase }: {
+export function HandlungForm({ person, prologVM }: {
     person: LandesabgabePerson,
-    faceBase: PrologFile[],
-    setFactBase: React.Dispatch<React.SetStateAction<PrologFile[]>>
+    prologVM: PrologVM
 }) {
     const [handlungen, setHandlungen] = useState<[LandesabgabeHandlung, string, JSX.Element][]>([]); // TODO save this
     const [date, setDate] = useState<Date | null>(null);
@@ -31,9 +30,7 @@ export function HandlungForm({ person, faceBase, setFactBase }: {
             content: generateProlog()
         };
 
-        const faceBaseExcludingCurrent: PrologFile[] = faceBase.filter((x) => x.name !== uniqueFactSetName);
-
-        setFactBase([...faceBaseExcludingCurrent, prologFile]);
+        prologVM.addFactBase(prologFile);
     }
 
     function generateProlog(): string {

@@ -2,9 +2,12 @@ import SWIPL, { Prolog } from "swipl-wasm";
 import { getRechtsbestand, PrologFile } from "./PrologFileSystem";
 import { v4 as uuid } from 'uuid';
 
+export type FactBaseListener = (factBase: PrologFile[]) => void;
+
 export class PrologVM {
     private swipl: SWIPL.SWIPLModule;
     private factBase: PrologFile[];
+    private addFactBaseEvents: FactBaseListener[] = [];
 
     constructor(swipl: SWIPL.SWIPLModule) {
         this.swipl = swipl;
@@ -43,6 +46,15 @@ export class PrologVM {
         });
     }
 
+    addFactBaseListener(listener: FactBaseListener) {
+        this.addFactBaseEvents.push(listener);
+    }
+
+    /**
+     * This functions is used to add a fact base to the prolog VM.
+     * Listeners are notified when a fact base is added.
+     * @param pf the Prolog fact base to add
+     */
     addFactBase(pf: PrologFile) {
         // see here: https://github.com/JanWielemaker/swi-prolog-wasm?tab=readme-ov-file#usage
         this.swipl.FS.writeFile(pf.name, pf.content);
@@ -57,6 +69,10 @@ export class PrologVM {
         console.log(`Loaded prolog file: ${pf.name}`);
 
         this.factBase.push(pf);
+
+        for (const listener of this.addFactBaseEvents) {
+            listener(this.factBase);
+        }
     }
 
     addFactBases(pfs: PrologFile[]) {

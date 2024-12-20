@@ -14,12 +14,13 @@ export function SachverhaltForm({ sachverhalt, prologVM }: {
     const [factBase, setFactBase] = useState<PrologFile[]>([]);
     const [persons, setPersons] = useState<[string, JSX.Element][]>([generateNewPersonForm()]);
 
+    prologVM.addFactBaseListener(setFactBase);
+
     function generateNewPersonForm(): [string, JSX.Element] {
         const uuid = uuidv4();
         const personForm = <PersonForm key={uuid}
             sachverhalt={sachverhalt}
-            faceBase={factBase}
-            setFactBase={setFactBase} />;
+            prologVM={prologVM} />;
         return [uuid, personForm];
     }
 
@@ -30,7 +31,7 @@ export function SachverhaltForm({ sachverhalt, prologVM }: {
         }
 
         f();
-    }, [sachverhalt, persons, factBase]);
+    }, [sachverhalt, persons, prologVM]);
 
     return <Flex
         mih={50}
@@ -71,7 +72,7 @@ function FormView({ persons }: { persons: [string, JSX.Element][] }) {
 
 function PrologFilesAccordion({ factBase }: { factBase: PrologFile[] }) {
     return factBase.map((x) => <>
-        {x.name}
+        {x.name}<br />
     </>);
     //return factBase.map((x: PrologFile) =>
     //    <Accordion.Item key={x.name} value={x.name}>

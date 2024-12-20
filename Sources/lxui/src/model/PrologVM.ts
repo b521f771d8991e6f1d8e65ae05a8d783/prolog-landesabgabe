@@ -102,4 +102,8 @@ export class PrologVM {
     public static getUniqueFilename() {
         return `input_${uuid().replaceAll('-', '_')}.pl`;
     }
+
+    getFactBase(): PrologFile[] {
+        return this.factBase;
+    }
 }

@@ -1,11 +1,16 @@
+import { PrologFile } from "@/model/PrologFileSystem";
 import { LandesabgabeHandlung, LandesabgabePerson } from "@/model/PrologTemplates";
 import { PrologVM } from "@/model/PrologVM";
 import { Text, Paper, Button, Title, NumberInput, Table, Divider } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { useState } from "react";
-import { UUIDTypes, v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 
-export function HandlungForm({ person, prologVM }: { person: LandesabgabePerson, prologVM: PrologVM }) {
+export function HandlungForm({ person, faceBase, setFactBase }: {
+    person: LandesabgabePerson,
+    faceBase: PrologFile[],
+    setFactBase: React.Dispatch<React.SetStateAction<PrologFile[]>>
+}) {
     const [handlungen, setHandlungen] = useState<[LandesabgabeHandlung, string, JSX.Element][]>([]); // TODO save this
     const [date, setDate] = useState<Date | null>(null);
     const [gefördert, setGefördert] = useState<number | null>(null);
@@ -21,12 +26,14 @@ export function HandlungForm({ person, prologVM }: { person: LandesabgabePerson,
     function addButtonClicked() {
         setHandlungen([...handlungen, generateNewHandlungViewer()]);
 
-        prologVM.removeFactBaseIfExists(uniqueFactSetName);
-        const prolog = generateProlog();
-        prologVM.addFactBase({
+        const prologFile: PrologFile = {
             name: uniqueFactSetName,
-            content: prolog
-        });
+            content: generateProlog()
+        };
+
+        const faceBaseExcludingCurrent: PrologFile[] = faceBase.filter((x) => x.name !== uniqueFactSetName);
+
+        setFactBase([...faceBaseExcludingCurrent, prologFile]);
     }
 
     function generateProlog(): string {

@@ -4,8 +4,13 @@ import { useId, useState } from "react";
 import { HandlungForm } from "./HandlungForm";
 import { PrologVM } from "@/model/PrologVM";
 import { v4 as uuidv4 } from 'uuid';
+import { PrologFile } from "@/model/PrologFileSystem";
 
-export function PersonForm({ sachverhalt, prologVM }: { sachverhalt: LandesabgabeSachverhalt, prologVM: PrologVM }) {
+export function PersonForm({ sachverhalt, faceBase, setFactBase }: {
+    sachverhalt: LandesabgabeSachverhalt,
+    faceBase: PrologFile[],
+    setFactBase: React.Dispatch<React.SetStateAction<PrologFile[]>>
+}) {
     const [vorname, setVorname] = useState<string>();
     const [nachname, setNachname] = useState<string>();
     const [alter, setAlter] = useState<number>();
@@ -14,7 +19,10 @@ export function PersonForm({ sachverhalt, prologVM }: { sachverhalt: Landesabgab
     function generateNewHandlungForm(): [string, JSX.Element] {
         const person = new LandesabgabePerson(sachverhalt, vorname!, nachname!, alter!);
         const uuid = uuidv4();
-        return [uuid, <HandlungForm key={uuid} person={person} prologVM={prologVM} />];
+        return [uuid, <HandlungForm key={uuid}
+            person={person}
+            faceBase={faceBase}
+            setFactBase={setFactBase} />];
     }
 
     function addButtonClicked() {

@@ -2,7 +2,7 @@ import { LandesabgabeSachverhalt } from "@/model/PrologTemplates";
 import { useEffect, useId, useRef, useState } from "react";
 import { PersonForm } from "./PersonForm";
 import { Paper, Flex, Code, Button, Center } from "@mantine/core";
-import { PrologVM } from "../model/PrologVM";
+import { AppState } from "../model/AppState";
 import { v4 as uuidv4 } from 'uuid';
 import { PrologFile } from "@/model/PrologFileSystem";
 
@@ -11,11 +11,13 @@ import hljs from "highlight.js";
 
 export function SachverhaltForm({ sachverhalt, prologVM }: {
     sachverhalt: LandesabgabeSachverhalt,
-    prologVM: PrologVM
+    prologVM: AppState
 }) {
     const [code, setCode] = useState<string>();
     const [factBase, setFactBase] = useState<PrologFile[]>([]);
     const [persons, setPersons] = useState<[string, JSX.Element][]>([generateNewPersonForm()]);
+
+    console.log(factBase);
 
     prologVM.addFactBaseListener(setFactBase);
 
@@ -100,7 +102,7 @@ function PrologCodeBlock({ prologCode }: { prologCode: string }) {
             {prologCode}
         </code>
         <Center>
-            <Button disabled>In Normtext konvertieren</Button>
+            <Button disabled>In Normtext konvertieren 🪄</Button>
         </Center>
     </Code>
 }

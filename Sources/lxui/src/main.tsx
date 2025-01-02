@@ -2,9 +2,9 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 
 import "./index.css";
-import { PrologVM } from './model/PrologVM';
+import { AppState } from './model/AppState';
 
-const pvm = await PrologVM.initFromLocalStorage();
+const pvm = await AppState.initFromLocalStorage();
 
 ReactDOM.createRoot(document.getElementById('root')!)
     .render(<App prologVM={pvm} />);

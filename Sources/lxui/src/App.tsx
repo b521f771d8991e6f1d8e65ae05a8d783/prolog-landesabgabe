@@ -3,9 +3,9 @@ import '@mantine/core/styles.css';
 import { MantineProvider } from '@mantine/core';
 import { Router } from './Router';
 import { theme } from './theme';
-import { PrologVM } from './model/PrologVM';
+import { AppState } from './model/AppState';
 
-export default function App({ prologVM }: { prologVM: PrologVM }) {
+export default function App({ prologVM }: { prologVM: AppState }) {
   return (
     <MantineProvider theme={theme}>
       <Router prologVM={prologVM} />

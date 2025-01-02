@@ -1,7 +1,7 @@
 import { Button, Flex, Title } from '@mantine/core';
 import { SachverhaltForm } from '@/components/SachverhaltEditorForm';
 import { LandesabgabeSachverhalt } from '@/model/PrologTemplates';
-import { PrologVM } from '@/model/PrologVM';
+import { AppState } from '@/model/AppState';
 import { useEffect } from 'react';
 
 import logo from "../../../../Resources/logo.svg";
@@ -18,7 +18,7 @@ function setTitle(title: string) {
   document.title = title;
 }
 
-export function HomePage({ prologVM }: { prologVM: PrologVM }) {
+export function HomePage({ prologVM }: { prologVM: AppState }) {
   const sachverhalt = new LandesabgabeSachverhalt();
 
   function onDeleteButtonClicked() {

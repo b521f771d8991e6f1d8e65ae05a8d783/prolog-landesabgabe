@@ -4,6 +4,8 @@ import { v4 as uuid } from 'uuid';
 
 export type FactBaseListener = (factBase: PrologFile[]) => void;
 
+const LOCAL_STORAGE_KEY: string = "factBase";
+
 // this is also used for state management in the UI
 export class PrologVM {
     private swipl: SWIPL.SWIPLModule;
@@ -15,9 +17,16 @@ export class PrologVM {
         this.factBase = [];
     }
 
-    // language designers should consider using paradigms such as ObjC init more, they would make stuff like this MUCH easier
-    // https://developer.apple.com/documentation/objectivec/nsobject/1418639-initialize?language=objc
-    public static async init(rechtsbestand: (Promise<PrologFile> | PrologFile)[] = getRechtsbestand()): Promise<PrologVM> {
+    private static async initPrologVM(): Promise<PrologVM> {
+        const swipl = new PrologVM(await PrologVM.initializePrologModule());
+
+        // TODO make this more generic
+        swipl.swipl.FS.mkdir("src");
+        swipl.swipl.FS.mkdir("src/static");
+        return swipl;
+    }
+
+    private static async awaitPrologFiles(rechtsbestand: (PrologFile | Promise<PrologFile>)[]): Promise<PrologFile[]> {
         const rechtsbestandPromises: Promise<PrologFile>[] = rechtsbestand.filter((x) => x instanceof Promise);
         const rechtsbestandFiles: PrologFile[] = rechtsbestand.filter((x) => x instanceof PrologFile);
         const rechtsbestandPromisesResolved = await Promise.all(rechtsbestandPromises);
@@ -26,19 +35,42 @@ export class PrologVM {
             ...rechtsbestandPromisesResolved,
             ...rechtsbestandFiles
         ];
+        return pfs;
+    }
 
-        const swipl = new PrologVM(await PrologVM.initializePrologModule());
+    // language designers should consider using paradigms such as ObjC init more, they would make stuff like this MUCH easier
+    // https://developer.apple.com/documentation/objectivec/nsobject/1418639-initialize?language=objc
+    public static async initFromArray(rechtsbestand: (Promise<PrologFile> | PrologFile)[] = getRechtsbestand()): Promise<PrologVM> {
+        const pfs: PrologFile[] = await PrologVM.awaitPrologFiles(rechtsbestand);
 
-        // TODO make this more generic
-        swipl.swipl.FS.mkdir("src");
-        swipl.swipl.FS.mkdir("src/static");
+        const swipl = await PrologVM.initPrologVM();
         await swipl.addFactBases(pfs);
         return swipl;
     }
 
-    private savedFiles(): string[] {
-        const dir = this.swipl.FS.readdir("/");
-        return dir;
+    // creates a new PrologVM instance from the local storage
+    // automatically adds a fact base listener to save the fact base to local storage when it changes
+    public static async initFromLocalStorage(rechtsbestand: (Promise<PrologFile> | PrologFile)[] = getRechtsbestand()): Promise<PrologVM> {
+        if (!this.hasLocalStorageFactBase()) {
+            return await this.initFromArray(rechtsbestand);
+        }
+
+        const factBaseString = localStorage.getItem(LOCAL_STORAGE_KEY)!;
+        const factBase = JSON.parse(factBaseString) as PrologFile[];
+        const swipl = await PrologVM.initPrologVM();
+
+        await swipl.addFactBases(factBase);
+        swipl.addFactBaseListener(swipl.saveToLocalStorage.bind(swipl));
+        return swipl;
+    }
+
+    public static hasLocalStorageFactBase(): boolean {
+        return localStorage.getItem(LOCAL_STORAGE_KEY) !== null;
+    }
+
+    public saveToLocalStorage() {
+        localStorage.removeItem(LOCAL_STORAGE_KEY);
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(this.factBase));
     }
 
     private static async initializePrologModule(): Promise<SWIPL.SWIPLModule> {
@@ -74,6 +106,8 @@ export class PrologVM {
         for (const listener of this.addFactBaseEvents) {
             listener(this.factBase);
         }
+
+        this.saveToLocalStorage();
     }
 
     addFactBases(pfs: PrologFile[]) {
@@ -104,7 +138,7 @@ export class PrologVM {
 
     // untested
     async reboot(): Promise<void> {
-        const temporaryPrologVM = await PrologVM.init(this.factBase);
+        const temporaryPrologVM = await PrologVM.initFromArray(this.factBase);
         this.swipl = temporaryPrologVM.swipl;
     }
 

@@ -23,7 +23,6 @@ export function HomePage({ prologVM }: { prologVM: PrologVM }) {
 
   useEffect(() => {
     setTitle("LXUI");
-    console.log(logo)
     setFavicon(logo);
   }, []);
 

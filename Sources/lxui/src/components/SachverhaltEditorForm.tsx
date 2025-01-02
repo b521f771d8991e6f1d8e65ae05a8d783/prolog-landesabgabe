@@ -72,11 +72,11 @@ function FormView({ persons }: { persons: [string, JSX.Element][] }) {
 
 function PrologFilesAccordion({ factBase }: { factBase: PrologFile[] }) {
     return factBase.map((x) => <>
-        {x.name}<br />
+        <details>
+            <summary>{x.name}</summary>
+            <Code block>
+                {x.content.replace(/\n/g, "\n")}
+            </Code>
+        </details>
     </>);
-    //return factBase.map((x: PrologFile) =>
-    //    <Accordion.Item key={x.name} value={x.name}>
-    //        <Accordion.Panel>{x.content}</Accordion.Panel>
-    //    </Accordion.Item>
-    //);
 }

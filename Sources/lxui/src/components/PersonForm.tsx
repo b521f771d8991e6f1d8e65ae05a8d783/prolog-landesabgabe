@@ -4,7 +4,6 @@ import { useId, useState } from "react";
 import { HandlungForm } from "./HandlungForm";
 import { PrologVM } from "@/model/PrologVM";
 import { v4 as uuidv4 } from 'uuid';
-import { PrologFile } from "@/model/PrologFileSystem";
 
 export function PersonForm({ sachverhalt, prologVM }: {
     sachverhalt: LandesabgabeSachverhalt,

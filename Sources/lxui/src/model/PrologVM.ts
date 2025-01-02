@@ -4,6 +4,7 @@ import { v4 as uuid } from 'uuid';
 
 export type FactBaseListener = (factBase: PrologFile[]) => void;
 
+// this is also used for state management in the UI
 export class PrologVM {
     private swipl: SWIPL.SWIPLModule;
     private factBase: PrologFile[];

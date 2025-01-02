@@ -93,9 +93,12 @@ export class AppState {
     /**
      * This functions is used to add a fact base to the prolog VM.
      * Listeners are notified when a fact base is added.
+     * An older fact base with the same name is removed if it exists.
      * @param pf the Prolog fact base to add
      */
     addFactBase(pf: PrologFile) {
+        this.removeFactBaseIfExists(pf.name);
+
         // see here: https://github.com/JanWielemaker/swi-prolog-wasm?tab=readme-ov-file#usage
         this.swipl.FS.writeFile(pf.name, pf.content);
 
@@ -123,6 +126,9 @@ export class AppState {
         }
     }
 
+    /*
+    * cleans up the fact base, both from the state and from the prolog file system
+    */
     removeFactBase(filename: string) {
         const query: SWIPL.Query = this.swipl.prolog.query("unload_file(File)", {
             "File": filename
@@ -130,7 +136,8 @@ export class AppState {
 
         //console.assert('success' in query.once());
         this.swipl.FS.unlink(filename);
-        console.log(`Removed fact base ${filename}`)
+        this.factBase = this.factBase.filter((pf: PrologFile) => pf.name !== filename);
+        console.log(`Removed fact base ${filename}`);
     }
 
     removeFactBaseIfExists(filename: string) {

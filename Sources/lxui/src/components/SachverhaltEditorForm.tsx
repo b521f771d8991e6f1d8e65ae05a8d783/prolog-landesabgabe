@@ -9,17 +9,22 @@ import { PrologFile } from "@/model/PrologFileSystem";
 import "highlight.js/styles/github.css";
 import hljs from "highlight.js";
 
+/*
+ * This component is responsible for displaying a Sachverhalt
+*/
 export function SachverhaltForm({ sachverhalt, prologVM }: {
     sachverhalt: LandesabgabeSachverhalt,
     prologVM: AppState
 }) {
     const [code, setCode] = useState<string>();
-    const [factBase, setFactBase] = useState<PrologFile[]>([]);
+    const [factBase, setFactBase] = useState<PrologFile[]>(prologVM.getFactBase());
     const [persons, setPersons] = useState<[string, JSX.Element][]>([generateNewPersonForm()]);
 
-    console.log(factBase);
+    console.log("Loaded fact base:", factBase);
 
-    prologVM.addFactBaseListener(setFactBase);
+    prologVM.addFactBaseListener((changedFactBase: PrologFile[]) => {
+        setFactBase(changedFactBase);
+    });
 
     function generateNewPersonForm(): [string, JSX.Element] {
         const uuid = uuidv4();
@@ -47,7 +52,7 @@ export function SachverhaltForm({ sachverhalt, prologVM }: {
         wrap="wrap">
         <FactBaseView factBase={factBase} />
         <FormView persons={persons} />
-        <CodeView code={code} />
+        <ResultView code={code} />
     </Flex >;
 }
 
@@ -59,7 +64,7 @@ function FactBaseView({ factBase }: { factBase: PrologFile[] }) {
     </Paper>;
 }
 
-function CodeView({ code }: { code: string | undefined }) {
+function ResultView({ code }: { code: string | undefined }) {
     return <Paper shadow="xs"
         p="xl"
         m="sm">

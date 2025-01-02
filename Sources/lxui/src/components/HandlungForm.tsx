@@ -23,13 +23,10 @@ export function HandlungForm({ person, prologVM }: {
     }
 
     function addButtonClicked() {
-        setHandlungen([...handlungen, generateNewHandlungViewer()]);
+        const newHandlungenValue = [...handlungen, generateNewHandlungViewer()]
+        setHandlungen(newHandlungenValue);
 
-        const prologFile: PrologFile = {
-            name: uniqueFactSetName,
-            content: generateProlog()
-        };
-
+        const prologFile = new PrologFile(uniqueFactSetName, generateProlog(), handlungen.map((x) => x[0]));
         prologVM.addFactBase(prologFile);
     }
 

@@ -1,10 +1,13 @@
 import { LandesabgabeSachverhalt } from "@/model/PrologTemplates";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { PersonForm } from "./PersonForm";
-import { Paper, Flex, Code, Accordion } from "@mantine/core";
+import { Paper, Flex, Code } from "@mantine/core";
 import { PrologVM } from "../model/PrologVM";
 import { v4 as uuidv4 } from 'uuid';
 import { PrologFile } from "@/model/PrologFileSystem";
+
+import "highlight.js/styles/github.css";
+import hljs from "highlight.js";
 
 export function SachverhaltForm({ sachverhalt, prologVM }: {
     sachverhalt: LandesabgabeSachverhalt,
@@ -75,8 +78,26 @@ function PrologFilesAccordion({ factBase }: { factBase: PrologFile[] }) {
         <details>
             <summary>{x.name}</summary>
             <Code block>
-                {x.content.replace(/\n/g, "\n")}
+                <PrologCodeBlock prologCode={x.content} />
             </Code>
         </details>
     </>);
+}
+
+function PrologCodeBlock({ prologCode }: { prologCode: string }) {
+    const codeRef = useId();
+
+    useEffect(() => {
+        const codeElement = document.getElementById(codeRef);
+
+        if (codeElement) {
+            hljs.highlightElement(codeElement);
+        }
+    }, [prologCode]);
+
+    return <Code block>
+        <code id={codeRef} className="prolog">
+            {prologCode}
+        </code>
+    </Code>
 }

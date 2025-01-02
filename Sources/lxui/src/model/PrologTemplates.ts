@@ -125,14 +125,13 @@ export class LandesabgabePerson implements PrologFragment {
     }
 
     serialize2Prolog(): string {
-        return `
-        % Person
-        subjekt(${this._sachverhalt.sacherhaltId}, ${this._person_id}).
-        vorname(${this._person_id}, "${this._vorname}").
-        nachname(${this._person_id}, "${this._nachname}").
-        natuerliche_person(${this._person_id}).
-        alter(${this._person_id}, ${this._alter}).
-        ${this._berufsmäßig ? "" : `berufsmaessig(${this._person_id}).`}
-      `;
+        return `% Person
+subjekt(${this._sachverhalt.sacherhaltId}, ${this._person_id}).
+vorname(${this._person_id}, "${this._vorname}").
+nachname(${this._person_id}, "${this._nachname}").
+natuerliche_person(${this._person_id}).
+alter(${this._person_id}, ${this._alter}).
+${this._berufsmäßig ? "" : `berufsmaessig(${this._person_id}).`}
+`;
     }
 }

@@ -15,6 +15,7 @@ This is a swift project that contains some C++ and Prolog parts. It may, in the 
 
 Currently, we are relying on the Docker-Devcontainer, but I would love to:
  1. replace it by nix (nearly finished, waiting for a more recent Swift version (Swift 6))
+    - https://github.com/NixOS/nixpkgs/issues/343210
  2. ship the resulting binary as a 100% static build (that may take some time)
 
 Dependencies:

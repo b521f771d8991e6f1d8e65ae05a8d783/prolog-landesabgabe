@@ -10,11 +10,13 @@ const LOCAL_STORAGE_KEY: string = "factBase";
 export class PrologVM {
     private swipl: SWIPL.SWIPLModule;
     private factBase: PrologFile[];
+    private initialFactBase: PrologFile[];
     private addFactBaseEvents: FactBaseListener[] = [];
 
-    constructor(swipl: SWIPL.SWIPLModule) {
+    constructor(swipl: SWIPL.SWIPLModule, factBase: PrologFile[] = []) {
         this.swipl = swipl;
-        this.factBase = [];
+        this.factBase = factBase;
+        this.initialFactBase = this.factBase;
     }
 
     private static async initPrologVM(): Promise<PrologVM> {
@@ -31,11 +33,7 @@ export class PrologVM {
         const rechtsbestandFiles: PrologFile[] = rechtsbestand.filter((x) => x instanceof PrologFile);
         const rechtsbestandPromisesResolved = await Promise.all(rechtsbestandPromises);
 
-        const pfs: PrologFile[] = [
-            ...rechtsbestandPromisesResolved,
-            ...rechtsbestandFiles
-        ];
-        return pfs;
+        return [...rechtsbestandPromisesResolved, ...rechtsbestandFiles];
     }
 
     // language designers should consider using paradigms such as ObjC init more, they would make stuff like this MUCH easier
@@ -44,12 +42,21 @@ export class PrologVM {
         const pfs: PrologFile[] = await PrologVM.awaitPrologFiles(rechtsbestand);
 
         const swipl = await PrologVM.initPrologVM();
+        swipl.initialFactBase = pfs;
         await swipl.addFactBases(pfs);
         return swipl;
     }
 
-    // creates a new PrologVM instance from the local storage
-    // automatically adds a fact base listener to save the fact base to local storage when it changes
+    /*
+     * creates a new PrologVM instance from the local storage
+     * automatically adds a fact base listener to save the fact base to local storage when it changes
+     * the initial fact base it set to the one handed over as a parameter
+     * even if the local storage contains a fact base.
+     * the initial fact base is saved in case we want to reboot it
+     * 
+     * @params rechtsbestand the initial fact base to use
+     * @returns a prologVM instances preloaded with the initial fact base
+    */
     public static async initFromLocalStorage(rechtsbestand: (Promise<PrologFile> | PrologFile)[] = getRechtsbestand()): Promise<PrologVM> {
         if (!this.hasLocalStorageFactBase()) {
             return await this.initFromArray(rechtsbestand);
@@ -60,6 +67,7 @@ export class PrologVM {
         const swipl = await PrologVM.initPrologVM();
 
         await swipl.addFactBases(factBase);
+        swipl.initialFactBase = await PrologVM.awaitPrologFiles(rechtsbestand);
         swipl.addFactBaseListener(swipl.saveToLocalStorage.bind(swipl));
         return swipl;
     }
@@ -136,7 +144,20 @@ export class PrologVM {
         return this.factBase.some((x: PrologFile) => x.name === filename);
     }
 
-    // untested
+    /*
+     * Resets the prolog VM to its initial state.
+     *  - fact base listeners are not deleted, they are kept!
+     *  - the fact base is reset to the initial fact base
+    */
+    async reset() {
+        localStorage.removeItem(LOCAL_STORAGE_KEY);
+        this.factBase = this.initialFactBase;
+        this.reboot(); // this does not reset the fact base!
+    }
+
+    /**
+     * Reboots the prologVM, uses the same fact base as before
+     */
     async reboot(): Promise<void> {
         const temporaryPrologVM = await PrologVM.initFromArray(this.factBase);
         this.swipl = temporaryPrologVM.swipl;

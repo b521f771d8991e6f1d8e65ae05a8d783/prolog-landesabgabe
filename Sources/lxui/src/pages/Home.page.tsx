@@ -1,4 +1,4 @@
-import { Flex, Title } from '@mantine/core';
+import { Button, Flex, Title } from '@mantine/core';
 import { SachverhaltForm } from '@/components/SachverhaltEditorForm';
 import { LandesabgabeSachverhalt } from '@/model/PrologTemplates';
 import { PrologVM } from '@/model/PrologVM';
@@ -21,6 +21,10 @@ function setTitle(title: string) {
 export function HomePage({ prologVM }: { prologVM: PrologVM }) {
   const sachverhalt = new LandesabgabeSachverhalt();
 
+  function onDeleteButtonClicked() {
+    prologVM.reset();
+  }
+
   useEffect(() => {
     setTitle("LXUI");
     setFavicon(logo);
@@ -35,6 +39,7 @@ export function HomePage({ prologVM }: { prologVM: PrologVM }) {
     wrap="wrap">
     <Title>Sachverhalts-Editor</Title>
     <SachverhaltForm sachverhalt={sachverhalt} prologVM={prologVM} />
+    <Button onClick={onDeleteButtonClicked}>Löschen 🗑</Button>
   </Flex>;
 }
 

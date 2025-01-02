@@ -1,7 +1,7 @@
 import { LandesabgabeSachverhalt } from "@/model/PrologTemplates";
 import { useEffect, useId, useRef, useState } from "react";
 import { PersonForm } from "./PersonForm";
-import { Paper, Flex, Code } from "@mantine/core";
+import { Paper, Flex, Code, Button, Center } from "@mantine/core";
 import { PrologVM } from "../model/PrologVM";
 import { v4 as uuidv4 } from 'uuid';
 import { PrologFile } from "@/model/PrologFileSystem";
@@ -99,5 +99,8 @@ function PrologCodeBlock({ prologCode }: { prologCode: string }) {
         <code id={codeRef} className="prolog">
             {prologCode}
         </code>
+        <Center>
+            <Button disabled>In Normtext konvertieren</Button>
+        </Center>
     </Code>
 }

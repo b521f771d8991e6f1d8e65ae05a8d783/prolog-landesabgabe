@@ -1,5 +1,3 @@
-// TODO use TemplateKit for this!
-
 import { v4 as uuidv4 } from 'uuid';
 
 interface PrologFragment {
@@ -61,6 +59,7 @@ export class LandesabgabeHandlung implements PrologFragment {
     }
 
     public get person(): LandesabgabePerson {
+        console.log(this)
         return this._person;
     }
 

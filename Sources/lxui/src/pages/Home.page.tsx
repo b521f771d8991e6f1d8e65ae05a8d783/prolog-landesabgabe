@@ -1,6 +1,6 @@
 import { Title } from '@mantine/core';
-import { LandesabgabeSachverhalt } from '@/model/PrologTemplates';
-import { useEffect, useState } from "react";
+import { LandesabgabeHandlung, LandesabgabePerson, LandesabgabeSachverhalt } from '@/model/PrologTemplates';
+import { useEffect, useMemo, useState } from "react";
 import { Paper, Flex, Code, Button } from "@mantine/core";
 import { AppState } from "../model/AppState";
 import { v4 as uuidv4 } from 'uuid';
@@ -9,7 +9,7 @@ import { PrologFile } from "@/model/PrologFileSystem";
 import "highlight.js/styles/github.css";
 
 import logo from "../../../../Resources/logo.svg";
-import { SacherhaltEditorForm } from '@/components/SacherhaltEditorForm';
+import { SacherhaltEditorForm } from '@/components/SachverhaltEditorForm';
 import { PrologFilesAccordion } from '@/components/PrologFilesAccordion';
 import { ResultView } from '@/components/ResultView';
 
@@ -34,9 +34,25 @@ function setTitle(title: string) {
   document.title = title;
 }
 
+/**
+ * Represents the home page component of the application.
+ *
+ * @param {Object} props - The properties object.
+ * @param {AppState} props.prologVM - The application state managed by Prolog VM.
+ *
+ * @returns {JSX.Element} The rendered home page component.
+ *
+ * @component
+ *
+ * @example
+ * // Usage example:
+ * <HomePage prologVM={appState} />
+ *
+ * @remarks
+ * This component sets the page title and favicon on mount, and provides a button
+ * to reset the application state and reload the page.
+ */
 export function HomePage({ prologVM }: { prologVM: AppState }) {
-  const sachverhalt = new LandesabgabeSachverhalt();
-
   function onDeleteButtonClicked() {
     prologVM.reset();
     window.location.reload();
@@ -55,39 +71,41 @@ export function HomePage({ prologVM }: { prologVM: AppState }) {
     direction="column"
     wrap="wrap">
     <Title>Sachverhalts-Editor</Title>
-    <MainUI
-      sachverhalt={sachverhalt}
-      appState={prologVM} />
+    <AppStateView appState={prologVM} />
     <Button onClick={onDeleteButtonClicked}>Löschen 🗑</Button>
   </Flex>;
 }
 
 /*
- * This component is responsible for displaying a Sachverhalt
+* The AppStateView is responsible for:
+*  - displaying prolog files, resulting code, and the form view
+*  - creating the Prolog from the output
+*  - re-creating the page from the prolog VM on page reload
 */
-export function MainUI({ sachverhalt, appState }: {
-  sachverhalt: LandesabgabeSachverhalt,
-  appState: AppState
-}) {
+function AppStateView({ appState }: { appState: AppState }) {
+  const [sachverhalt, setSachverhalt] = useState<LandesabgabeSachverhalt>(new LandesabgabeSachverhalt());
   const [code, setCode] = useState<string>();
   const [factBase, setFactBase] = useState<PrologFile[]>(appState.getFactBase());
-  const [persons, setPersons] = useState<[string, JSX.Element][]>([generateNewPersonForm()]);
+
+  // we currently do not have support for multiple Sachverhalte, but that would be possible
+
+  const initialPersons: [LandesabgabePerson, LandesabgabeHandlung[]][] = useMemo(() => {
+    const handlungen = appState.getFactBaseContainingHandlung().flatMap((pf) => pf.handlung! as LandesabgabeHandlung[]);
+
+    const personsWithDuplicates = handlungen.map((handlung) => handlung._person as LandesabgabePerson);
+    const persons = [...new Set(personsWithDuplicates)];
+
+    return persons.map((person) => [person, handlungen.filter((handlung) => handlung._person === person)]);
+  }, [appState]);
 
   console.log("Loaded fact base:", factBase);
+  console.log("Initial persons: ", initialPersons)
 
   appState.addFactBaseListener(setFactBase);
 
   function addFactsFunction(pf: PrologFile) {
     console.log("Adding facts to fact base:", pf);
     appState.addFactBase(pf);
-  }
-
-  function generateNewPersonForm(): [string, JSX.Element] {
-    const uuid = uuidv4();
-    const personForm = <SacherhaltEditorForm key={uuid}
-      sachverhalt={sachverhalt}
-      addFacts={addFactsFunction} />;
-    return [uuid, personForm];
   }
 
   useEffect(() => {
@@ -97,7 +115,7 @@ export function MainUI({ sachverhalt, appState }: {
     }
 
     f();
-  }, [sachverhalt, persons, appState]);
+  }, [appState]);
 
   return <Flex
     mih={50}
@@ -107,15 +125,10 @@ export function MainUI({ sachverhalt, appState }: {
     direction="row"
     wrap="wrap">
     <PrologFilesAccordion factBase={factBase} />
-    <FormView persons={persons} />
+    <SacherhaltEditorForm
+      addFacts={addFactsFunction}
+      sachverhalt={sachverhalt}
+      initialPersons={initialPersons} />
     <ResultView code={code} />
   </Flex >;
-}
-
-function FormView({ persons }: { persons: [string, JSX.Element][] }) {
-  return <Paper shadow="xs"
-    p="xl"
-    m="sm">
-    {persons.map((x) => x[1])}
-  </Paper>;
 }

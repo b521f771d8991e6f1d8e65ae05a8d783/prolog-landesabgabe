@@ -6,11 +6,12 @@ import { DateInput } from "@mantine/dates";
 import { useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 
-export function PersonForm({ person, addFacts }: {
+export function PersonForm({ person, addFacts, initialHandlungen }: {
     person: LandesabgabePerson,
-    addFacts: AddFactFileFunction
+    addFacts: AddFactFileFunction,
+    initialHandlungen?: LandesabgabeHandlung[]
 }) {
-    const [handlungen, setHandlungen] = useState<[LandesabgabeHandlung, string, JSX.Element][]>([]); // TODO save this
+    const [handlungen, setHandlungen] = useState<[LandesabgabeHandlung, string, JSX.Element][]>([]);
     const [date, setDate] = useState<Date | null>(null);
     const [gefördert, setGefördert] = useState<number | null>(null);
     const [uniqueFactSetName] = useState<string>(AppState.getUniqueFilename());
@@ -69,7 +70,7 @@ function PersonDetail({ person }: { person: LandesabgabePerson }) {
         <Text>Name: {person.vorname}</Text>
         <Text>Vorname: {person.nachname}</Text>
         <Text>Alter: {person.alter}</Text>
-    </>;
+    </>
 }
 
 function DetailTable({ handlungen, setDate, setGefördert, date, gefördert, addButtonClicked }: {

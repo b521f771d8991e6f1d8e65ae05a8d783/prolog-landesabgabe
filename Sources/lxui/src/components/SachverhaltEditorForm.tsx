@@ -1,18 +1,30 @@
-import { LandesabgabePerson, LandesabgabeSachverhalt } from "@/model/PrologTemplates";
+import { LandesabgabeHandlung, LandesabgabePerson, LandesabgabeSachverhalt } from "@/model/PrologTemplates";
 import { Input, Text, Button, NumberInput, Flex } from "@mantine/core";
 import { useState } from "react";
 import { PersonForm } from "./PersonForm";
 import { v4 as uuidv4 } from 'uuid';
 import { AddFactFileFunction } from "@/model/PrologFileSystem";
 
-export function SacherhaltEditorForm({ sachverhalt, addFacts }: {
-    sachverhalt: LandesabgabeSachverhalt,
-    addFacts: AddFactFileFunction
+/*
+* This component is used to edit a LandesabgabeSachverhalt. It allows adding
+* multiple Personen to the Sachverhalt.
+*/
+export function SacherhaltEditorForm({ addFacts, sachverhalt, initialPersons }: {
+    addFacts: AddFactFileFunction,
+    sachverhalt: LandesabgabeSachverhalt
+    initialPersons?: [LandesabgabePerson, LandesabgabeHandlung[]][],
 }) {
-    const [vorname, setVorname] = useState<string>();
-    const [nachname, setNachname] = useState<string>();
-    const [alter, setAlter] = useState<number>();
+    const [vorname, setVorname] = useState<string>("");
+    const [nachname, setNachname] = useState<string>("");
+    const [alter, setAlter] = useState<number>(0);
     const [handlungen, setHandlungen] = useState<[string, JSX.Element][]>([]);
+
+    function personFomFromState(state: [LandesabgabePerson, LandesabgabeHandlung[]]): [string, JSX.Element] {
+        const uuid = uuidv4();
+        return [uuid, <PersonForm key={uuid}
+            person={state[0]}
+            addFacts={addFacts} />];
+    }
 
     function generateNewHandlungForm(): [string, JSX.Element] {
         const person = new LandesabgabePerson(sachverhalt, vorname!, nachname!, alter!);
@@ -41,11 +53,11 @@ export function SacherhaltEditorForm({ sachverhalt, addFacts }: {
 }
 
 function Toolbar({ vorname, setVorname, nachname, setNachname, alter, setAlter, addButtonClicked }: {
-    vorname: string | unknown,
+    vorname: string,
     setVorname: any,
-    nachname: string | unknown,
+    nachname: string,
     setNachname: any,
-    alter: number | unknown,
+    alter: number,
     setAlter: any,
     addButtonClicked: any
 }) {

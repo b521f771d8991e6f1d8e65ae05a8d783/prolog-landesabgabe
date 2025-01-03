@@ -1,7 +1,9 @@
 ## Internals
 
 ### Frontend
-The frontend is written in React and Typescript.
+The frontend is written in React and Typescript. Ideally, we compile the
+backend parts using WASM into the frontend to use the same code there, but we
+are currently not there yet.
 
 ### Backend
 
@@ -24,4 +26,8 @@ Dependencies:
  * do not rely on nix or Docker, except for the build infrastructure
 
 ### Misc
-Where to update stuff? Dependencies.cmake, flake.nix, .gitmodules
+Where to update dependencies?
+ - ./Dependencies/Dependencies.cmake
+ - ./flake.nix
+ - ./.gitmodules
+ - ./vcpkg.json

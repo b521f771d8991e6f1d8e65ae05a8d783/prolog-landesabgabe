@@ -1,11 +1,27 @@
-import { Button, Flex, Title } from '@mantine/core';
-import { MainUI } from '@/components/MainUI';
+import { PillGroup, Title } from '@mantine/core';
 import { LandesabgabeSachverhalt } from '@/model/PrologTemplates';
-import { AppState } from '@/model/AppState';
-import { useEffect } from 'react';
+import { useEffect, useId, useState } from "react";
+import { Paper, Flex, Code, Button, Center, ScrollArea } from "@mantine/core";
+import { AppState } from "../model/AppState";
+import { v4 as uuidv4 } from 'uuid';
+import { PrologFile } from "@/model/PrologFileSystem";
+
+import "highlight.js/styles/github.css";
+import hljs from "highlight.js";
 
 import logo from "../../../../Resources/logo.svg";
+import { PersonForm } from '@/components/PersonForm';
+import { SacherhaltEditorForm } from '@/components/SacherhaltEditorForm';
 
+/**
+ * Sets the favicon of the document to the provided SVG data URL.
+ *
+ * This function creates a new link element with the relationship set to "shortcut icon"
+ * and the type set to "image/svg+xml". It then sets the href attribute to the provided
+ * SVG data URL and appends the link element to the document's head.
+ *
+ * @param {string} svgDataURL - The data URL of the SVG to be used as the favicon.
+ */
 function setFavicon(svgDataURL: string) {
   const link = document.createElement("link");
   link.rel = "shortcut icon";
@@ -41,5 +57,120 @@ export function HomePage({ prologVM }: { prologVM: AppState }) {
     <MainUI sachverhalt={sachverhalt} prologVM={prologVM} />
     <Button onClick={onDeleteButtonClicked}>Löschen 🗑</Button>
   </Flex>;
+}
+
+/*
+ * This component is responsible for displaying a Sachverhalt
+*/
+export function MainUI({ sachverhalt, prologVM }: {
+  sachverhalt: LandesabgabeSachverhalt,
+  prologVM: AppState
+}) {
+  const [code, setCode] = useState<string>();
+  const [factBase, setFactBase] = useState<PrologFile[]>(prologVM.getFactBase());
+  const [persons, setPersons] = useState<[string, JSX.Element][]>([generateNewPersonForm()]);
+
+  console.log("Loaded fact base:", factBase);
+
+  prologVM.addFactBaseListener(setFactBase);
+
+  function generateNewPersonForm(): [string, JSX.Element] {
+    const uuid = uuidv4();
+    const personForm = <SacherhaltEditorForm key={uuid}
+      sachverhalt={sachverhalt}
+      prologVM={prologVM} />;
+    return [uuid, personForm];
+  }
+
+  useEffect(() => {
+    async function f() {
+      const result = await prologVM.evaluate();
+      setCode(result);
+    }
+
+    f();
+  }, [sachverhalt, persons, prologVM]);
+
+  return <Flex
+    mih={50}
+    gap="xs"
+    justify="flex-start"
+    align="center"
+    direction="row"
+    wrap="wrap">
+    <FactBaseView factBase={factBase} />
+    <FormView persons={persons} />
+    <ResultView code={code} />
+  </Flex >;
+}
+
+function FactBaseView({ factBase }: { factBase: PrologFile[] }) {
+  return <Paper shadow="xs"
+    p="xl"
+    m="sm">
+    <PrologFilesAccordion factBase={factBase} />
+  </Paper>;
+}
+
+function ResultView({ code }: { code: string | undefined }) {
+  return <Paper shadow="xs"
+    p="xl"
+    m="sm">
+    <Code>{code}</Code>
+  </Paper>
+}
+
+function FormView({ persons }: { persons: [string, JSX.Element][] }) {
+  return <Paper shadow="xs"
+    p="xl"
+    m="sm">
+    {persons.map((x) => x[1])}
+  </Paper>;
+}
+
+function PrologFilesAccordion({ factBase }: { factBase: PrologFile[] }) {
+  return factBase.map((x) => <PrologFileView pf={x} />);
+}
+
+function PrologFileView({ pf }: { pf: PrologFile }) {
+  function onFullScreenClicked() {
+    // open a new window containing pf.content
+    const blob = URL.createObjectURL(new Blob([pf.content], { type: "text/plain" }));
+    window.open(blob);
+  }
+
+  return <>
+    <details>
+      <summary>{pf.name}</summary>
+      <Code block>
+        <PrologCodeBlock prologCode={pf.content} />
+      </Code>
+
+      <Center>
+        <Button onClick={onFullScreenClicked}>Vergrößern</Button>
+        <Button disabled>In Normtext konvertieren 🪄</Button>
+      </Center>
+    </details>
+  </>;
+}
+
+function PrologCodeBlock({ prologCode }: { prologCode: string }) {
+  const codeRef = useId();
+
+  useEffect(() => {
+    const codeElement = document.getElementById(codeRef);
+
+    if (codeElement) {
+      hljs.highlightElement(codeElement);
+    }
+  }, [prologCode]);
+
+  return <Code>
+    <ScrollArea w={300} h={200}>
+      <code id={codeRef} className="prolog overflow-x-auto max-w-11">
+        {prologCode}
+      </code>
+    </ScrollArea>
+  </Code>
 }
 

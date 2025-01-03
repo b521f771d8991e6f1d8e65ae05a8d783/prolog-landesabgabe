@@ -1,90 +1,137 @@
-import { LandesabgabePerson, LandesabgabeSachverhalt } from "@/model/PrologTemplates";
-import { Input, Text, Button, NumberInput, Flex } from "@mantine/core";
-import { useState } from "react";
-import { HandlungForm } from "./HandlungForm";
+import { PrologFile } from "@/model/PrologFileSystem";
+import { LandesabgabeHandlung, LandesabgabePerson } from "@/model/PrologTemplates";
 import { AppState } from "@/model/AppState";
+import { Text, Paper, Button, Title, NumberInput, Table, Divider } from "@mantine/core";
+import { DateInput } from "@mantine/dates";
+import { useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 
-export function PersonForm({ sachverhalt, prologVM }: {
-    sachverhalt: LandesabgabeSachverhalt,
+export function PersonForm({ person, prologVM }: {
+    person: LandesabgabePerson,
     prologVM: AppState
 }) {
-    const [vorname, setVorname] = useState<string>();
-    const [nachname, setNachname] = useState<string>();
-    const [alter, setAlter] = useState<number>();
-    const [handlungen, setHandlungen] = useState<[string, JSX.Element][]>([]);
+    const [handlungen, setHandlungen] = useState<[LandesabgabeHandlung, string, JSX.Element][]>([]); // TODO save this
+    const [date, setDate] = useState<Date | null>(null);
+    const [gefördert, setGefördert] = useState<number | null>(null);
+    const [uniqueFactSetName] = useState<string>(AppState.getUniqueFilename());
 
-    function generateNewHandlungForm(): [string, JSX.Element] {
-        const person = new LandesabgabePerson(sachverhalt, vorname!, nachname!, alter!);
+    function generateNewHandlungViewer(): [LandesabgabeHandlung, string, JSX.Element] {
+        const handlung = new LandesabgabeHandlung(person, date!, gefördert!);
         const uuid = uuidv4();
-        return [uuid, <HandlungForm key={uuid}
-            person={person}
-            prologVM={prologVM} />];
+        const form = <HandlungViewer key={uuid} handlung={handlung} />;
+        return [handlung, uuid, form];
     }
 
     function addButtonClicked() {
-        setHandlungen([...handlungen, generateNewHandlungForm()]);
+        const newHandlungenValue = [...handlungen, generateNewHandlungViewer()]
+        setHandlungen(newHandlungenValue);
+
+        const prologFile = new PrologFile(uniqueFactSetName, generateProlog(), handlungen.map((x) => x[0]));
+        prologVM.addFactBase(prologFile);
     }
 
-    return <>
-        <Toolbar vorname={vorname}
-            setVorname={setVorname}
-            nachname={nachname}
-            setNachname={setNachname}
-            alter={alter}
-            setAlter={setAlter}
-            addButtonClicked={addButtonClicked} />
+    function generateProlog(): string {
+        return `${person.sachverhalt.serialize2Prolog()}
+            ${person.serialize2Prolog()}
+            ${handlungen.reduce((previousValue: string, currentValue: [LandesabgabeHandlung, string, JSX.Element]): string => {
+            return `
+                ${previousValue}
+                ${currentValue[0].serialize2Prolog()}
+            `;
+        }, "")}`;
+    }
 
-        {handlungen.map((x) => x[1])}
+    return <Paper shadow="xs"
+        p="xl"
+        m="sm">
+        <Title>Abgabenakt von "{person.vorname}"</Title>
+        <PersonDetail person={person} />
+        <Divider my="md" />
+        <DetailTable handlungen={handlungen}
+            setDate={setDate}
+            setGefördert={setGefördert}
+            date={date}
+            gefördert={gefördert}
+            addButtonClicked={addButtonClicked} />
+    </Paper>;
+}
+
+function HandlungViewer({ handlung }: { handlung: LandesabgabeHandlung }) {
+    return <Table.Tr>
+        <Table.Td>{handlung.date.toISOString()}</Table.Td>
+        <Table.Td>{handlung.gefördert}</Table.Td>
+        <Table.Td>{handlung.einheit}</Table.Td>
+    </Table.Tr >;
+}
+
+function PersonDetail({ person }: { person: LandesabgabePerson }) {
+    return <>
+        <Text>Name: {person.vorname}</Text>
+        <Text>Vorname: {person.nachname}</Text>
+        <Text>Alter: {person.alter}</Text>
     </>;
 }
 
-function Toolbar({ vorname, setVorname, nachname, setNachname, alter, setAlter, addButtonClicked }: {
-    vorname: string | unknown,
-    setVorname: any,
-    nachname: string | unknown,
-    setNachname: any,
-    alter: number | unknown,
-    setAlter: any,
+function DetailTable({ handlungen, setDate, setGefördert, date, gefördert, addButtonClicked }: {
+    handlungen: [LandesabgabeHandlung, string, JSX.Element][],
+    setDate: any,
+    setGefördert: any,
+    date: any,
+    gefördert: any,
     addButtonClicked: any
 }) {
-    return <Flex
-        mih={50}
-        gap="xs"
-        justify="flex-start"
-        align="center"
-        direction="row"
-        wrap="wrap">
-        <Text mb={4}>Vorname:</Text>
-        <Input
-            value={vorname}
-            onChange={(event) => setVorname(event.target.value)}
-            placeholder="Geben Sie Ihren Vornamen ein" />
-
-        <Text mb={4}>Nachname:</Text>
-        <Input
-            value={nachname}
-            onChange={(event) => setNachname(event.target.value)}
-            placeholder="Geben Sie Ihren Nachnamen ein" />
-
-        <Text mb={4}>Alter:</Text>
-
-        <NumberInput
-            value={alter}
-            onChange={(event) => {
-                if (typeof event === "number") {
-                    setAlter(event);
-                }
-                else {
-                    console.error("Unknown type");
-                }
-            }}
-            placeholder="Geben Sie Ihren Nachnamen ein" />
-
-        <Button disabled={vorname === undefined || nachname === undefined || alter === undefined}
-            onClick={addButtonClicked}>
-            Person hinzufügen
-        </Button>
-    </Flex>;
+    return <Table
+        stickyHeader
+        stickyHeaderOffset={60}
+        variant="vertical">
+        <TableHeader></TableHeader>
+        <HandlungenTableBody
+            handlungen={handlungen}
+            setDate={setDate}
+            setGefördert={setGefördert}
+            date={date}
+            gefördert={gefördert}
+            addButtonClicked={addButtonClicked}>
+        </HandlungenTableBody>
+    </Table>;
 }
 
+function HandlungenTableBody({ handlungen, setDate, setGefördert, date, gefördert, addButtonClicked }: {
+    handlungen: [LandesabgabeHandlung, string, JSX.Element][],
+    setDate: any,
+    setGefördert: any,
+    date: any,
+    gefördert: any,
+    addButtonClicked: any
+}) {
+    return <Table.Tbody>
+        {handlungen.map((x) => x[2])}
+
+        <Table.Tr>
+            <Table.Td>
+                <DateInput onChange={setDate} />
+            </Table.Td>
+
+            <Table.Td>
+                <NumberInput onChange={setGefördert} />
+            </Table.Td>
+
+            <Table.Td>
+                <Button disabled={date === undefined || date === null || gefördert === undefined || gefördert === 0 || gefördert === null}
+                    onClick={addButtonClicked}>
+                    Eintrag hinzufügen
+                </Button>
+            </Table.Td>
+        </Table.Tr >
+    </Table.Tbody>
+}
+
+function TableHeader() {
+    return <Table.Thead>
+        <Table.Tr>
+            <Table.Th>Datum</Table.Th>
+            <Table.Th>Menge</Table.Th>
+            <Table.Th>Einheit</Table.Th>
+        </Table.Tr>
+    </Table.Thead>;
+}

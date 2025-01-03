@@ -1,7 +1,7 @@
 import { LandesabgabeSachverhalt } from "@/model/PrologTemplates";
 import { useEffect, useId, useRef, useState } from "react";
-import { PersonForm } from "./PersonForm";
-import { Paper, Flex, Code, Button, Center } from "@mantine/core";
+import { SacherhaltEditorForm } from "./SacherhaltEditorForm";
+import { Paper, Flex, Code, Button, Center, ScrollArea } from "@mantine/core";
 import { AppState } from "../model/AppState";
 import { v4 as uuidv4 } from 'uuid';
 import { PrologFile } from "@/model/PrologFileSystem";
@@ -12,7 +12,7 @@ import hljs from "highlight.js";
 /*
  * This component is responsible for displaying a Sachverhalt
 */
-export function SachverhaltForm({ sachverhalt, prologVM }: {
+export function MainUI({ sachverhalt, prologVM }: {
     sachverhalt: LandesabgabeSachverhalt,
     prologVM: AppState
 }) {
@@ -22,13 +22,20 @@ export function SachverhaltForm({ sachverhalt, prologVM }: {
 
     console.log("Loaded fact base:", factBase);
 
-    prologVM.addFactBaseListener((changedFactBase: PrologFile[]) => {
-        setFactBase(changedFactBase);
-    });
+    prologVM.addFactBaseListener(setFactBase);
+
+    function personFormFromFactBase(factBase: PrologFile[]): [string, JSX.Element][] {
+        return factBase.map((x) => {
+            const personForm = <SacherhaltEditorForm key={x.name}
+                sachverhalt={sachverhalt}
+                prologVM={prologVM} />;
+            return [x.name, personForm];
+        });
+    }
 
     function generateNewPersonForm(): [string, JSX.Element] {
         const uuid = uuidv4();
-        const personForm = <PersonForm key={uuid}
+        const personForm = <SacherhaltEditorForm key={uuid}
             sachverhalt={sachverhalt}
             prologVM={prologVM} />;
         return [uuid, personForm];
@@ -102,10 +109,12 @@ function PrologCodeBlock({ prologCode }: { prologCode: string }) {
         }
     }, [prologCode]);
 
-    return <Code block>
-        <code id={codeRef} className="prolog">
-            {prologCode}
-        </code>
+    return <Code>
+        <ScrollArea w={300} h={200}>
+            <code id={codeRef} className="prolog overflow-x-auto max-w-11">
+                {prologCode}
+            </code>
+        </ScrollArea>
         <Center>
             <Button disabled>In Normtext konvertieren 🪄</Button>
         </Center>

@@ -10,7 +10,8 @@
                 "ms-azuretools.vscode-docker",
                 "streetsidesoftware.code-spell-checker",
                 "vscodevim.vim",
-                "arthurwang.vsc-prolog"
+                "arthurwang.vsc-prolog",
+                "bradlc.vscode-tailwindcss"
             ]
         }
     },

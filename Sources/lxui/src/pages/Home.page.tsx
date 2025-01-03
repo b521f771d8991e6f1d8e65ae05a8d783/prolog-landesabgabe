@@ -1,5 +1,5 @@
 import { Button, Flex, Title } from '@mantine/core';
-import { SachverhaltForm } from '@/components/SachverhaltEditorForm';
+import { MainUI } from '@/components/MainUI';
 import { LandesabgabeSachverhalt } from '@/model/PrologTemplates';
 import { AppState } from '@/model/AppState';
 import { useEffect } from 'react';
@@ -38,7 +38,7 @@ export function HomePage({ prologVM }: { prologVM: AppState }) {
     direction="column"
     wrap="wrap">
     <Title>Sachverhalts-Editor</Title>
-    <SachverhaltForm sachverhalt={sachverhalt} prologVM={prologVM} />
+    <MainUI sachverhalt={sachverhalt} prologVM={prologVM} />
     <Button onClick={onDeleteButtonClicked}>Löschen 🗑</Button>
   </Flex>;
 }

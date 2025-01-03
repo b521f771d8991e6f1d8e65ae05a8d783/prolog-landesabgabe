@@ -12,6 +12,7 @@ import hljs from "highlight.js";
 import logo from "../../../../Resources/logo.svg";
 import { PersonForm } from '@/components/PersonForm';
 import { SacherhaltEditorForm } from '@/components/SacherhaltEditorForm';
+import { Prolog } from 'swipl-wasm';
 
 /**
  * Sets the favicon of the document to the provided SVG data URL.
@@ -39,6 +40,7 @@ export function HomePage({ prologVM }: { prologVM: AppState }) {
 
   function onDeleteButtonClicked() {
     prologVM.reset();
+    window.location.reload();
   }
 
   useEffect(() => {
@@ -54,7 +56,9 @@ export function HomePage({ prologVM }: { prologVM: AppState }) {
     direction="column"
     wrap="wrap">
     <Title>Sachverhalts-Editor</Title>
-    <MainUI sachverhalt={sachverhalt} prologVM={prologVM} />
+    <MainUI
+      sachverhalt={sachverhalt}
+      appState={prologVM} />
     <Button onClick={onDeleteButtonClicked}>Löschen 🗑</Button>
   </Flex>;
 }
@@ -62,34 +66,39 @@ export function HomePage({ prologVM }: { prologVM: AppState }) {
 /*
  * This component is responsible for displaying a Sachverhalt
 */
-export function MainUI({ sachverhalt, prologVM }: {
+export function MainUI({ sachverhalt, appState }: {
   sachverhalt: LandesabgabeSachverhalt,
-  prologVM: AppState
+  appState: AppState
 }) {
   const [code, setCode] = useState<string>();
-  const [factBase, setFactBase] = useState<PrologFile[]>(prologVM.getFactBase());
+  const [factBase, setFactBase] = useState<PrologFile[]>(appState.getFactBase());
   const [persons, setPersons] = useState<[string, JSX.Element][]>([generateNewPersonForm()]);
 
   console.log("Loaded fact base:", factBase);
 
-  prologVM.addFactBaseListener(setFactBase);
+  appState.addFactBaseListener(setFactBase);
+
+  function addFactsFunction(pf: PrologFile) {
+    console.log("Adding facts to fact base:", pf);
+    appState.addFactBase(pf);
+  }
 
   function generateNewPersonForm(): [string, JSX.Element] {
     const uuid = uuidv4();
     const personForm = <SacherhaltEditorForm key={uuid}
       sachverhalt={sachverhalt}
-      prologVM={prologVM} />;
+      addFacts={addFactsFunction} />;
     return [uuid, personForm];
   }
 
   useEffect(() => {
     async function f() {
-      const result = await prologVM.evaluate();
+      const result = await appState.evaluate();
       setCode(result);
     }
 
     f();
-  }, [sachverhalt, persons, prologVM]);
+  }, [sachverhalt, persons, appState]);
 
   return <Flex
     mih={50}

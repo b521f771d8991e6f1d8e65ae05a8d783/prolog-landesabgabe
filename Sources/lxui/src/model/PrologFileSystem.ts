@@ -4,6 +4,8 @@ import { LandesabgabeHandlung } from "./PrologTemplates";
 
 export const labbgPl = new URL("../static/labgg.pl", import.meta.url);
 
+export type AddFactFileFunction = (prologFile: PrologFile) => void;
+
 export class PrologFile {
     public name: string;
     public content: string;

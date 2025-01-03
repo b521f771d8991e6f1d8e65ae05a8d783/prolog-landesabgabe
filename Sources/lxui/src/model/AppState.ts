@@ -184,4 +184,8 @@ export class AppState {
     getFactBase(): PrologFile[] {
         return this.factBase;
     }
+
+    getFactBaseContainingHandlung(): PrologFile[] {
+        return this.factBase.filter((pf: PrologFile) => pf.handlung !== undefined);
+    }
 }

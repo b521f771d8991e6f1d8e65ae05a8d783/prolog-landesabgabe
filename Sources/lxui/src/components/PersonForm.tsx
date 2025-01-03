@@ -1,4 +1,4 @@
-import { PrologFile } from "@/model/PrologFileSystem";
+import { AddFactFileFunction, PrologFile } from "@/model/PrologFileSystem";
 import { LandesabgabeHandlung, LandesabgabePerson } from "@/model/PrologTemplates";
 import { AppState } from "@/model/AppState";
 import { Text, Paper, Button, Title, NumberInput, Table, Divider } from "@mantine/core";
@@ -6,9 +6,9 @@ import { DateInput } from "@mantine/dates";
 import { useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 
-export function PersonForm({ person, prologVM }: {
+export function PersonForm({ person, addFacts }: {
     person: LandesabgabePerson,
-    prologVM: AppState
+    addFacts: AddFactFileFunction
 }) {
     const [handlungen, setHandlungen] = useState<[LandesabgabeHandlung, string, JSX.Element][]>([]); // TODO save this
     const [date, setDate] = useState<Date | null>(null);
@@ -27,7 +27,7 @@ export function PersonForm({ person, prologVM }: {
         setHandlungen(newHandlungenValue);
 
         const prologFile = new PrologFile(uniqueFactSetName, generateProlog(), handlungen.map((x) => x[0]));
-        prologVM.addFactBase(prologFile);
+        addFacts(prologFile);
     }
 
     function generateProlog(): string {

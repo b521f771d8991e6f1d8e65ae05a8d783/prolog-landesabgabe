@@ -1,9 +1,8 @@
 import { Title } from '@mantine/core';
 import { LandesabgabeHandlung, LandesabgabePerson, LandesabgabeSachverhalt } from '@/model/PrologTemplates';
 import { useEffect, useMemo, useState } from "react";
-import { Paper, Flex, Code, Button } from "@mantine/core";
+import { Flex, Button } from "@mantine/core";
 import { AppState, getLocalStorage } from "../model/AppState";
-import { v4 as uuidv4 } from 'uuid';
 import { PrologFile } from "@/model/PrologFileSystem";
 
 import "highlight.js/styles/github.css";
@@ -12,6 +11,9 @@ import logo from "../../../../Resources/logo.svg";
 import { SacherhaltEditorForm } from '@/components/SachverhaltEditorForm';
 import { PrologFilesAccordion } from '@/components/PrologFilesAccordion';
 import { ResultView } from '@/components/ResultView';
+
+const DOWNLOAD_FILE_DEFAULT_NAME = "Sachverhalt.sv";
+export const WIDTH = 550;
 
 /**
  * Sets the favicon of the document to the provided SVG data URL.
@@ -64,7 +66,7 @@ export function HomePage({ prologVM }: { prologVM: AppState }) {
     // Create a download link
     const downloadLink = document.createElement('a');
     downloadLink.setAttribute('href', 'data:application/octet-stream;charset=utf-8,' + encodeURIComponent(storage));
-    downloadLink.setAttribute('download', 'Sachverhalt.sv');
+    downloadLink.setAttribute('download', DOWNLOAD_FILE_DEFAULT_NAME);
 
     // Append the link to the document and click it
     document.body.appendChild(downloadLink);
@@ -86,10 +88,20 @@ export function HomePage({ prologVM }: { prologVM: AppState }) {
     align="center"
     direction="column"
     wrap="wrap">
+
     <Title td="underline">Sachverhalts-Editor</Title>
     <AppStateView appState={prologVM} />
-    <Button onClick={onDeleteButtonClicked}>Löschen 🗑</Button>
-    <Button onClick={onSaveClicked}>Speichern 💾</Button>
+
+    <Flex className={"select-none"}
+      mih={50}
+      gap="xs"
+      justify="center"
+      align="center"
+      direction="row"
+      wrap="wrap">
+      <Button onClick={onDeleteButtonClicked}>Löschen 🗑</Button>
+      <Button onClick={onSaveClicked}>Speichern 💾</Button>
+    </Flex>
   </Flex>;
 }
 
@@ -138,14 +150,14 @@ function AppStateView({ appState }: { appState: AppState }) {
     mih={50}
     gap="xs"
     justify="flex-start"
-    align="center"
+    align="top"
     direction="row"
     wrap="wrap">
-    <PrologFilesAccordion factBase={factBase} />
+    <PrologFilesAccordion factBase={factBase} width={WIDTH} />
     <SacherhaltEditorForm
       addFacts={addFactsFunction}
       sachverhalt={sachverhalt}
-      initialPersons={initialPersons} />
-    <ResultView code={code} />
+      initialPersons={initialPersons} width={WIDTH} />
+    <ResultView code={code} width={WIDTH} />
   </Flex >;
 }

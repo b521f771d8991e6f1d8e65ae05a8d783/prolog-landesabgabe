@@ -1,13 +1,18 @@
 import { PrologFile } from "@/model/PrologFileSystem";
-import { Code, Center, Button, ScrollArea, Paper } from "@mantine/core";
+import { Code, Center, Button, ScrollArea, Paper, Title } from "@mantine/core";
 import hljs from "highlight.js";
 import { useId, useEffect } from "react";
 
-export function PrologFilesAccordion({ factBase }: { factBase: PrologFile[] }) {
+export function PrologFilesAccordion({ factBase, width }: { factBase: PrologFile[], width: number }) {
     return <Paper shadow="xs"
         p="xl"
-        m="sm">
+        m="sm"
+        w={width}>
+        <Title>Faktenbasis</Title>
         {factBase.map((x) => <PrologFileView pf={x} />)}
+        <Center>
+            <Button disabled>Faktenbasis manuell hinzufügen</Button>
+        </Center>
     </Paper>;
 }
 

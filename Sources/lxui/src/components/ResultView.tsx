@@ -1,9 +1,11 @@
-import { Paper, Code } from "@mantine/core";
+import { Paper, Code, Title } from "@mantine/core";
 
-export function ResultView({ code }: { code: string | undefined }) {
+export function ResultView({ code, width }: { code: string | undefined, width: number }) {
     return <Paper shadow="xs"
         p="xl"
-        m="sm">
+        m="sm"
+        w={width}>
+        <Title>Ergebnisse</Title>
         <Code>{code}</Code>
     </Paper>
 }

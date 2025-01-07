@@ -1,10 +1,14 @@
-import SWIPL, { Prolog } from "swipl-wasm";
+import SWIPL from "swipl-wasm";
 import { getRechtsbestand, PrologFile } from "./PrologFileSystem";
 import { v4 as uuid } from 'uuid';
 
 export type FactBaseListener = (factBase: PrologFile[]) => void;
 
 const LOCAL_STORAGE_KEY: string = "factBase";
+
+export function getLocalStorage(): string | null {
+    return localStorage.getItem(LOCAL_STORAGE_KEY);
+}
 
 export class AppState {
     private swipl: SWIPL.SWIPLModule;

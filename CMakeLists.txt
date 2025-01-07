@@ -10,19 +10,17 @@ include(Dependencies/Dependencies.cmake)
 add_subdirectory(Sources/ActKit)
 add_subdirectory(Sources/LogicKit)
 add_subdirectory(Sources/Corpus)
-add_subdirectory(Sources/TemplateKit)
 
 # configuration for all targets
 set(TARGETS
   ActKit
   LogicKit
-  TemplateKit
+
 )
 
 set(TEST_TARGETS
   ActKitTests
   LogicKitTests
-  TemplateKitTests
 )
 
 # add target configuration

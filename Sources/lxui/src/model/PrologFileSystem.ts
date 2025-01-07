@@ -1,5 +1,3 @@
-// this should be done in the backend
-
 import { LandesabgabeHandlung } from "./PrologTemplates";
 
 export const labbgPl = new URL("../static/labgg.pl", import.meta.url);

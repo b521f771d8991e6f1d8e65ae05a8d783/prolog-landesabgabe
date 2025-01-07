@@ -26,9 +26,7 @@ function PrologFileView({ pf }: { pf: PrologFile }) {
     return <>
         <details>
             <summary>{pf.name}</summary>
-            <Code block>
-                <PrologCodeBlock prologCode={pf.content} />
-            </Code>
+            <PrologCodeBlock prologCode={pf.content} h={300} />
 
             <Center>
                 <Button onClick={onFullScreenClicked}>Vergrößern</Button>
@@ -38,7 +36,7 @@ function PrologFileView({ pf }: { pf: PrologFile }) {
     </>;
 }
 
-function PrologCodeBlock({ prologCode }: { prologCode: string }) {
+function PrologCodeBlock({ prologCode, h = 300 }: { prologCode: string, h: number }) {
     const codeRef = useId();
 
     useEffect(() => {
@@ -49,11 +47,7 @@ function PrologCodeBlock({ prologCode }: { prologCode: string }) {
         }
     }, [prologCode]);
 
-    return <Code>
-        <ScrollArea w={300} h={200}>
-            <code id={codeRef} className="prolog overflow-x-auto max-w-11">
-                {prologCode}
-            </code>
-        </ScrollArea>
-    </Code>
+    return <Code h={h} block>
+        {prologCode}
+    </Code>;
 }

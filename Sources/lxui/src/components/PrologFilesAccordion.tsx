@@ -1,13 +1,11 @@
 import { PrologFile, PrologFileType } from "@/model/PrologFileSystem";
-import { Code, Center, Button, Paper, Title, Flex } from "@mantine/core";
+import { Code, Center, Button, Paper, Title, Flex, Text } from "@mantine/core";
 import hljs from "highlight.js";
 import { useId, useEffect } from "react";
 
 export function PrologFilesAccordion({ factBase, width }: { factBase: PrologFile[], width: number }) {
     const laws = factBase.filter((x) => x.prologFileType === PrologFileType.LAW);
     const mereFacts = factBase.filter((x) => x.prologFileType === PrologFileType.FACT);
-
-    console.log(laws, mereFacts, factBase)
 
     return <Paper shadow="xs"
         p="xl"
@@ -17,12 +15,14 @@ export function PrologFilesAccordion({ factBase, width }: { factBase: PrologFile
 
         {laws.length > 0 && <>
             <Title order={2}>Gesetze</Title>
-            {laws.map((x) => <PrologFileView pf={x} />)}
+            <Text size="xs">Gesetze werden als Hintergrundinformationen geladen und nicht im Sachverhalt angezeigt</Text>
+            {laws.map((x) => <PrologFileView pf={x} key={x.name} />)}
         </>}
 
         {mereFacts.length > 0 && <>
             <Title order={2}>Fakten</Title>
-            {mereFacts.map((x) => <PrologFileView pf={x} />)}
+            <Text size="xs">Fakten werden im Sachverhalt angezeigt</Text>
+            {mereFacts.map((x) => <PrologFileView pf={x} key={x.name} />)}
         </>}
 
         <Center>
@@ -78,10 +78,10 @@ function PrologFileView({ pf }: { pf: PrologFile }) {
 }
 
 function PrologCodeBlock({ prologCode, h = 300 }: { prologCode: string, h: number }) {
-    const codeRef = useId();
+    const codeId = useId();
 
     useEffect(() => {
-        const codeElement = document.getElementById(codeRef);
+        const codeElement = document.getElementById(codeId);
 
         if (codeElement) {
             hljs.highlightElement(codeElement);
@@ -89,7 +89,7 @@ function PrologCodeBlock({ prologCode, h = 300 }: { prologCode: string, h: numbe
     }, [prologCode]);
 
     return <Code h={h} block>
-        <code className="Prolog">
+        <code id={codeId} className="prolog">
             {prologCode}
         </code>
     </Code>;

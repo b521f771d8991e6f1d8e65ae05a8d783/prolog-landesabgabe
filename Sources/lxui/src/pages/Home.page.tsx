@@ -2,7 +2,7 @@ import { Title } from '@mantine/core';
 import { LandesabgabeHandlung, LandesabgabePerson, LandesabgabeSachverhalt } from '@/model/PrologTemplates';
 import { useEffect, useMemo, useState } from "react";
 import { Paper, Flex, Code, Button } from "@mantine/core";
-import { AppState } from "../model/AppState";
+import { AppState, getLocalStorage } from "../model/AppState";
 import { v4 as uuidv4 } from 'uuid';
 import { PrologFile } from "@/model/PrologFileSystem";
 
@@ -58,6 +58,22 @@ export function HomePage({ prologVM }: { prologVM: AppState }) {
     window.location.reload();
   }
 
+  async function onSaveClicked() {
+    const storage = getLocalStorage() ?? "[]"; // if there is no object yet created, create an empty array (no object)
+
+    // Create a download link
+    const downloadLink = document.createElement('a');
+    downloadLink.setAttribute('href', 'data:application/octet-stream;charset=utf-8,' + encodeURIComponent(storage));
+    downloadLink.setAttribute('download', 'Sachverhalt.sv');
+
+    // Append the link to the document and click it
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+
+    // Remove the temporary link
+    document.body.removeChild(downloadLink);
+  }
+
   useEffect(() => {
     setTitle("LXUI");
     setFavicon(logo);
@@ -70,9 +86,10 @@ export function HomePage({ prologVM }: { prologVM: AppState }) {
     align="center"
     direction="column"
     wrap="wrap">
-    <Title>Sachverhalts-Editor</Title>
+    <Title td="underline">Sachverhalts-Editor</Title>
     <AppStateView appState={prologVM} />
     <Button onClick={onDeleteButtonClicked}>Löschen 🗑</Button>
+    <Button onClick={onSaveClicked}>Speichern 💾</Button>
   </Flex>;
 }
 

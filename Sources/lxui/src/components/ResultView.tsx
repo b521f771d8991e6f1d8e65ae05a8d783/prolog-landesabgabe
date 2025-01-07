@@ -1,7 +1,7 @@
 import { Paper, Code, Title } from "@mantine/core";
 
 export function ResultView({ code, width }: { code: string | undefined, width: number }) {
-    return <Paper shadow="xs"
+    return <Paper shadow="sm"
         p="xl"
         m="sm"
         w={width}>

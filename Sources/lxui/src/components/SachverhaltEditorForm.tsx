@@ -1,10 +1,9 @@
 import { LandesabgabeHandlung, LandesabgabePerson, LandesabgabeSachverhalt } from "@/model/PrologTemplates";
-import { Input, Text, Button, NumberInput, Flex, Paper } from "@mantine/core";
+import { Input, Text, Button, NumberInput, Flex, Paper, Title } from "@mantine/core";
 import { useState } from "react";
 import { PersonForm } from "./PersonForm";
 import { v4 as uuidv4 } from 'uuid';
 import { AddFactFileFunction } from "@/model/PrologFileSystem";
-import { WIDTH } from "@/pages/Home.page";
 
 /*
 * This component is used to edit a LandesabgabeSachverhalt. It allows adding
@@ -42,10 +41,11 @@ export function SacherhaltEditorForm({ addFacts, sachverhalt, initialPersons, wi
     }
 
     return <Paper
-        shadow="xs"
+        shadow="sm"
         p="xl"
         m="sm"
         w={width}>
+        <Title>Faktenbasis bearbeiten</Title>
         <Flex
             mih={50}
             gap="xs"

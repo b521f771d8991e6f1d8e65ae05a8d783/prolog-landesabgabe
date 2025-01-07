@@ -2,12 +2,18 @@ import '@mantine/core/styles.css';
 
 import { MantineProvider } from '@mantine/core';
 import { Router } from './Router';
-import { theme } from './theme';
+import { shadcnTheme } from './theme';
 import { AppState } from './model/AppState';
+
+
+import "./style.css";
+import { shadcnCssVariableResolver } from './cssVariableResolver';
 
 export default function App({ prologVM: appState }: { prologVM: AppState }) {
   return (
-    <MantineProvider theme={theme}>
+    <MantineProvider
+      theme={shadcnTheme}
+      cssVariablesResolver={shadcnCssVariableResolver}>
       <Router prologVM={appState} />
     </MantineProvider>
   );

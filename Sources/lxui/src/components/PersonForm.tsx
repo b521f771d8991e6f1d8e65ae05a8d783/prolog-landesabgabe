@@ -42,12 +42,13 @@ export function PersonForm({ person, addFacts, initialHandlungen }: {
         }, "")}`;
     }
 
-    return <Paper shadow="xs"
+    return <Paper shadow="sm"
         p="xl"
         m="sm">
         <Title>Abgabenakt von "{person.vorname}"</Title>
         <PersonDetail person={person} />
         <Divider my="md" />
+        <Text size="xs">Geben Sie hier bitte an wie viel Gestein Sie in welchem Zeitraum gefördert haben</Text>
         <DetailTable handlungen={handlungen}
             setDate={setDate}
             setGefördert={setGefördert}
@@ -131,8 +132,8 @@ function TableHeader() {
     return <Table.Thead>
         <Table.Tr>
             <Table.Th>Datum</Table.Th>
-            <Table.Th>Menge</Table.Th>
-            <Table.Th>Einheit</Table.Th>
+            <Table.Th>Geförderte Menge</Table.Th>
+            {/*<Table.Th>Einheit</Table.Th>*/}
         </Table.Tr>
     </Table.Thead>;
 }

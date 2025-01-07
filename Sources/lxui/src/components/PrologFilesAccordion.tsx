@@ -7,7 +7,7 @@ export function PrologFilesAccordion({ factBase, width }: { factBase: PrologFile
     const laws = factBase.filter((x) => x.prologFileType === PrologFileType.LAW);
     const mereFacts = factBase.filter((x) => x.prologFileType === PrologFileType.FACT);
 
-    return <Paper shadow="xs"
+    return <Paper shadow="sm"
         p="xl"
         m="sm"
         w={width}>
@@ -19,6 +19,19 @@ export function PrologFilesAccordion({ factBase, width }: { factBase: PrologFile
             {laws.map((x) => <PrologFileView pf={x} key={x.name} />)}
         </>}
 
+        <Center>
+            <Flex className={"select-none"}
+                mih={50}
+                gap="xs"
+                justify="center"
+                align="center"
+                direction="row"
+                wrap="wrap">
+                <Button leftSection={"⚖️"} disabled>Gesetz aus Bibliothek hinzufügen</Button>
+                <Button leftSection={"✏️"} disabled>Gesetze manuell hinzufügen</Button>
+            </Flex>
+        </Center>
+
         {mereFacts.length > 0 && <>
             <Title order={2}>Fakten</Title>
             <Text size="xs">Fakten werden im Sachverhalt angezeigt</Text>
@@ -26,9 +39,9 @@ export function PrologFilesAccordion({ factBase, width }: { factBase: PrologFile
         </>}
 
         <Center>
-            <Button disabled>Wissensbasis manuell hinzufügen</Button>
+            <Button leftSection={"⚒️"} disabled>Fakten manuell hinzufügen</Button>
         </Center>
-    </Paper>;
+    </Paper >;
 }
 
 function PrologFileView({ pf }: { pf: PrologFile }) {
@@ -68,12 +81,12 @@ function PrologFileView({ pf }: { pf: PrologFile }) {
                     align="center"
                     direction="row"
                     wrap="wrap">
-                    <Button onClick={onDownloadClicked}>💾</Button>
-                    <Button onClick={onFullScreenClicked}>Vergrößern</Button>
-                    <Button disabled>In Normtext konvertieren 🪄</Button>
+                    <Button onClick={onDownloadClicked} leftSection={"💾"}>Download</Button>
+                    <Button onClick={onFullScreenClicked} leftSection={"💻"}>Vergrößern</Button>
+                    <Button disabled leftSection={"🪄"}>In Norm verwandeln</Button>
                 </Flex>
             </Center>
-        </details>
+        </details >
     </>;
 }
 

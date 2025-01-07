@@ -1,4 +1,4 @@
-import { Title } from '@mantine/core';
+import { Divider, Paper, Title } from '@mantine/core';
 import { LandesabgabeHandlung, LandesabgabePerson, LandesabgabeSachverhalt } from '@/model/PrologTemplates';
 import { useEffect, useMemo, useState } from "react";
 import { Flex, Button, Text } from "@mantine/core";
@@ -81,7 +81,7 @@ export function HomePage({ prologVM }: { prologVM: AppState }) {
     setFavicon(logo);
   }, []);
 
-  return <Flex className={"select-none"}
+  return <Flex
     mih={50}
     gap="xs"
     justify="center"
@@ -90,18 +90,22 @@ export function HomePage({ prologVM }: { prologVM: AppState }) {
     wrap="wrap">
 
     <Title td="underline">Sachverhalts-Editor</Title>
+    <Paper shadow="sm"
+      p="sm"
+      m="sm">
+      <Flex className={"select-none"}
+        mih={50}
+        gap="xs"
+        justify="center"
+        align="center"
+        direction="row"
+        wrap="wrap">
+        <Button onClick={onDeleteButtonClicked} leftSection={"🗑"}>Löschen</Button>
+        <Button onClick={onSaveClicked} leftSection={"💾"}>Speichern</Button>
+      </Flex>
+    </Paper>
+    <Divider />
     <AppStateView appState={prologVM} />
-
-    <Flex className={"select-none"}
-      mih={50}
-      gap="xs"
-      justify="center"
-      align="center"
-      direction="row"
-      wrap="wrap">
-      <Button onClick={onDeleteButtonClicked}>Löschen 🗑</Button>
-      <Button onClick={onSaveClicked}>Speichern 💾</Button>
-    </Flex>
 
     <Text c="dimmed">
       Ein Projekt der Staabsstelle für Digitalisierung Oberösterreich☕

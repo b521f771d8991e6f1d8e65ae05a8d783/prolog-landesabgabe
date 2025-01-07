@@ -4,15 +4,21 @@ export const labbgPl = new URL("../static/labgg.pl", import.meta.url);
 
 export type AddFactFileFunction = (prologFile: PrologFile) => void;
 
+export enum PrologFileType {
+    LAW, FACT
+}
+
 export class PrologFile {
+    public prologFileType: PrologFileType;;
     public name: string;
     public content: string;
     public handlung: LandesabgabeHandlung[] | undefined;
 
-    constructor(name: string, content: string, handlung: LandesabgabeHandlung[]) {
+    constructor(name: string, content: string, handlung: LandesabgabeHandlung[], pft: PrologFileType = PrologFileType.FACT) {
         this.name = name;
         this.content = content;
         this.handlung = handlung;
+        this.prologFileType = pft;
     }
 }
 
@@ -24,7 +30,8 @@ export function getRechtsbestand(fileSet: URL[] = defaultFileSet): Promise<Prolo
         return {
             name: url.pathname,
             content: await response.text(),
-            handlung: undefined
+            handlung: undefined,
+            prologFileType: PrologFileType.LAW
         }
     });
 }

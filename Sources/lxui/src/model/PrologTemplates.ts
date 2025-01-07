@@ -95,7 +95,8 @@ export class LandesabgabePerson implements PrologFragment {
         this._person_id = generateUUID(PERSON_ID);
     }
 
-    public toJSON() {
+    public convert2JSON() {
+        console.log(this);
         return JSON.stringify(this);
     }
 

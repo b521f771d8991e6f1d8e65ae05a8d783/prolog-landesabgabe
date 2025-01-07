@@ -1,4 +1,4 @@
-import { AddFactFileFunction, PrologFile } from "@/model/PrologFileSystem";
+import { AddFactFileFunction, PrologFile, PrologFileType } from "@/model/PrologFileSystem";
 import { LandesabgabeHandlung, LandesabgabePerson } from "@/model/PrologTemplates";
 import { AppState } from "@/model/AppState";
 import { Text, Paper, Button, Title, NumberInput, Table, Divider } from "@mantine/core";
@@ -27,7 +27,7 @@ export function PersonForm({ person, addFacts, initialHandlungen }: {
         const newHandlungenValue = [...handlungen, generateNewHandlungViewer()]
         setHandlungen(newHandlungenValue);
 
-        const prologFile = new PrologFile(uniqueFactSetName, generateProlog(), handlungen.map((x) => x[0]));
+        const prologFile = new PrologFile(uniqueFactSetName, generateProlog(), handlungen.map((x) => x[0]), PrologFileType.FACT);
         addFacts(prologFile);
     }
 

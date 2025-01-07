@@ -1,7 +1,7 @@
 import { Title } from '@mantine/core';
 import { LandesabgabeHandlung, LandesabgabePerson, LandesabgabeSachverhalt } from '@/model/PrologTemplates';
 import { useEffect, useMemo, useState } from "react";
-import { Flex, Button } from "@mantine/core";
+import { Flex, Button, Text } from "@mantine/core";
 import { AppState, getLocalStorage } from "../model/AppState";
 import { PrologFile } from "@/model/PrologFileSystem";
 
@@ -102,6 +102,10 @@ export function HomePage({ prologVM }: { prologVM: AppState }) {
       <Button onClick={onDeleteButtonClicked}>Löschen 🗑</Button>
       <Button onClick={onSaveClicked}>Speichern 💾</Button>
     </Flex>
+
+    <Text c="dimmed">
+      Ein Projekt der Staabsstelle für Digitalisierung Oberösterreich☕
+    </Text>
   </Flex>;
 }
 

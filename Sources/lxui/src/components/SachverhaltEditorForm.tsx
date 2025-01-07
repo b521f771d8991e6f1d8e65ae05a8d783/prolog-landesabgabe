@@ -1,70 +1,79 @@
 import { LandesabgabeHandlung, LandesabgabePerson, LandesabgabeSachverhalt } from "@/model/PrologTemplates";
 import { Input, Text, Button, NumberInput, Flex, Paper, Title } from "@mantine/core";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { PersonForm } from "./PersonForm";
-import { v4 as uuidv4 } from 'uuid';
-import { AddFactFileFunction } from "@/model/PrologFileSystem";
+import { AddFactFileFunction, PrologFile, PrologFileType } from "@/model/PrologFileSystem";
+import { AppState } from "@/model/AppState";
 
 /*
 * This component is used to edit a LandesabgabeSachverhalt. It allows adding
 * multiple Personen to the Sachverhalt.
 */
-export function SacherhaltEditorForm({ addFacts, sachverhalt, initialPersons, width }: {
+export function SachverhaltEditorForm({ addFacts, initialFactBase, width }: {
     addFacts: AddFactFileFunction,
-    sachverhalt: LandesabgabeSachverhalt
-    initialPersons?: [LandesabgabePerson, LandesabgabeHandlung[]][],
+    initialFactBase: PrologFile[],
     width: number
 }) {
+    const facts = useMemo<PrologFile[]>(() =>
+        initialFactBase.filter((x) => x.prologFileType === PrologFileType.FACT),
+        [initialFactBase]);
+    const [currentFacts, setCurrentFacts] = useState<PrologFile[]>(facts);
+
+    function addFactBase() {
+        setCurrentFacts([
+            ...currentFacts,
+            new PrologFile(AppState.getUniqueFilename(), "", [], [], PrologFileType.FACT)
+        ]);
+    }
+
+    return <Paper shadow="sm" p="xl" m="sm" w={width}>
+        <Title>Faktenbasis bearbeiten</Title>
+        <Button onClick={addFactBase}>Neue Faktenbasis</Button>
+
+        {currentFacts.length > 0
+            ? currentFacts.map((x: PrologFile) => <FactFile prologFile={x} />)
+            : <Text>Keine Fakten gefunden</Text>
+        }
+    </Paper>;
+}
+
+function FactFile({ prologFile }: { prologFile: PrologFile }) {
+    const [sachverhalt, setSachverhalt] = useState(new LandesabgabeSachverhalt());
+    const initialPersons = useMemo<LandesabgabePerson[]>(() => {
+        const sovereignPersons = prologFile.savedPersons;
+        const persons = prologFile.handlungen.map((x) => x.person);
+        const personsWithDuplicates = [...sovereignPersons, ...persons];
+
+        return [...new Set(personsWithDuplicates)];
+    }, [prologFile]);
+    const [persons, setPersons] = useState<LandesabgabePerson[]>(initialPersons);
+
     const [vorname, setVorname] = useState<string>("");
     const [nachname, setNachname] = useState<string>("");
     const [alter, setAlter] = useState<number>(0);
-    const [handlungen, setHandlungen] = useState<[string, JSX.Element][]>(initialPersons?.map(personFormFromState) ?? []);
-
-    function personFormFromState(state: [LandesabgabePerson, LandesabgabeHandlung[]]): [string, JSX.Element] {
-        const uuid = uuidv4();
-        return [uuid, <PersonForm key={uuid}
-            person={state[0]}
-            addFacts={addFacts}
-            initialHandlungen={state[1]} />];
-    }
-
-    function generateNewHandlungForm(): [string, JSX.Element] {
-        const person = new LandesabgabePerson(sachverhalt, vorname!, nachname!, alter!);
-        const uuid = uuidv4();
-        return [uuid, <PersonForm key={uuid}
-            person={person}
-            addFacts={addFacts} />];
-    }
 
     function addButtonClicked() {
-        setHandlungen([...handlungen, generateNewHandlungForm()]);
+        setPersons([
+            ...persons,
+            new LandesabgabePerson(sachverhalt, vorname, nachname, alter)
+        ]);
     }
 
-    return <Paper
-        shadow="sm"
-        p="xl"
-        m="sm"
-        w={width}>
-        <Title>Faktenbasis bearbeiten</Title>
-        <Flex
-            mih={50}
-            gap="xs"
-            justify="flex-start"
-            align="center"
-            direction="column"
-            wrap="wrap">
-            <Toolbar vorname={vorname}
-                setVorname={setVorname}
-                nachname={nachname}
-                setNachname={setNachname}
-                alter={alter}
-                setAlter={setAlter}
-                addButtonClicked={addButtonClicked} />
+    return <>
+        <Title order={4}>{prologFile.name}</Title>
+        <Toolbar vorname={vorname}
+            setVorname={setVorname}
+            nachname={nachname}
+            setNachname={setNachname}
+            alter={alter}
+            setAlter={setAlter}
+            addButtonClicked={addButtonClicked} />
 
-            <Text ta="left">Im Sachverhalt sind folgende Personen enthalten:</Text>
-            {handlungen.map((x) => x[1])}
-        </Flex>
-    </Paper>;
+        {persons.length > 0
+            ? persons.map((x) => <PersonForm person={x} />)
+            : <Text>Keine Personen gefunden</Text>
+        }
+    </>;
 }
 
 function Toolbar({ vorname, setVorname, nachname, setNachname, alter, setAlter, addButtonClicked }: {
@@ -106,7 +115,8 @@ function Toolbar({ vorname, setVorname, nachname, setNachname, alter, setAlter, 
             }}
             placeholder="Alter" />
 
-        <Button disabled={vorname === undefined || nachname === undefined || alter === undefined || vorname === "" || nachname === "" || alter === 0}
+        <Button disabled={vorname === undefined || nachname === undefined || alter === undefined
+            || vorname === "" || nachname === "" || alter === 0}
             onClick={addButtonClicked}>
             Person hinzufügen
         </Button>

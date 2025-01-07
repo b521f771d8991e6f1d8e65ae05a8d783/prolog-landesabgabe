@@ -3,12 +3,12 @@ import { LandesabgabeHandlung, LandesabgabePerson, LandesabgabeSachverhalt } fro
 import { useEffect, useMemo, useState } from "react";
 import { Flex, Button, Text } from "@mantine/core";
 import { AppState, getLocalStorage } from "../model/AppState";
-import { PrologFile } from "@/model/PrologFileSystem";
+import { PrologFile, PrologFileType } from "@/model/PrologFileSystem";
 
 import "highlight.js/styles/github.css";
 
 import logo from "../../../../Resources/logo.svg";
-import { SacherhaltEditorForm } from '@/components/SachverhaltEditorForm';
+import { SachverhaltEditorForm } from '@/components/SachverhaltEditorForm';
 import { PrologFilesAccordion } from '@/components/PrologFilesAccordion';
 import { ResultView } from '@/components/ResultView';
 
@@ -120,23 +120,10 @@ export function HomePage({ prologVM }: { prologVM: AppState }) {
 *  - re-creating the page from the prolog VM on page reload
 */
 function AppStateView({ appState }: { appState: AppState }) {
-  const [sachverhalt, setSachverhalt] = useState<LandesabgabeSachverhalt>(new LandesabgabeSachverhalt());
   const [code, setCode] = useState<string>();
   const [factBase, setFactBase] = useState<PrologFile[]>(appState.getFactBase());
 
-  // we currently do not have support for multiple Sachverhalte, but that would be possible
-
-  const initialPersons: [LandesabgabePerson, LandesabgabeHandlung[]][] = useMemo(() => {
-    const handlungen = appState.getFactBaseContainingHandlung().flatMap((pf) => pf.handlung! as LandesabgabeHandlung[]);
-
-    const personsWithDuplicates = handlungen.map((handlung) => handlung._person as LandesabgabePerson);
-    const persons = [...new Set(personsWithDuplicates)];
-
-    return persons.map((person) => [person, handlungen.filter((handlung) => handlung._person === person)]);
-  }, [appState]);
-
-  console.log("Loaded fact base:", factBase);
-  console.log("Initial persons: ", initialPersons)
+  console.log("Loaded fact base: ", factBase);
 
   appState.addFactBaseListener(setFactBase);
 
@@ -145,15 +132,6 @@ function AppStateView({ appState }: { appState: AppState }) {
     appState.addFactBase(pf);
   }
 
-  useEffect(() => {
-    async function f() {
-      const result = await appState.evaluate();
-      setCode(result);
-    }
-
-    f();
-  }, [appState]);
-
   return <Flex
     mih={50}
     gap="xs"
@@ -161,11 +139,17 @@ function AppStateView({ appState }: { appState: AppState }) {
     align="top"
     direction="row"
     wrap="wrap">
-    <PrologFilesAccordion factBase={factBase} width={WIDTH} />
-    <SacherhaltEditorForm
+    <PrologFilesAccordion
+      factBase={factBase}
+      width={WIDTH} />
+
+    <SachverhaltEditorForm
       addFacts={addFactsFunction}
-      sachverhalt={sachverhalt}
-      initialPersons={initialPersons} width={WIDTH} />
-    <ResultView code={code} width={WIDTH} />
+      initialFactBase={factBase}
+      width={WIDTH} />
+
+    <ResultView
+      code={code}
+      width={WIDTH} />
   </Flex >;
 }

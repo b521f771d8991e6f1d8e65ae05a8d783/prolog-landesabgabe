@@ -1,4 +1,4 @@
-import { LandesabgabeHandlung } from "./PrologTemplates";
+import { LandesabgabeHandlung, LandesabgabePerson } from "./PrologTemplates";
 
 export const labbgPl = new URL("../static/labgg.pl", import.meta.url);
 
@@ -9,16 +9,22 @@ export enum PrologFileType {
 }
 
 export class PrologFile {
-    public prologFileType: PrologFileType;;
+    public prologFileType: PrologFileType;
     public name: string;
     public content: string;
-    public handlung: LandesabgabeHandlung[] | undefined;
+    public handlungen: LandesabgabeHandlung[];
+    public savedPersons: LandesabgabePerson[];
 
-    constructor(name: string, content: string, handlung: LandesabgabeHandlung[], pft: PrologFileType = PrologFileType.FACT) {
+    constructor(name: string,
+        content: string,
+        handlung: LandesabgabeHandlung[] = [],
+        person: LandesabgabePerson[] = [],
+        pft: PrologFileType = PrologFileType.FACT) {
         this.name = name;
         this.content = content;
-        this.handlung = handlung;
+        this.handlungen = handlung;
         this.prologFileType = pft;
+        this.savedPersons = person;
     }
 }
 
@@ -30,7 +36,8 @@ export function getRechtsbestand(fileSet: URL[] = defaultFileSet): Promise<Prolo
         return {
             name: url.pathname,
             content: await response.text(),
-            handlung: undefined,
+            handlungen: [],
+            savedPersons: [],
             prologFileType: PrologFileType.LAW
         }
     });

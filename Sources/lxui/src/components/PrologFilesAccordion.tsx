@@ -13,8 +13,8 @@ export function PrologFilesAccordion({ factBase, width }: { factBase: PrologFile
         w={width}>
         <Title>Wissensbasis</Title>
 
+        <Title order={2}>Gesetze</Title>
         {laws.length > 0 && <>
-            <Title order={2}>Gesetze</Title>
             <Text size="xs">Gesetze werden als Hintergrundinformationen geladen und nicht im Sachverhalt angezeigt</Text>
             {laws.map((x) => <PrologFileView pf={x} key={x.name} />)}
         </>}
@@ -32,8 +32,8 @@ export function PrologFilesAccordion({ factBase, width }: { factBase: PrologFile
             </Flex>
         </Center>
 
+        <Title order={2}>Fakten</Title>
         {mereFacts.length > 0 && <>
-            <Title order={2}>Fakten</Title>
             <Text size="xs">Fakten werden im Sachverhalt angezeigt</Text>
             {mereFacts.map((x) => <PrologFileView pf={x} key={x.name} />)}
         </>}

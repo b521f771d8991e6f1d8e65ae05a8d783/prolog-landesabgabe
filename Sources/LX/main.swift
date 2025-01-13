@@ -8,7 +8,6 @@ let version = String(BuildInformation.getCurrentVersionAsString())
 
 print("Running digital law server in version: \(version) ✨🚀")
 
-// configures your application
 public func configure(withApp app: Application, andLogicVM lvm: LogicVM) throws {
     try routes(withApp: app, andLogicVM: lvm)
 }
@@ -41,8 +40,27 @@ func routes(withApp app: Application, andLogicVM lvm: LogicVM) throws {
     }
 }
 
+func configure(app a: Application) {
+    let corsConfiguration = CORSMiddleware.Configuration(
+        allowedOrigin: .all,
+        allowedMethods: [.GET, .POST, .PUT, .OPTIONS, .DELETE, .PATCH],
+        allowedHeaders: [
+            .accept, .authorization, .contentType, .origin, .xRequestedWith, .userAgent,
+            .accessControlAllowOrigin,
+        ]
+    )
+    let cors = CORSMiddleware(configuration: corsConfiguration)
+    // cors-Middleware sollte vor der Standard-Fehler-Middleware mit `at: .beginning` stehen
+    app.middleware.use(cors, at: .beginning)
+
+    app.http.server.configuration.hostname = "0.0.0.0"
+    app.http.server.configuration.port = 1337
+    app.http.server.configuration.serverName = "LX"
+}
+
 let lvm = LogicVM()
 let app = Application()
+configure(app: app)
 
 defer {
     print("Exiting server ... Goodbye 🌙✨")

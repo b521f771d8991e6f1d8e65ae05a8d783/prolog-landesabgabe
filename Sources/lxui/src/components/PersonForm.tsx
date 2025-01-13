@@ -1,22 +1,26 @@
-import { AddFactFileFunction, PrologFile, PrologFileType } from "@/model/PrologFileSystem";
-import { LandesabgabeHandlung, LandesabgabePerson } from "@/model/PrologTemplates";
-import { AppState } from "@/model/AppState";
+import { LandesabgabeHandlung, LandesabgabePerson, LandesabgabeSachverhalt } from "@/model/PrologTemplates";
 import { Text, Paper, Button, Title, NumberInput, Table, Divider } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
-import React, { useState } from "react";
-import { v4 as uuidv4 } from 'uuid';
+import { useEffect, useState } from "react";
 
-export function PersonForm({ person }: {
-    person: LandesabgabePerson
+export function PersonForm({ person, addHandlung }: {
+    person: LandesabgabePerson,
+    addHandlung: (handlung: LandesabgabeHandlung) => void
 }) {
     const [handlungen, setHandlungen] = useState<LandesabgabeHandlung[]>([]);
-
     const [date, setDate] = useState<Date>(new Date(Date.now()));
     const [gefördert, setGefördert] = useState<number>(0);
 
     function addButtonClicked() {
-        setHandlungen([...handlungen, new LandesabgabeHandlung(person, date, gefördert)]);
+        setHandlungen([
+            ...handlungen,
+            new LandesabgabeHandlung(person, date, gefördert)
+        ]);
     }
+
+    useEffect(() => {
+        handlungen.forEach((handlung) => addHandlung(handlung));
+    }, [handlungen]);
 
     return <Paper shadow="sm" p="xl" m="sm">
         <Title order={5}>Abgabenakt von "{person.vorname}"</Title>

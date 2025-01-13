@@ -11,6 +11,7 @@ import logo from "../../../../Resources/logo.svg";
 import { SachverhaltEditorForm } from '@/components/SachverhaltEditorForm';
 import { PrologFilesAccordion } from '@/components/PrologFilesAccordion';
 import { ResultView } from '@/components/ResultView';
+import { defaultConfig } from '@/config/ServerConfig';
 
 const DOWNLOAD_FILE_DEFAULT_NAME = "Sachverhalt.sv";
 export const WIDTH = 550;
@@ -102,15 +103,39 @@ export function HomePage({ prologVM }: { prologVM: AppState }) {
         wrap="wrap">
         <Button onClick={onDeleteButtonClicked} leftSection={"🗑"}>Löschen</Button>
         <Button onClick={onSaveClicked} leftSection={"💾"}>Speichern</Button>
+        <VersionString />
       </Flex>
     </Paper>
     <Divider />
     <AppStateView appState={prologVM} />
 
     <Text c="dimmed">
-      Ein Projekt der Staabsstelle für Digitalisierung Oberösterreich☕
+      Ein Projekt der Stabsstelle für Digitalisierung Oberösterreich☕
     </Text>
   </Flex>;
+}
+
+function VersionString() {
+  const [version, setVersion] = useState<string>("");
+
+  useEffect(() => {
+    async function d() {
+      const versionRequest = await fetch(`${defaultConfig.getServerProtocol()}://${defaultConfig.getServerName()}:${defaultConfig.getServerPort()}/version`, {
+        mode: "cors"
+      });
+
+      if (!versionRequest.ok) {
+        console.error(versionRequest);
+        return "Could not connect to server";
+      }
+
+      setVersion("Version: " + await versionRequest.text());
+    }
+
+    d();
+  }, []);
+
+  return <Text c="dimmed">{version}</Text>;
 }
 
 /*

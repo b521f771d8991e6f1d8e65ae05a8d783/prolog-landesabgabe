@@ -94,7 +94,6 @@ ${this._berufsmäßig ? "" : `berufsmaessig(${this._person_id}).`}
     }
 }
 
-
 export class LandesabgabeHandlung implements PrologFragment {
     private _person: LandesabgabePerson;
     private _gefördert?: number;

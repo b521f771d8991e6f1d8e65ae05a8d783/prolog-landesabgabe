@@ -12,7 +12,7 @@ services:
       - ..:/workspace
   frontend:
     build:
-      dockerfile: Infrastructure/Frontend.dockerfile
+      dockerfile: Sources/lxui/Dockerfile
       target: dev
       context: ..
     tty: true

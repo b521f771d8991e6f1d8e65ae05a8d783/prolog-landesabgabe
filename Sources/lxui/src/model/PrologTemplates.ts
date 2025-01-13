@@ -28,6 +28,73 @@ export class LandesabgabeSachverhalt implements PrologFragment {
     }
 }
 
+export class LandesabgabePerson implements PrologFragment {
+    private _sachverhalt: LandesabgabeSachverhalt;
+    private _vorname: string;
+    private _nachname: string;
+    private _alter: number;
+    private _berufsmäßig: boolean;
+    private _person_id: string;
+
+    constructor(sachverhalt: LandesabgabeSachverhalt,
+        vorname: string,
+        nachname: string,
+        alter: number,
+        berufsmäßig: boolean = true) {
+        this._sachverhalt = sachverhalt;
+        this._vorname = vorname;
+        this._nachname = nachname;
+        this._alter = alter;
+        this._berufsmäßig = berufsmäßig;
+        this._person_id = generateUUID(PERSON_ID);
+    }
+
+    public convert2JSON() {
+        console.log(this);
+        return JSON.stringify(this);
+    }
+
+    public get sachverhalt() {
+        return this._sachverhalt;
+    }
+
+    public get personId() {
+        return this._person_id;
+    }
+
+    public get vorname(): string {
+        return this._vorname;
+    }
+
+    public get nachname(): string {
+        return this._nachname;
+    }
+
+    public get alter(): number {
+        return this._alter;
+    }
+
+    public get berufsmäßig(): boolean {
+        return this._berufsmäßig;
+    }
+
+    public get person_id(): string {
+        return this._person_id;
+    }
+
+    serialize2Prolog(): string {
+        return `% Person
+subjekt(${this._sachverhalt.sacherhaltId}, ${this._person_id}).
+vorname(${this._person_id}, "${this._vorname}").
+nachname(${this._person_id}, "${this._nachname}").
+natuerliche_person(${this._person_id}).
+alter(${this._person_id}, ${this._alter}).
+${this._berufsmäßig ? "" : `berufsmaessig(${this._person_id}).`}
+`;
+    }
+}
+
+
 export class LandesabgabeHandlung implements PrologFragment {
     private _person: LandesabgabePerson;
     private _gefördert?: number;
@@ -75,61 +142,5 @@ export class LandesabgabeHandlung implements PrologFragment {
         ${this.gefördert ? `gefoerdert(${this.uuidWithPrefix}, ${this.gefördert!}, ${this.einheit}).` : ""}
         verwertet_am(${this.uuidWithPrefix}, date(${this.date.getFullYear()}, ${this.date.getMonth()}, ${this.date.getDay()}, 0, 0, 0, Off, TZ, DST)).
       `; // TODO Stunde und Minute übernehmen
-    }
-}
-
-export class LandesabgabePerson implements PrologFragment {
-    private _vorname: string;
-    private _nachname: string;
-    private _alter: number;
-    private _berufsmäßig: boolean;
-    private _person_id: string;
-
-    constructor(vorname: string, nachname: string, alter: number, berufsmäßig: boolean = true) {
-        this._vorname = vorname;
-        this._nachname = nachname;
-        this._alter = alter;
-        this._berufsmäßig = berufsmäßig;
-        this._person_id = generateUUID(PERSON_ID);
-    }
-
-    public convert2JSON() {
-        console.log(this);
-        return JSON.stringify(this);
-    }
-
-    public get personId() {
-        return this._person_id;
-    }
-
-    public get vorname(): string {
-        return this._vorname;
-    }
-
-    public get nachname(): string {
-        return this._nachname;
-    }
-
-    public get alter(): number {
-        return this._alter;
-    }
-
-    public get berufsmäßig(): boolean {
-        return this._berufsmäßig;
-    }
-
-    public get person_id(): string {
-        return this._person_id;
-    }
-
-    serialize2Prolog(): string {
-        return `% Person
-subjekt(${this._sachverhalt.sacherhaltId}, ${this._person_id}).
-vorname(${this._person_id}, "${this._vorname}").
-nachname(${this._person_id}, "${this._nachname}").
-natuerliche_person(${this._person_id}).
-alter(${this._person_id}, ${this._alter}).
-${this._berufsmäßig ? "" : `berufsmaessig(${this._person_id}).`}
-`;
     }
 }

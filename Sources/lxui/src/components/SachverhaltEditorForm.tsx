@@ -55,7 +55,7 @@ function FactFile({ prologFile }: { prologFile: PrologFile }) {
     function addButtonClicked() {
         setPersons([
             ...persons,
-            new LandesabgabePerson(sachverhalt, vorname, nachname, alter)
+            new LandesabgabePerson(vorname, nachname, alter)
         ]);
     }
 

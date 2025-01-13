@@ -79,15 +79,13 @@ export class LandesabgabeHandlung implements PrologFragment {
 }
 
 export class LandesabgabePerson implements PrologFragment {
-    private _sachverhalt: LandesabgabeSachverhalt;
     private _vorname: string;
     private _nachname: string;
     private _alter: number;
     private _berufsmäßig: boolean;
     private _person_id: string;
 
-    constructor(sachverhalt: LandesabgabeSachverhalt, vorname: string, nachname: string, alter: number, berufsmäßig: boolean = true) {
-        this._sachverhalt = sachverhalt;
+    constructor(vorname: string, nachname: string, alter: number, berufsmäßig: boolean = true) {
         this._vorname = vorname;
         this._nachname = nachname;
         this._alter = alter;
@@ -100,17 +98,8 @@ export class LandesabgabePerson implements PrologFragment {
         return JSON.stringify(this);
     }
 
-    public static fromJSON(json: string): LandesabgabePerson {
-        const obj = JSON.parse(json);
-        return new LandesabgabePerson(obj._sachverhalt, obj._vorname, obj._nachname, obj._alter, obj._berufsmäßig);
-    }
-
     public get personId() {
         return this._person_id;
-    }
-
-    public get sachverhalt(): LandesabgabeSachverhalt {
-        return this._sachverhalt;
     }
 
     public get vorname(): string {

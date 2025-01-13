@@ -3,7 +3,7 @@ services:
   worker:
     build:
       dockerfile: Infrastructure/Worker.dockerfile
-      target: run
+      target: ${WORKER_TARGET_STAGE}
       context: ..
     tty: true
     ports:
@@ -13,7 +13,7 @@ services:
   frontend:
     build:
       dockerfile: Sources/lxui/Dockerfile
-      target: dev
+      target: ${FRONTEND_TARGET_STAGE}
       context: ..
     tty: true
     ports:

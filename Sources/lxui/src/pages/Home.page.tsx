@@ -116,7 +116,7 @@ export function HomePage({ prologVM }: { prologVM: AppState }) {
 }
 
 function VersionString() {
-  const [version, setVersion] = useState<string>("");
+  const [version, setVersion] = useState<JSX.Element>(<></>);
 
   useEffect(() => {
     async function d() {
@@ -126,16 +126,16 @@ function VersionString() {
 
       if (!versionRequest.ok) {
         console.error(versionRequest);
-        return "Could not connect to server";
+        setVersion(<Text c="red">Could not connect to server</Text>);
       }
 
-      setVersion("Version: " + await versionRequest.text());
+      setVersion(<Text c="dimmed">Version: {await versionRequest.text()}</Text >);
     }
 
     d();
   }, []);
 
-  return <Text c="dimmed">{version}</Text>;
+  return version;
 }
 
 /*

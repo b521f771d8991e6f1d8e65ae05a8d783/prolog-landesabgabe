@@ -13,6 +13,10 @@ public func configure(withApp app: Application, andLogicVM lvm: LogicVM) throws 
 }
 
 func routes(withApp app: Application, andLogicVM lvm: LogicVM) throws {
+    app.get("fetch-standard-corpus") { req async -> String in
+        return "{}"
+    }
+
     app.get("status") { req async -> String in
         return "OK"
     }
@@ -53,7 +57,7 @@ func configure(app a: Application) {
     // cors-Middleware sollte vor der Standard-Fehler-Middleware mit `at: .beginning` stehen
     app.middleware.use(cors, at: .beginning)
 
-    app.http.server.configuration.hostname = "0.0.0.0"
+    app.http.server.configuration.hostname = "worker"
     app.http.server.configuration.port = 1337
     app.http.server.configuration.serverName = "LX"
 }

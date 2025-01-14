@@ -1,6 +1,6 @@
 import { PrologFile } from "@/model/PrologFileSystem";
 import { LandesabgabeSachverhalt, LandesabgabePerson, LandesabgabeHandlung } from "@/model/PrologTemplates";
-import { Title, Text, Flex, NumberInput, Input, Button, Center } from "@mantine/core";
+import { Title, Text, Flex, NumberInput, Input, Button, Center, Divider } from "@mantine/core";
 import { useState, useMemo } from "react";
 import { PersonForm } from "./PersonForm";
 
@@ -23,6 +23,7 @@ export function FactFile({ prologFile, addHandlung, addPerson }: {
         ]);
     }
 
+    // TODO remove the Divider on the last item
     return <>
         <Title order={4}>{prologFile.name}</Title>
         <Toolbar vorname={vorname}
@@ -34,9 +35,12 @@ export function FactFile({ prologFile, addHandlung, addPerson }: {
             addButtonClicked={addButtonClicked} />
 
         {persons.length > 0
-            ? persons.map((x) => <PersonForm
-                person={x}
-                addHandlung={addHandlung} />)
+            ? persons.map((x) => <>
+                <PersonForm
+                    person={x}
+                    addHandlung={addHandlung} />
+                <Divider my="md" />
+            </>)
             : <Center><Text>Keine Personen gefunden 😥</Text></Center>
         }
     </>;

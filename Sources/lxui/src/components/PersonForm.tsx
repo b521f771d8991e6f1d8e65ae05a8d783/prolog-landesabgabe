@@ -14,12 +14,12 @@ export function PersonForm({ person, addHandlung }: {
     function addButtonClicked() {
         setHandlungen([
             ...handlungen,
-            new LandesabgabeHandlung(person, date, gefördert)
+            new LandesabgabeHandlung(date, gefördert)
         ]);
     }
 
     useEffect(() => {
-        handlungen.forEach((handlung) => addHandlung(handlung));
+        // save the handlung in the join table
     }, [handlungen]);
 
     return <Paper shadow="sm" p="xl" m="sm">
@@ -109,6 +109,7 @@ function TableHeader() {
 }
 
 function HandlungViewer({ handlung }: { handlung: LandesabgabeHandlung }) {
+    console.log(handlung);
     return <Table.Tr>
         <Table.Td>{handlung.date.toISOString()}</Table.Td>
         <Table.Td>{handlung.gefördert}</Table.Td>

@@ -10,14 +10,7 @@ export function FactFile({ prologFile, addHandlung, addPerson }: {
     addPerson: (person: LandesabgabePerson) => void
 }) {
     const [sachverhalt, setSachverhalt] = useState(new LandesabgabeSachverhalt());
-    const initialPersons = useMemo<LandesabgabePerson[]>(() => {
-        const sovereignPersons = prologFile.savedPersons;
-        const persons = prologFile.handlungen.map((x) => x.person);
-        const personsWithDuplicates = [...sovereignPersons, ...persons];
-
-        return [...new Set(personsWithDuplicates)];
-    }, [prologFile]);
-    const [persons, setPersons] = useState<LandesabgabePerson[]>(initialPersons);
+    const [persons, setPersons] = useState<LandesabgabePerson[]>([]);
 
     const [vorname, setVorname] = useState<string>("");
     const [nachname, setNachname] = useState<string>("");
@@ -26,7 +19,7 @@ export function FactFile({ prologFile, addHandlung, addPerson }: {
     function addButtonClicked() {
         setPersons([
             ...persons,
-            new LandesabgabePerson(sachverhalt, vorname, nachname, alter)
+            new LandesabgabePerson(vorname, nachname, alter)
         ]);
     }
 

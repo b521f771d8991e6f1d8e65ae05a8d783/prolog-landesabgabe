@@ -1,6 +1,6 @@
 import { PrologFile } from "@/model/PrologFileSystem";
 import { LandesabgabeSachverhalt, LandesabgabePerson, LandesabgabeHandlung } from "@/model/PrologTemplates";
-import { Title, Text, Flex, NumberInput, Input, Button } from "@mantine/core";
+import { Title, Text, Flex, NumberInput, Input, Button, Center } from "@mantine/core";
 import { useState, useMemo } from "react";
 import { PersonForm } from "./PersonForm";
 
@@ -37,7 +37,7 @@ export function FactFile({ prologFile, addHandlung, addPerson }: {
             ? persons.map((x) => <PersonForm
                 person={x}
                 addHandlung={addHandlung} />)
-            : <Text>Keine Personen gefunden</Text>
+            : <Center><Text>Keine Personen gefunden 😥</Text></Center>
         }
     </>;
 }
@@ -83,7 +83,8 @@ function Toolbar({ vorname, setVorname, nachname, setNachname, alter, setAlter, 
 
         <Button disabled={vorname === undefined || nachname === undefined || alter === undefined
             || vorname === "" || nachname === "" || alter === 0}
-            onClick={addButtonClicked}>
+            onClick={addButtonClicked}
+            leftSection={"✨"}>
             Person hinzufügen
         </Button>
     </Flex>;

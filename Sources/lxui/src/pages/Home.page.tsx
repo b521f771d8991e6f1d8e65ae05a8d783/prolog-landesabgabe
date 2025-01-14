@@ -101,8 +101,11 @@ export function HomePage({ prologVM }: { prologVM: AppState }) {
         align="center"
         direction="row"
         wrap="wrap">
-        <Button onClick={onDeleteButtonClicked} leftSection={"🗑"}>Löschen</Button>
+        <Button leftSection={"📅"} disabled>Historie</Button>
+        <Button onClick={onDeleteButtonClicked} leftSection={"🗑"}>Alles löschen</Button>
         <Button onClick={onSaveClicked} leftSection={"💾"}>Speichern</Button>
+        <Button leftSection={"⚡"} disabled>Laden</Button>
+        <Button leftSection={"🔐"} disabled>Login</Button>
         <VersionString />
       </Flex>
     </Paper>

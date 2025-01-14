@@ -27,7 +27,7 @@ export function SachverhaltEditorForm({ addFacts, initialFactBase, width }: {
 
     return <Paper shadow="sm" p="xl" m="sm" w={width}>
         <Title>Faktenbasis bearbeiten</Title>
-        <Button onClick={addFactBase}>Neue Faktenbasis</Button>
+        <Button onClick={addFactBase} leftSection={"➕"}>Neue Faktenbasis</Button>
 
         {currentPrologFiles.length > 0
             ? currentPrologFiles.map((x: PrologFile) => <FactFile prologFile={x} />)

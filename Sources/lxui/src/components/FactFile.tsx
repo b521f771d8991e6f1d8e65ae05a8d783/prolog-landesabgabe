@@ -2,13 +2,14 @@ import { PrologFile } from "@/model/PrologFileSystem";
 import { LandesabgabePerson, LandesabgabeHandlung } from "@/model/PrologTemplates";
 import { Title, Text, Flex, NumberInput, Input, Button, Center, Divider } from "@mantine/core";
 import { useState } from "react";
-import { PersonForm } from "./PersonForm";
+import { PersonDetailForm } from "./PersonForm";
 
 export function FactFile({ prologFile, setPrologFile }: {
     prologFile: PrologFile,
     setPrologFile: (pf: PrologFile) => void
 }) {
     const persons = prologFile.sachverhalt!.persons;
+    const handlungen = prologFile.sachverhalt!.personsWithAssociatedHandlung;
 
     const [vorname, setVorname] = useState<string>("");
     const [nachname, setNachname] = useState<string>("");
@@ -41,9 +42,9 @@ export function FactFile({ prologFile, setPrologFile }: {
 
         {persons.length > 0
             ? persons.map((x) => <>
-                <PersonForm
+                <PersonDetailForm
                     person={x}
-                    addSovereignPerson={addSovereignPerson}
+                    handlungen={handlungen.get(x)}
                     addToJoinTable={addToJoinTable} />
                 <Divider my="md" />
             </>)

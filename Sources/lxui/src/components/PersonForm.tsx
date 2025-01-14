@@ -1,22 +1,18 @@
 import { LandesabgabeHandlung, LandesabgabePerson, LandesabgabeSachverhalt } from "@/model/PrologTemplates";
 import { Text, Paper, Button, Title, NumberInput, Table, Divider } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-export function PersonForm({ person, addSovereignPerson, addToJoinTable }: {
+export function PersonDetailForm({ person, handlungen, addToJoinTable }: {
     person: LandesabgabePerson,
-    addSovereignPerson: (p: LandesabgabePerson) => void,
+    handlungen: LandesabgabeHandlung[]
     addToJoinTable: (p: LandesabgabePerson, h: LandesabgabeHandlung) => void
 }) {
-    const [handlungen, setHandlungen] = useState<LandesabgabeHandlung[]>([]);
     const [date, setDate] = useState<Date>(new Date(Date.now()));
     const [gefördert, setGefördert] = useState<number>(0);
 
     function addButtonClicked() {
-        setHandlungen([
-            ...handlungen,
-            new LandesabgabeHandlung(date, gefördert)
-        ]);
+        addToJoinTable(person, new LandesabgabeHandlung(date, gefördert));
     }
 
     return <Paper shadow="sm" p="xl" m="sm">
@@ -106,7 +102,6 @@ function TableHeader() {
 }
 
 function HandlungViewer({ handlung }: { handlung: LandesabgabeHandlung }) {
-    console.log(handlung);
     return <Table.Tr>
         <Table.Td>{handlung.date.toISOString()}</Table.Td>
         <Table.Td>{handlung.gefördert}</Table.Td>

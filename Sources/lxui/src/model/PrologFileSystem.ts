@@ -2,8 +2,6 @@ import { LandesabgabeSachverhalt } from "./PrologTemplates";
 
 export const labbgPl = new URL("../static/labgg.pl", import.meta.url);
 
-export type AddFactFileFunction = (prologFile: PrologFile) => void;
-
 export enum PrologFileType {
     LAW, FACT
 }
@@ -12,7 +10,7 @@ export class PrologFile {
     private _prologFileType: PrologFileType;
     private _name: string;
     private _evaluatedProlog: string;
-    private _sachverhalt: LandesabgabeSachverhalt | undefined
+    private _sachverhalt: LandesabgabeSachverhalt | undefined;
 
     constructor(name: string,
         evaluatedProlog: string,

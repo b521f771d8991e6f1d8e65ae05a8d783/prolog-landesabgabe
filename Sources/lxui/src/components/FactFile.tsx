@@ -1,29 +1,34 @@
 import { PrologFile } from "@/model/PrologFileSystem";
-import { LandesabgabeSachverhalt, LandesabgabePerson, LandesabgabeHandlung } from "@/model/PrologTemplates";
+import { LandesabgabePerson, LandesabgabeHandlung } from "@/model/PrologTemplates";
 import { Title, Text, Flex, NumberInput, Input, Button, Center, Divider } from "@mantine/core";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { PersonForm } from "./PersonForm";
 
-export function FactFile({ prologFile, addHandlung, addPerson }: {
+export function FactFile({ prologFile, setPrologFile }: {
     prologFile: PrologFile,
-    addHandlung: (handlung: LandesabgabeHandlung) => void,
-    addPerson: (person: LandesabgabePerson) => void
+    setPrologFile: (pf: PrologFile) => void
 }) {
-    const [sachverhalt, setSachverhalt] = useState(new LandesabgabeSachverhalt());
-    const [persons, setPersons] = useState<LandesabgabePerson[]>([]);
+    const persons = prologFile.sachverhalt!.persons;
 
     const [vorname, setVorname] = useState<string>("");
     const [nachname, setNachname] = useState<string>("");
     const [alter, setAlter] = useState<number>(0);
 
-    function addButtonClicked() {
-        setPersons([
-            ...persons,
-            new LandesabgabePerson(vorname, nachname, alter)
-        ]);
+    function addSovereignPerson(p: LandesabgabePerson) {
+        prologFile.sachverhalt!.addSovereignPerson(p);
+        setPrologFile(prologFile);
     }
 
-    // TODO remove the Divider on the last item
+    function addToJoinTable(p: LandesabgabePerson, h: LandesabgabeHandlung) {
+        prologFile.sachverhalt!.addToJoinTable(p, h);
+        setPrologFile(prologFile);
+    }
+
+    function addButtonClicked() {
+        addSovereignPerson(new LandesabgabePerson(vorname, nachname, alter));
+    }
+
+    // TODO remove the Divider following the last item
     return <>
         <Title order={4}>{prologFile.name}</Title>
         <Toolbar vorname={vorname}
@@ -38,7 +43,8 @@ export function FactFile({ prologFile, addHandlung, addPerson }: {
             ? persons.map((x) => <>
                 <PersonForm
                     person={x}
-                    addHandlung={addHandlung} />
+                    addSovereignPerson={addSovereignPerson}
+                    addToJoinTable={addToJoinTable} />
                 <Divider my="md" />
             </>)
             : <Center><Text>Keine Personen gefunden 😥</Text></Center>

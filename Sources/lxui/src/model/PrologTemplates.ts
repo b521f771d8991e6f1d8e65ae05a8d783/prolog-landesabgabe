@@ -34,8 +34,16 @@ export class LandesabgabeSachverhalt implements PrologFragment {
         return this._sovereignPersons;
     }
 
+    public addSovereignPerson(sp: LandesabgabePerson) {
+        return this._sovereignPersons.push(sp);
+    }
+
     public get joinTable() {
         return this._joinTable;
+    }
+
+    public addToJoinTable(p: LandesabgabePerson, h: LandesabgabeHandlung) {
+        this._joinTable.push([p, h]);
     }
 
     public get persons() {
@@ -74,7 +82,7 @@ export class LandesabgabePerson implements PrologFragment {
     private _nachname: string;
     private _alter: number;
     private _berufsmäßig: boolean;
-    private _person_id: string;
+    private _personId: string;
 
     constructor(vorname: string,
         nachname: string,
@@ -84,7 +92,7 @@ export class LandesabgabePerson implements PrologFragment {
         this._nachname = nachname;
         this._alter = alter;
         this._berufsmäßig = berufsmäßig;
-        this._person_id = generateUUID(PERSON_ID);
+        this._personId = generateUUID(PERSON_ID);
     }
 
     public convert2JSON() {
@@ -93,7 +101,7 @@ export class LandesabgabePerson implements PrologFragment {
     }
 
     public get personId() {
-        return this._person_id;
+        return this._personId;
     }
 
     public get vorname(): string {
@@ -113,7 +121,7 @@ export class LandesabgabePerson implements PrologFragment {
     }
 
     public get person_id(): string {
-        return this._person_id;
+        return this._personId;
     }
 
     serialize2Prolog(): string {

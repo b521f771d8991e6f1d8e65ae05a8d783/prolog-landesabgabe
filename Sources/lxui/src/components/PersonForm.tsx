@@ -3,9 +3,10 @@ import { Text, Paper, Button, Title, NumberInput, Table, Divider } from "@mantin
 import { DateInput } from "@mantine/dates";
 import { useEffect, useState } from "react";
 
-export function PersonForm({ person, addHandlung }: {
+export function PersonForm({ person, addSovereignPerson, addToJoinTable }: {
     person: LandesabgabePerson,
-    addHandlung: (handlung: LandesabgabeHandlung) => void
+    addSovereignPerson: (p: LandesabgabePerson) => void,
+    addToJoinTable: (p: LandesabgabePerson, h: LandesabgabeHandlung) => void
 }) {
     const [handlungen, setHandlungen] = useState<LandesabgabeHandlung[]>([]);
     const [date, setDate] = useState<Date>(new Date(Date.now()));
@@ -17,10 +18,6 @@ export function PersonForm({ person, addHandlung }: {
             new LandesabgabeHandlung(date, gefördert)
         ]);
     }
-
-    useEffect(() => {
-        // save the handlung in the join table
-    }, [handlungen]);
 
     return <Paper shadow="sm" p="xl" m="sm">
         <Title order={5}>Abgabenakt von "{person.vorname}"</Title>

@@ -14,12 +14,13 @@ export class AppState {
     private swipl: SWIPL.SWIPLModule;
     private factBase: PrologFile[];
     private initialFactBase: PrologFile[];
-    private addFactBaseEvents: FactBaseListener[] = [];
+    private addFactBaseEvents: FactBaseListener[];
 
     private constructor(swipl: SWIPL.SWIPLModule, factBase: PrologFile[] = []) {
         this.swipl = swipl;
         this.factBase = factBase;
         this.initialFactBase = this.factBase;
+        this.addFactBaseEvents = [];
     }
 
     private static async initPrologVM(): Promise<AppState> {

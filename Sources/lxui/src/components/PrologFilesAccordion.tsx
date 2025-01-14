@@ -47,13 +47,13 @@ export function PrologFilesAccordion({ factBase, width }: { factBase: PrologFile
 function PrologFileView({ pf }: { pf: PrologFile }) {
     function onFullScreenClicked() {
         // open a new window containing pf.content
-        const blob = URL.createObjectURL(new Blob([pf.content], { type: "text/plain" }));
+        const blob = URL.createObjectURL(new Blob([pf.evaluatedProlog], { type: "text/plain" }));
         window.open(blob);
     }
 
     function onDownloadClicked() {
         const downloadLink = document.createElement('a');
-        downloadLink.setAttribute('href', 'data:application/octet-stream;charset=utf-8,' + encodeURIComponent(pf.content));
+        downloadLink.setAttribute('href', 'data:application/octet-stream;charset=utf-8,' + encodeURIComponent(pf.evaluatedProlog));
 
         const fileName = pf.name.replaceAll("/", "-");
         const fileNameSanitized = fileName.startsWith("-") ? fileName.substring(1) : fileName;
@@ -71,7 +71,7 @@ function PrologFileView({ pf }: { pf: PrologFile }) {
     return <>
         <details>
             <summary>{pf.name}</summary>
-            <PrologCodeBlock prologCode={pf.content} h={300} />
+            <PrologCodeBlock prologCode={pf.evaluatedProlog} h={300} />
 
             <Center>
                 <Flex className={"select-none"}

@@ -1,6 +1,9 @@
 {
     "name": "Frontend",
-    "dockerComposeFile": "../../Infrastructure/docker-compose.dev.yml",
+    "dockerComposeFile": [
+        "docker-compose.yml",
+        "../../Infrastructure/Docker/docker-compose.yml"
+    ],
     "service": "frontend",
     "customizations": {
         "vscode": {

@@ -1,6 +1,9 @@
 {
     "name": "Backend",
-    "dockerComposeFile": "../../Infrastructure/docker-compose.dev.yml",
+    "dockerComposeFile": [
+        "docker-compose.yml",
+        "../../Infrastructure/Docker/docker-compose.yml"
+    ],
     "service": "worker",
     "customizations": {
         "vscode": {

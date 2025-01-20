@@ -4,22 +4,22 @@ services:
     build:
       dockerfile: Infrastructure/Worker.dockerfile
       target: ${WORKER_TARGET_STAGE}
-      context: ..
+      context: ../..
     tty: true
     ports:
       - "1337:1337"
     volumes:
-      - ..:/workspace
+      - ../..:/workspace
   frontend:
     build:
       dockerfile: Sources/lxui/Dockerfile
       target: ${FRONTEND_TARGET_STAGE}
-      context: ..
+      context: ../..
     tty: true
     ports:
       - "5173:5173"
     volumes:
-      - ..:/workspace
+      - ../..:/workspace
   rabbitmq-server:
     user: "1000:1000"
     cap_drop:

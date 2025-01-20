@@ -116,7 +116,6 @@ export function HomePage({ prologVM }: { prologVM: AppState }) {
           statisticViewOpened ? <Button onClick={showStatisticsButtonClicked} leftSection={"❌"}>Statistiken ausblenden</Button>
                               : <Button onClick={showStatisticsButtonClicked} leftSection={"📊"}>Statistiken einblenden</Button>
         }
-        <VersionString />
       </Flex>
     </Paper>
     <Divider />
@@ -135,6 +134,7 @@ export function HomePage({ prologVM }: { prologVM: AppState }) {
     <Text c="dimmed">
       Ein Projekt der Stabsstelle für Digitalisierung Oberösterreich☕
     </Text>
+    <VersionString />
   </Flex>;
 }
 

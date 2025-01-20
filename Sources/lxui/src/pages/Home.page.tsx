@@ -11,7 +11,6 @@ import { SachverhaltEditorForm } from '@/components/SachverhaltEditorForm';
 import { PrologFilesAccordion } from '@/components/PrologFilesAccordion';
 import { ResultView } from '@/components/ResultView';
 import { defaultConfig } from '@/config/ServerConfig';
-import { LandesabgabeHandlung, LandesabgabePerson } from '@/model/PrologTemplates';
 
 const DOWNLOAD_FILE_DEFAULT_NAME = "Sachverhalt.sv";
 export const WIDTH = 550;

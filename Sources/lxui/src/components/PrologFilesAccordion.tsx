@@ -1,7 +1,6 @@
 import { PrologFile, PrologFileType } from "@/model/PrologFileSystem";
 import { Code, Center, Button, Paper, Title, Flex, Text } from "@mantine/core";
-import hljs from "highlight.js";
-import { useId, useEffect } from "react";
+import { CodeView } from "./CodeView";
 
 export function PrologFilesAccordion({ factBase, width }: { factBase: PrologFile[], width: number }) {
     const laws = factBase.filter((x) => x.prologFileType === PrologFileType.LAW);
@@ -71,7 +70,7 @@ function PrologFileView({ pf }: { pf: PrologFile }) {
     return <>
         <details>
             <summary>{pf.name}</summary>
-            <PrologCodeBlock prologCode={pf.evaluatedProlog} h={300} />
+            <CodeView code={pf.evaluatedProlog} language="code" h={300} />
 
             <Center>
                 <Flex className={"select-none"}
@@ -88,22 +87,4 @@ function PrologFileView({ pf }: { pf: PrologFile }) {
             </Center>
         </details >
     </>;
-}
-
-function PrologCodeBlock({ prologCode, h = 300 }: { prologCode: string, h: number }) {
-    const codeId = useId();
-
-    useEffect(() => {
-        const codeElement = document.getElementById(codeId);
-
-        if (codeElement) {
-            hljs.highlightElement(codeElement);
-        }
-    }, [prologCode]);
-
-    return <Code h={h} block>
-        <code id={codeId} className="prolog">
-            {prologCode}
-        </code>
-    </Code>;
 }

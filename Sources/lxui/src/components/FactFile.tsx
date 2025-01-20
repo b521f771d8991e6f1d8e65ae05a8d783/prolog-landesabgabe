@@ -29,6 +29,16 @@ export function FactFile({ prologFile, setPrologFile }: {
         addSovereignPerson(new LandesabgabePerson(vorname, nachname, alter));
     }
 
+    function renderPersonDetailForm(x: LandesabgabePerson) {
+        return <>
+            <PersonDetailForm
+                person={x}
+                handlungen={handlungen.get(x)!} // ! ist allowed here because we are iterating over the map in the lambda anyway
+                addToJoinTable={addToJoinTable} />
+            <Divider my="md" />
+        </>
+    }
+
     // TODO remove the Divider following the last item
     return <>
         <Title order={4}>{prologFile.name}</Title>
@@ -41,13 +51,7 @@ export function FactFile({ prologFile, setPrologFile }: {
             addButtonClicked={addButtonClicked} />
 
         {persons.length > 0
-            ? persons.map((x) => <>
-                <PersonDetailForm
-                    person={x}
-                    handlungen={handlungen.get(x)}
-                    addToJoinTable={addToJoinTable} />
-                <Divider my="md" />
-            </>)
+            ? persons.map(renderPersonDetailForm)
             : <Center><Text>Keine Personen gefunden 😥</Text></Center>
         }
     </>;

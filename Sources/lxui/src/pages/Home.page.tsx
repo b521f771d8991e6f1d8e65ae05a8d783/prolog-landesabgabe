@@ -149,8 +149,12 @@ function VersionString() {
 function AppStateView({ appState }: {
   appState: AppState
 }) {
+  function mergeFactFiles(pf: PrologFile[]) {
+    return factFiles.reduce((p, c) => `${p}\n% Filename: ${c.name}\n${c.evaluatedProlog}`, "");
+  }
+
   const [factFiles, setFactFiles] = useState<PrologFile[]>(appState.getFactBase());
-  const code = useMemo<string>(() => factFiles.reduce((p, c) => `${p}\n${c.evaluatedProlog}`, ""), [factFiles]);
+  const code = useMemo<string>(() => mergeFactFiles(factFiles), [factFiles]);
 
   useEffect(() => {
     // update the App State

@@ -22,7 +22,7 @@ function PrologTerminal({ }: {}) {
         Closed, Minimized, Open, Maximized
     }
 
-    const [terminalState, setTerminalState] = useState<TerminalState>(TerminalState.Minimized);
+    const [terminalState, setTerminalState] = useState<TerminalState>(TerminalState.Open);
     const [terminalLineData, setTerminalLineData] = useState<JSX.Element[]>([]);
 
     function onExecute(terminalInput: string) {

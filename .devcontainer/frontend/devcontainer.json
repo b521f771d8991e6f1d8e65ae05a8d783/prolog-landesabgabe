@@ -11,7 +11,9 @@
                 "streetsidesoftware.code-spell-checker",
                 "vscodevim.vim",
                 "arthurwang.vsc-prolog",
-                "bradlc.vscode-tailwindcss"
+                "bradlc.vscode-tailwindcss",
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode"
             ]
         }
     },

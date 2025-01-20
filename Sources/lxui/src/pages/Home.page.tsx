@@ -1,9 +1,8 @@
 import { Divider, Paper, Title } from '@mantine/core';
-import { LandesabgabeHandlung, LandesabgabePerson, LandesabgabeSachverhalt } from '@/model/PrologTemplates';
 import { useEffect, useMemo, useState } from "react";
 import { Flex, Button, Text } from "@mantine/core";
 import { AppState, getLocalStorage } from "../model/AppState";
-import { PrologFile, PrologFileType } from "@/model/PrologFileSystem";
+import { PrologFile } from "@/model/PrologFileSystem";
 
 import "highlight.js/styles/github.css";
 
@@ -12,6 +11,7 @@ import { SachverhaltEditorForm } from '@/components/SachverhaltEditorForm';
 import { PrologFilesAccordion } from '@/components/PrologFilesAccordion';
 import { ResultView } from '@/components/ResultView';
 import { defaultConfig } from '@/config/ServerConfig';
+import { LandesabgabeHandlung, LandesabgabePerson } from '@/model/PrologTemplates';
 
 const DOWNLOAD_FILE_DEFAULT_NAME = "Sachverhalt.sv";
 export const WIDTH = 550;
@@ -101,8 +101,11 @@ export function HomePage({ prologVM }: { prologVM: AppState }) {
         align="center"
         direction="row"
         wrap="wrap">
-        <Button onClick={onDeleteButtonClicked} leftSection={"🗑"}>Löschen</Button>
+        <Button leftSection={"📅"} disabled>Historie</Button>
+        <Button onClick={onDeleteButtonClicked} leftSection={"🗑"}>Alles löschen</Button>
         <Button onClick={onSaveClicked} leftSection={"💾"}>Speichern</Button>
+        <Button leftSection={"⚡"} disabled>Laden</Button>
+        <Button leftSection={"🔐"} disabled>Login</Button>
         <VersionString />
       </Flex>
     </Paper>
@@ -144,18 +147,17 @@ function VersionString() {
 *  - creating the Prolog from the output
 *  - re-creating the page from the prolog VM on page reload
 */
-function AppStateView({ appState }: { appState: AppState }) {
-  const [code, setCode] = useState<string>();
-  const [factBase, setFactBase] = useState<PrologFile[]>(appState.getFactBase());
+function AppStateView({ appState }: {
+  appState: AppState
+}) {
+  const [factFiles, setFactFiles] = useState<PrologFile[]>(appState.getFactBase());
+  const code = useMemo<string>(() => factFiles.reduce((p, c) => `${p}\n${c.evaluatedProlog}`, ""), [factFiles]);
 
-  console.log("Loaded fact base: ", factBase);
+  useEffect(() => {
+    // update the App State
+  }, [factFiles]);
 
-  appState.addFactBaseListener(setFactBase);
-
-  function addFactsFunction(pf: PrologFile) {
-    console.log("Adding facts to fact base:", pf);
-    appState.addFactBase(pf);
-  }
+  console.log("Loaded fact base: ", factFiles);
 
   return <Flex
     mih={50}
@@ -165,12 +167,12 @@ function AppStateView({ appState }: { appState: AppState }) {
     direction="row"
     wrap="wrap">
     <PrologFilesAccordion
-      factBase={factBase}
+      factBase={factFiles}
       width={WIDTH} />
 
     <SachverhaltEditorForm
-      addFacts={addFactsFunction}
-      initialFactBase={factBase}
+      factFiles={factFiles}
+      setFactFiles={setFactFiles}
       width={WIDTH} />
 
     <ResultView

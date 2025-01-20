@@ -1,26 +1,19 @@
 import { LandesabgabeHandlung, LandesabgabePerson, LandesabgabeSachverhalt } from "@/model/PrologTemplates";
 import { Text, Paper, Button, Title, NumberInput, Table, Divider } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-export function PersonForm({ person, addHandlung }: {
+export function PersonDetailForm({ person, handlungen, addToJoinTable }: {
     person: LandesabgabePerson,
-    addHandlung: (handlung: LandesabgabeHandlung) => void
+    handlungen: LandesabgabeHandlung[]
+    addToJoinTable: (p: LandesabgabePerson, h: LandesabgabeHandlung) => void
 }) {
-    const [handlungen, setHandlungen] = useState<LandesabgabeHandlung[]>([]);
     const [date, setDate] = useState<Date>(new Date(Date.now()));
     const [gefördert, setGefördert] = useState<number>(0);
 
     function addButtonClicked() {
-        setHandlungen([
-            ...handlungen,
-            new LandesabgabeHandlung(person, date, gefördert)
-        ]);
+        addToJoinTable(person, new LandesabgabeHandlung(date, gefördert));
     }
-
-    useEffect(() => {
-        handlungen.forEach((handlung) => addHandlung(handlung));
-    }, [handlungen]);
 
     return <Paper shadow="sm" p="xl" m="sm">
         <Title order={5}>Abgabenakt von "{person.vorname}"</Title>
@@ -90,7 +83,8 @@ function HandlungenTableBody({ handlungen, setDate, setGefördert, date, geförd
 
             <Table.Td>
                 <Button disabled={date === undefined || date === null || gefördert === undefined || gefördert === 0 || gefördert === null}
-                    onClick={addButtonClicked}>
+                    onClick={addButtonClicked}
+                    leftSection={"🔢"}>
                     Eintrag hinzufügen
                 </Button>
             </Table.Td>

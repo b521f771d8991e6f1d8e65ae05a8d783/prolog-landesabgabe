@@ -14,12 +14,13 @@ export class AppState {
     private swipl: SWIPL.SWIPLModule;
     private factBase: PrologFile[];
     private initialFactBase: PrologFile[];
-    private addFactBaseEvents: FactBaseListener[] = [];
+    private addFactBaseEvents: FactBaseListener[];
 
     private constructor(swipl: SWIPL.SWIPLModule, factBase: PrologFile[] = []) {
         this.swipl = swipl;
         this.factBase = factBase;
         this.initialFactBase = this.factBase;
+        this.addFactBaseEvents = [];
     }
 
     private static async initPrologVM(): Promise<AppState> {
@@ -61,12 +62,16 @@ export class AppState {
      * @returns a prologVM instances preloaded with the initial fact base
     */
     public static async initFromLocalStorage(rechtsbestand: (Promise<PrologFile> | PrologFile)[] = getRechtsbestand()): Promise<AppState> {
-        if (!this.hasLocalStorageFactBase()) {
-            return await this.initFromArray(rechtsbestand);
-        }
+        //if (!this.hasLocalStorageFactBase()) {
+        return await this.initFromArray(rechtsbestand);
+        //}
+
+        // TODO discuss this with Lukas, something like https://dexie.org/#sync would be cool
 
         const factBaseString = localStorage.getItem(LOCAL_STORAGE_KEY)!;
-        const factBase = JSON.parse(factBaseString) as PrologFile[];
+        const factBaseRaw = JSON.parse(factBaseString) as any[];
+        const factBase = factBaseRaw.map((x) => new PrologFile(x._name, x._evaluatedProlog, x._sachverhalt, x._pft));
+        console.log(factBase);
         const swipl = await AppState.initPrologVM();
 
         await swipl.addFactBases(factBase);
@@ -104,7 +109,7 @@ export class AppState {
         this.removeFactBaseIfExists(pf.name);
 
         // see here: https://github.com/JanWielemaker/swi-prolog-wasm?tab=readme-ov-file#usage
-        this.swipl.FS.writeFile(pf.name, pf.content);
+        this.swipl.FS.writeFile(pf.name, pf.evaluatedProlog);
 
         // https://www.swi-prolog.org/pldoc/doc_for?object=load_files/1
         const query: SWIPL.Query = this.swipl.prolog.query("load_files(File)", {

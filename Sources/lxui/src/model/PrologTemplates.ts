@@ -1,9 +1,4 @@
 import { v4 as uuidv4 } from 'uuid';
-import { V } from 'vitest/dist/chunks/reporters.D7Jzd9GS';
-
-interface PrologFragment {
-    serialize2Prolog(): string;
-}
 
 function generateUUID(id: string) {
     return `${id}_${uuidv4().replaceAll("-", "")}`;
@@ -13,7 +8,7 @@ const GESTEIN_ID = "gestein";
 const PERSON_ID = "person";
 const SACHVERHALT_ID = "sachverhalt";
 
-export class LandesabgabeSachverhalt implements PrologFragment {
+export class LandesabgabeSachverhalt {
     private _sachverhalt_id: string;
     private _sovereignPersons: LandesabgabePerson[];
     private _joinTable: [LandesabgabePerson, LandesabgabeHandlung][];
@@ -73,11 +68,19 @@ export class LandesabgabeSachverhalt implements PrologFragment {
     }
 
     serialize2Prolog(): string {
-        return "% Sachverhalt";
+        function joinWithNewLine(a: string, b: string) {
+            return `${a}\n${b}`;
+        }
+
+        return "% Sachverhalt" + this.personsWithAssociatedHandlung.keys().reduce((p: string, person: LandesabgabePerson) => {
+            const handlungen = this.personsWithAssociatedHandlung.get(person) ?? [];
+            return p + joinWithNewLine(person.serialize2Prolog(this.sacherhaltId), handlungen.reduce((p, i: LandesabgabeHandlung) =>
+                joinWithNewLine(p, i.serialize2Prolog(this.sacherhaltId, person.personId)), ""));
+        }, "");
     }
 }
 
-export class LandesabgabePerson implements PrologFragment {
+export class LandesabgabePerson {
     private _vorname: string;
     private _nachname: string;
     private _alter: number;
@@ -120,25 +123,20 @@ export class LandesabgabePerson implements PrologFragment {
         return this._berufsmäßig;
     }
 
-    public get person_id(): string {
-        return this._personId;
-    }
-
-    serialize2Prolog(): string {
-        return "";
-        /*
-        return `% Person
-        subjekt(${this._sachverhalt.sacherhaltId}, ${this._person_id}).
-        vorname(${this._person_id}, "${this._vorname}").
-        nachname(${this._person_id}, "${this._nachname}").
-        natuerliche_person(${this._person_id}).
-        alter(${this._person_id}, ${this._alter}).
-        ${this._berufsmäßig ? "" : `berufsmaessig(${this._person_id}).`}
-        `;*/
+    serialize2Prolog(sachverhaltsID: string): string {
+        return `
+        % Person
+        subjekt(${sachverhaltsID}, ${this.personId}).
+        vorname(${this.personId}, "${this._vorname}").
+        nachname(${this.personId}, "${this._nachname}").
+        natuerliche_person(${this.personId}).
+        alter(${this.personId}, ${this._alter}).
+        ${this._berufsmäßig ? "" : `berufsmaessig(${this.personId}).`}
+        `;
     }
 }
 
-export class LandesabgabeHandlung implements PrologFragment {
+export class LandesabgabeHandlung {
     private _gefördert?: number;
     private _date: Date;
     private _einheit: string = "tonne";
@@ -166,14 +164,13 @@ export class LandesabgabeHandlung implements PrologFragment {
         return this._uuidWithPrefix;
     }
 
-    serialize2Prolog(): string {
-        return "";/*
+    serialize2Prolog(sachverhaltId: string, personId: string): string {
         return `
-        % Verbum
-        verbum(${this.sachverhalt.sacherhaltId}, ${this.person.personId}, bergbau(gewinnen, obertags, mineralische_rohstoffe)).
-        objekt(${this.sachverhalt.sacherhaltId}, ${this.person.personId}, bergbau(gewinnen, obertags, mineralische_rohstoffe), ${this.uuidWithPrefix}).
+        % Handlung
+        verbum(${sachverhaltId}, ${personId}, bergbau(gewinnen, obertags, mineralische_rohstoffe)).
+        objekt(${sachverhaltId}, ${personId}, bergbau(gewinnen, obertags, mineralische_rohstoffe), ${this.uuidWithPrefix}).
         ${this.gefördert ? `gefoerdert(${this.uuidWithPrefix}, ${this.gefördert!}, ${this.einheit}).` : ""}
         verwertet_am(${this.uuidWithPrefix}, date(${this.date.getFullYear()}, ${this.date.getMonth()}, ${this.date.getDay()}, 0, 0, 0, Off, TZ, DST)).
-      `; // TODO Stunde und Minute übernehmen*/
+        `; // TODO Stunde und Minute übernehmen*/
     }
 }

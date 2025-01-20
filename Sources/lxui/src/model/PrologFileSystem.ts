@@ -9,11 +9,11 @@ export enum PrologFileType {
 export class PrologFile {
     private _prologFileType: PrologFileType;
     private _name: string;
-    private _evaluatedProlog: string;
+    private _evaluatedProlog: string | undefined;
     private _sachverhalt: LandesabgabeSachverhalt | undefined;
 
     constructor(name: string,
-        evaluatedProlog: string,
+        evaluatedProlog: string | undefined,
         sachverhalt: LandesabgabeSachverhalt | undefined,
         pft: PrologFileType = PrologFileType.FACT) {
         this._name = name;
@@ -31,7 +31,15 @@ export class PrologFile {
     }
 
     public get evaluatedProlog(): string {
-        return this._evaluatedProlog;
+        if (this._evaluatedProlog) {
+            return this._evaluatedProlog;
+        }
+
+        if (this._sachverhalt) {
+            return this._sachverhalt.serialize2Prolog();
+        }
+
+        return "";
     }
 
     public get sachverhalt(): LandesabgabeSachverhalt | undefined {

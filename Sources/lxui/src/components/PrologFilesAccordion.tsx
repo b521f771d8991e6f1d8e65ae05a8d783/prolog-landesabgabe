@@ -2,7 +2,10 @@ import { PrologFile, PrologFileType } from "@/model/PrologFileSystem";
 import { Code, Center, Button, Paper, Title, Flex, Text } from "@mantine/core";
 import { CodeView } from "./CodeView";
 
-export function PrologFilesAccordion({ factBase, width }: { factBase: PrologFile[], width: number }) {
+export function PrologFilesAccordion({ factBase, width }: {
+    factBase: PrologFile[],
+    width: number
+}) {
     const laws = factBase.filter((x) => x.prologFileType === PrologFileType.LAW);
     const mereFacts = factBase.filter((x) => x.prologFileType === PrologFileType.FACT);
 

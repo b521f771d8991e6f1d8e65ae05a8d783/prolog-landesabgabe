@@ -47,7 +47,7 @@ export class LandesabgabeSachverhalt implements PrologFragment {
     }
 
     public get persons() {
-        return [...this.sovereignPersons, ...this.joinTable.map((x) => x[0])];
+        return [...new Set([...this.sovereignPersons, ...this.joinTable.map((x) => x[0])])];
     }
 
     public get handlungen() {

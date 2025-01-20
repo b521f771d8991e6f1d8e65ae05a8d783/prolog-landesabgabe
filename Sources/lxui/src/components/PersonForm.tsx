@@ -83,7 +83,8 @@ function HandlungenTableBody({ handlungen, setDate, setGefördert, date, geförd
 
             <Table.Td>
                 <Button disabled={date === undefined || date === null || gefördert === undefined || gefördert === 0 || gefördert === null}
-                    onClick={addButtonClicked}>
+                    onClick={addButtonClicked}
+                    leftSection={"🔢"}>
                     Eintrag hinzufügen
                 </Button>
             </Table.Td>

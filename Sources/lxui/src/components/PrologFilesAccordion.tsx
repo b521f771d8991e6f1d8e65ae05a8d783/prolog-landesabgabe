@@ -47,47 +47,14 @@ export function PrologFilesAccordion({ factBase, width }: {
 }
 
 function PrologFileView({ pf }: { pf: PrologFile }) {
-    function onFullScreenClicked() {
-        // open a new window containing pf.content
-        const blob = URL.createObjectURL(new Blob([pf.evaluatedProlog], { type: "text/plain" }));
-        window.open(blob);
-    }
-
-    function onDownloadClicked() {
-        const downloadLink = document.createElement('a');
-        downloadLink.setAttribute('href', 'data:application/octet-stream;charset=utf-8,' + encodeURIComponent(pf.evaluatedProlog));
-
-        const fileName = pf.name.replaceAll("/", "-");
-        const fileNameSanitized = fileName.startsWith("-") ? fileName.substring(1) : fileName;
-
-        downloadLink.setAttribute('download', fileNameSanitized);
-
-        // Append the link to the document and click it
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-
-        // Remove the temporary link
-        document.body.removeChild(downloadLink);
-    }
-
     return <>
         <details>
             <summary>{pf.name}</summary>
-            <CodeView code={pf.evaluatedProlog} language="code" h={300} />
-
-            <Center>
-                <Flex className={"select-none"}
-                    mih={50}
-                    gap="xs"
-                    justify="center"
-                    align="center"
-                    direction="row"
-                    wrap="wrap">
-                    <Button onClick={onDownloadClicked} leftSection={"💾"}>Download</Button>
-                    <Button onClick={onFullScreenClicked} leftSection={"💻"}>Vergrößern</Button>
-                    <Button disabled leftSection={"🪄"}>In Norm verwandeln</Button>
-                </Flex>
-            </Center>
+            <CodeView
+                code={pf.evaluatedProlog}
+                language="code"
+                h={300}
+                fileName={pf.name.replaceAll("/", "-")} />
         </details >
     </>;
 }

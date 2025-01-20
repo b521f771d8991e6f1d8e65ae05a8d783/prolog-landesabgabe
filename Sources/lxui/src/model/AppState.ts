@@ -51,40 +51,18 @@ export class AppState {
         return swipl;
     }
 
-    /*
-     * creates a new PrologVM instance from the local storage
-     * automatically adds a fact base listener to save the fact base to local storage when it changes
-     * the initial fact base it set to the one handed over as a parameter
-     * even if the local storage contains a fact base.
-     * the initial fact base is saved in case we want to reboot it
-     * 
-     * @params rechtsbestand the initial fact base to use
-     * @returns a prologVM instances preloaded with the initial fact base
-    */
     public static async initFromLocalStorage(rechtsbestand: (Promise<PrologFile> | PrologFile)[] = getRechtsbestand()): Promise<AppState> {
-        //if (!this.hasLocalStorageFactBase()) {
+        // TODO
         return await this.initFromArray(rechtsbestand);
-        //}
-
-        // TODO discuss this with Lukas, something like https://dexie.org/#sync would be cool
-
-        const factBaseString = localStorage.getItem(LOCAL_STORAGE_KEY)!;
-        const factBaseRaw = JSON.parse(factBaseString) as any[];
-        const factBase = factBaseRaw.map((x) => new PrologFile(x._name, x._evaluatedProlog, x._sachverhalt, x._pft));
-        console.log(factBase);
-        const swipl = await AppState.initPrologVM();
-
-        await swipl.addFactBases(factBase);
-        swipl.initialFactBase = await AppState.awaitPrologFiles(rechtsbestand);
-        swipl.addFactBaseListener(swipl.saveToLocalStorage.bind(swipl));
-        return swipl;
     }
 
     public static hasLocalStorageFactBase(): boolean {
+        // TODO
         return localStorage.getItem(LOCAL_STORAGE_KEY) !== null;
     }
 
     public saveToLocalStorage() {
+        // TODO
         localStorage.removeItem(LOCAL_STORAGE_KEY);
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(this.factBase));
     }

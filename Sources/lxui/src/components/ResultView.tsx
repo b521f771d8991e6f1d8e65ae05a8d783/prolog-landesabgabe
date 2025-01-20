@@ -48,7 +48,7 @@ function PrologTerminal({ }: {}) {
             function reopenClicked() {
                 setTerminalState(TerminalState.Open);
             }
-            return <Button onClick={reopenClicked} leftSection={"🔍"}>Terminal öffnen</Button>;
+            return <Button onClick={reopenClicked} leftSection={"</>"}>Terminal öffnen</Button>;
         }
         case TerminalState.Open:
             return <Terminal

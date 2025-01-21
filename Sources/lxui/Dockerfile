@@ -17,4 +17,6 @@ RUN npm install
 RUN npm run build
 
 FROM httpd:alpine AS run
-# TODO
+
+COPY --from=build /build /usr/local/apache2/htdocs
+EXPOSE 8080

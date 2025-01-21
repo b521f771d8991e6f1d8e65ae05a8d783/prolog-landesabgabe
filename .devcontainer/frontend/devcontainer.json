@@ -1,6 +1,9 @@
 {
     "name": "Frontend",
-    "dockerComposeFile": "../../Infrastructure/docker-compose.dev.yml",
+    "dockerComposeFile": [
+        "docker-compose.yml",
+        "../../Infrastructure/Docker/docker-compose.yml"
+    ],
     "service": "frontend",
     "customizations": {
         "vscode": {
@@ -11,7 +14,9 @@
                 "streetsidesoftware.code-spell-checker",
                 "vscodevim.vim",
                 "arthurwang.vsc-prolog",
-                "bradlc.vscode-tailwindcss"
+                "bradlc.vscode-tailwindcss",
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode"
             ]
         }
     },

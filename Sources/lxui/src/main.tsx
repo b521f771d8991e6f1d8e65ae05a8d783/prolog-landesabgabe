@@ -6,7 +6,11 @@ import App from './App';
 import "./index.css";
 import { AppState } from './model/AppState';
 
-const pvm = await AppState.initFromLocalStorage();
-
-ReactDOM.createRoot(document.getElementById('root')!)
+AppState.initFromLocalStorage().then((pvm) => {
+    ReactDOM.createRoot(document.getElementById('root')!)
     .render(<App prologVM={pvm} />);
+}).catch((x) => {
+    console.log(x);
+    document.getElementById("root")!.innerHTML = "There was an error while loading the application"
+});
+

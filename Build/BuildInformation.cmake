@@ -1,18 +1,23 @@
+find_program(GIT NAMES git REQUIRED)
+
 execute_process(
-  COMMAND git rev-parse HEAD
+  COMMAND ${GIT} rev-parse HEAD
   OUTPUT_VARIABLE GIT_HASH
   OUTPUT_STRIP_TRAILING_WHITESPACE
+  WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/..
 )
 
 execute_process(
-  COMMAND git rev-parse --abbrev-ref HEAD
+  COMMAND ${GIT} rev-parse --abbrev-ref HEAD
   OUTPUT_VARIABLE GIT_BRANCH
   OUTPUT_STRIP_TRAILING_WHITESPACE
+  WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/..
 )
 
 execute_process(
-  COMMAND git diff --quiet
+  COMMAND ${GIT} diff --quiet
   RESULT_VARIABLE GIT_STATUS
+  WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/..
 )
 
 if(NOT GIT_STATUS EQUAL 0)

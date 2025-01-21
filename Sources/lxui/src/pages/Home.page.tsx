@@ -6,12 +6,12 @@ import { PrologFile } from "@/model/PrologFileSystem";
 
 import "highlight.js/styles/github.css";
 
-import logo from "../../../../Resources/logo.svg";
+import logo from "../static/logo.svg";
 import { SachverhaltEditorForm } from '@/components/SachverhaltEditorForm';
 import { PrologFilesAccordion } from '@/components/PrologFilesAccordion';
 import { ResultView } from '@/components/ResultView';
 import { defaultConfig } from '@/config/ServerConfig';
-import { LandesabgabeHandlung, LandesabgabePerson } from '@/model/PrologTemplates';
+import { StatisticsView } from '@/components/StatisticsView';
 
 const DOWNLOAD_FILE_DEFAULT_NAME = "Sachverhalt.sv";
 export const WIDTH = 550;
@@ -56,6 +56,8 @@ function setTitle(title: string) {
  * to reset the application state and reload the page.
  */
 export function HomePage({ prologVM }: { prologVM: AppState }) {
+  const [statisticViewOpened, setStatisticViewOpened] = useState<boolean>(false);
+
   function onDeleteButtonClicked() {
     prologVM.reset();
     window.location.reload();
@@ -75,6 +77,10 @@ export function HomePage({ prologVM }: { prologVM: AppState }) {
 
     // Remove the temporary link
     document.body.removeChild(downloadLink);
+  }
+
+  function showStatisticsButtonClicked() {
+    setStatisticViewOpened(!statisticViewOpened);
   }
 
   useEffect(() => {
@@ -106,15 +112,29 @@ export function HomePage({ prologVM }: { prologVM: AppState }) {
         <Button onClick={onSaveClicked} leftSection={"💾"}>Speichern</Button>
         <Button leftSection={"⚡"} disabled>Laden</Button>
         <Button leftSection={"🔐"} disabled>Login</Button>
-        <VersionString />
+        {
+          statisticViewOpened ? <Button onClick={showStatisticsButtonClicked} leftSection={"❌"}>Statistiken ausblenden</Button>
+            : <Button onClick={showStatisticsButtonClicked} leftSection={"📊"}>Statistiken einblenden</Button>
+        }
       </Flex>
     </Paper>
     <Divider />
+
+    {statisticViewOpened && <>
+      <Paper shadow="sm"
+        p="sm"
+        m="sm">
+        <StatisticsView />
+      </Paper>
+      <Divider />
+    </>}
+
     <AppStateView appState={prologVM} />
 
     <Text c="dimmed">
       Ein Projekt der Stabsstelle für Digitalisierung Oberösterreich☕
     </Text>
+    <VersionString />
   </Flex>;
 }
 
@@ -150,8 +170,12 @@ function VersionString() {
 function AppStateView({ appState }: {
   appState: AppState
 }) {
+  function mergeFactFiles(pf: PrologFile[]) {
+    return factFiles.reduce((p, c) => `${p}\n% Filename: ${c.name}\n${c.evaluatedProlog}`, "");
+  }
+
   const [factFiles, setFactFiles] = useState<PrologFile[]>(appState.getFactBase());
-  const code = useMemo<string>(() => factFiles.reduce((p, c) => `${p}\n${c.evaluatedProlog}`, ""), [factFiles]);
+  const code = useMemo<string>(() => mergeFactFiles(factFiles), [factFiles]);
 
   useEffect(() => {
     // update the App State

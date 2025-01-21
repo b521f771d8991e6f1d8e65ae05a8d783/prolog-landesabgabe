@@ -1,8 +1,8 @@
 /out
-/.git
 /.vscode
 /Containers
 /Docs
 /Scripts
 README.md
 /.devcontainer
+/Sources/lxui

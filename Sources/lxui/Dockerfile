@@ -10,13 +10,19 @@ FROM dev AS build
 RUN mkdir /build
 RUN mkdir /source
 
-COPY Sources/lxui /source
+COPY . /source
 
 WORKDIR /source
 RUN npm install
 RUN npm run build
 
-FROM httpd:alpine AS run
+FROM nginx:stable-alpine AS run
 
-COPY --from=build /build /usr/local/apache2/htdocs
+COPY nginx/lxui.conf /etc/nginx/conf.d/
+RUN rm /etc/nginx/nginx.conf
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
+
+RUN mkdir /usr/share/nginx/html/lxui
+COPY --from=build /build /usr/share/nginx/html/lxui
+
 EXPOSE 8080

@@ -11,7 +11,7 @@ export function ResultView({ code, width }: { code: string, width: number }) {
         w={width}>
         <Title>Ergebnisse</Title>
         <Text>Gesamter Prolog-Code:</Text>
-        <CodeView code={code} language="prolog" h={300} />
+        <CodeView code={code} language="prolog" h={300} fileName="result.pl" />
         <Divider my={10} />
         <PrologTerminal />
     </Paper>

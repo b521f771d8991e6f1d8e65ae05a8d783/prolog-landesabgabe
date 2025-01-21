@@ -12,14 +12,14 @@ services:
       - ../..:/workspace
   frontend:
     build:
-      dockerfile: Sources/lxui/Dockerfile
+      dockerfile: Dockerfile
       target: ${FRONTEND_TARGET_STAGE}
-      context: ../..
+      context: ../../Sources/lxui
     tty: true
     ports:
       - "8080:8080"
     volumes:
-      - ../..:/workspace
+      - ../../:/workspace
 
 networks:
   default:

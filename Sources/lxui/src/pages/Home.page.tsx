@@ -6,7 +6,7 @@ import { PrologFile } from "@/model/PrologFileSystem";
 
 import "highlight.js/styles/github.css";
 
-import logo from "../../../../Resources/logo.svg";
+import logo from "../static/logo.svg";
 import { SachverhaltEditorForm } from '@/components/SachverhaltEditorForm';
 import { PrologFilesAccordion } from '@/components/PrologFilesAccordion';
 import { ResultView } from '@/components/ResultView';
@@ -114,20 +114,20 @@ export function HomePage({ prologVM }: { prologVM: AppState }) {
         <Button leftSection={"🔐"} disabled>Login</Button>
         {
           statisticViewOpened ? <Button onClick={showStatisticsButtonClicked} leftSection={"❌"}>Statistiken ausblenden</Button>
-                              : <Button onClick={showStatisticsButtonClicked} leftSection={"📊"}>Statistiken einblenden</Button>
+            : <Button onClick={showStatisticsButtonClicked} leftSection={"📊"}>Statistiken einblenden</Button>
         }
       </Flex>
     </Paper>
     <Divider />
 
-  { statisticViewOpened && <>
-    <Paper shadow="sm"
-      p="sm"
-      m="sm">
+    {statisticViewOpened && <>
+      <Paper shadow="sm"
+        p="sm"
+        m="sm">
         <StatisticsView />
       </Paper>
       <Divider />
-    </> }
+    </>}
 
     <AppStateView appState={prologVM} />
 

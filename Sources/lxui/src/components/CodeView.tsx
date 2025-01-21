@@ -2,7 +2,7 @@ import { Button, Center, Code, Flex } from "@mantine/core";
 import hljs from "highlight.js";
 import { useEffect, useId } from "react";
 
-export function CodeView({ code, language, h = 300, fileName = "prolog.pl"}: {
+export function CodeView({ code, language, h = 300, fileName = "prolog.pl" }: {
     code: string,
     language: string,
     h: number,
@@ -42,11 +42,14 @@ export function CodeView({ code, language, h = 300, fileName = "prolog.pl"}: {
     }
 
 
+    // TODO make the "In Norm verwandeln"-Button call an LLM in the Backend and return the correct german law text
+    // we will work together on the prompts
+    // only sent the selected text
     return <><Code h={h} block>
         <code id={codeId} className={language}>
             {code}
         </code>
-        </Code>
+    </Code>
         <Center>
             <Flex className={"select-none"}
                 mih={50}

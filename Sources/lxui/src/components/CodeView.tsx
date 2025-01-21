@@ -42,6 +42,9 @@ export function CodeView({ code, language, h = 300, fileName = "prolog.pl"}: {
     }
 
 
+    // TODO make the "In Norm verwandeln"-Button call an LLM in the Backend and return the correct german law text
+    // we will work together on the prompts
+    // only sent the selected text
     return <><Code h={h} block>
         <code id={codeId} className={language}>
             {code}

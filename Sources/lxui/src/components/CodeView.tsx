@@ -2,7 +2,7 @@ import { Button, Center, Code, Flex } from "@mantine/core";
 import hljs from "highlight.js";
 import { useEffect, useId } from "react";
 
-export function CodeView({ code, language, h = 300, fileName = "prolog.pl"}: {
+export function CodeView({ code, language, h = 300, fileName = "prolog.pl" }: {
     code: string,
     language: string,
     h: number,
@@ -49,7 +49,7 @@ export function CodeView({ code, language, h = 300, fileName = "prolog.pl"}: {
         <code id={codeId} className={language}>
             {code}
         </code>
-        </Code>
+    </Code>
         <Center>
             <Flex className={"select-none"}
                 mih={50}

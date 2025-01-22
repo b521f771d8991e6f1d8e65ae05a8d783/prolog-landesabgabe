@@ -25,10 +25,6 @@ export class AppState {
 
     private static async initPrologVM(): Promise<AppState> {
         const swipl = new AppState(await AppState.initializePrologModule());
-
-        // TODO make this more generic
-        swipl.swipl.FS.mkdir("src");
-        swipl.swipl.FS.mkdir("src/static");
         return swipl;
     }
 
@@ -78,15 +74,15 @@ export class AppState {
     }
 
     protected spawnTopLevelDirectoriesFromURL(url: string) {
+        console.log("Creating folder: ", url)
         const urlCapped: string = url.startsWith("/") ? url.substring(1) : url;
         const segments: string[] = urlCapped.split("/");
-        const segmentsWithoutLast = segments.slice(0, segments.length - 1); // the last one is the file itself
-        let previous = "";
+        const segmentsWithoutLast: string[] = segments.slice(0, segments.length - 1); // the last one is the file itself
+        let current: string = "";
 
         for(const i of segmentsWithoutLast) {
-            this.swipl.FS.mkdir(previous + i);
-            previous += `${previous}/${i}`;
-            console.log(`Created folder: ${previous}`);
+            current = `${current}/${i}`;
+            this.swipl.FS.mkdir(current);
         }
     }
 

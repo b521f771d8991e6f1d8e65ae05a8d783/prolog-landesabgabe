@@ -1,7 +1,7 @@
 import { Paper, Title, Text, Divider, Button } from "@mantine/core";
 import { CodeView } from "./CodeView";
 import Terminal, { ColorMode } from 'react-terminal-ui';
-import { useId, useRef, useState } from "react";
+import { useState } from "react";
 
 export function ResultView({ code, width }: { code: string, width: number }) {
     return <Paper shadow="sm"
@@ -25,7 +25,7 @@ function PrologTerminal({ }: {}) {
     const [terminalLineData, setTerminalLineData] = useState<JSX.Element[]>([]);
 
     function onExecute(terminalInput: string) {
-
+        
     }
 
     function redButtonCallback() {

@@ -42,7 +42,7 @@ export class LandesabgabeSachverhalt {
     }
 
     public get persons() {
-        return [...new Set([...this.sovereignPersons, ...this.joinTable.map((x) => x[0])])];
+        return this.sovereignPersons;
     }
 
     public get handlungen() {

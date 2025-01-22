@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/incbin" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/bench" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/debian" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/PDT" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/RDF" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/archive" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/bdb" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/chr" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/clib" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/clpqr" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/cpp" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/cql" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/http" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/inclpr" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/jpl" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/libedit" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/ltx2htm" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/mqi" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/nlp" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/odbc" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/paxos" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/pcre" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/pengines" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/pldoc" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/plunit" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/protobufs" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/readline" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/redis" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/semweb" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/sgml" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/ssl" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/stomp" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/sweep" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/swipl-win" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/swipy" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/table" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/tipc" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/utf8proc" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/windows" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/xpce" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/yaml" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/swi-prolog/packages/zlib" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Dependencies/vcpkg" vcs="Git" />
+  </component>
+</project>

@@ -4,7 +4,7 @@ import App from './App';
 // https://mantinehub.com/
 
 import "./index.css";
-import { AppState } from './model/AppState';
+import { PrologVM } from './model/PrologVM';
 
 const launcher = document.getElementById("launcher")!;
 
@@ -47,7 +47,7 @@ ReactDOM.createRoot(launcher).render(
     </>
 );
 
-AppState.initFromLocalStorage().then((pvm) => {
+PrologVM.initFromLocalStorage().then((pvm) => {
     launcher.hidden = true;
     ReactDOM.createRoot(document.getElementById('root')!)
     .render(<App prologVM={pvm} />);

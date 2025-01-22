@@ -1,7 +1,7 @@
 import { Divider, Paper, Title } from '@mantine/core';
 import { useEffect, useMemo, useState } from "react";
 import { Flex, Button, Text } from "@mantine/core";
-import { AppState, getLocalStorage } from "../model/AppState";
+import { PrologVM, getLocalStorage } from "../model/PrologVM";
 import { PrologFile } from "@/model/PrologFileSystem";
 
 import "highlight.js/styles/github.css";
@@ -41,7 +41,7 @@ function setTitle(title: string) {
  * Represents the home page component of the application.
  *
  * @param {Object} props - The properties object.
- * @param {AppState} props.prologVM - The application state managed by Prolog VM.
+ * @param {PrologVM} props.prologVM - The application state managed by Prolog VM.
  *
  * @returns {JSX.Element} The rendered home page component.
  *
@@ -55,7 +55,7 @@ function setTitle(title: string) {
  * This component sets the page title and favicon on mount, and provides a button
  * to reset the application state and reload the page.
  */
-export function HomePage({ prologVM }: { prologVM: AppState }) {
+export function HomePage({ prologVM }: { prologVM: PrologVM }) {
   const [statisticViewOpened, setStatisticViewOpened] = useState<boolean>(false);
 
   function onDeleteButtonClicked() {
@@ -169,7 +169,7 @@ function VersionString() {
 *  - re-creating the page from the prolog VM on page reload
 */
 function AppStateView({ appState }: {
-  appState: AppState
+  appState: PrologVM
 }) {
   function mergeFactFiles(pf: PrologFile[]) {
     return factFiles.reduce((p, c) => `${p}\n% Filename: ${c.name}\n${c.evaluatedProlog}`, "");

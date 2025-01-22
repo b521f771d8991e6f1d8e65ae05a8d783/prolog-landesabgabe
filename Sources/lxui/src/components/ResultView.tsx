@@ -2,8 +2,12 @@ import { Paper, Title, Text, Divider, Button } from "@mantine/core";
 import { CodeView } from "./CodeView";
 import Terminal, { ColorMode } from 'react-terminal-ui';
 import { useState } from "react";
+import { PrologVM } from "@/model/PrologVM";
 
-export function ResultView({ code, width }: { code: string, width: number }) {
+export function ResultView({ code, width}: {
+    code: string,
+    width: number
+}) {
     return <Paper shadow="sm"
         p="xl"
         m="sm"
@@ -16,7 +20,7 @@ export function ResultView({ code, width }: { code: string, width: number }) {
     </Paper>
 }
 
-function PrologTerminal({ }: {}) {
+function PrologTerminal({  }: {}) {
     enum TerminalState {
         Closed, Minimized, Open, Maximized
     }

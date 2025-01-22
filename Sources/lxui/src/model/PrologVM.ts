@@ -10,7 +10,7 @@ export function getLocalStorage(): string | null {
     return localStorage.getItem(LOCAL_STORAGE_KEY);
 }
 
-export class AppState {
+export class PrologVM {
     private swipl: SWIPL.SWIPLModule;
     private factBase: PrologFile[];
     private initialFactBase: PrologFile[];
@@ -23,8 +23,8 @@ export class AppState {
         this.addFactBaseEvents = [];
     }
 
-    private static async initPrologVM(): Promise<AppState> {
-        const swipl = new AppState(await AppState.initializePrologModule());
+    private static async initPrologVM(): Promise<PrologVM> {
+        const swipl = new PrologVM(await PrologVM.initializePrologModule());
         return swipl;
     }
 
@@ -38,16 +38,16 @@ export class AppState {
 
     // language designers should consider using paradigms such as ObjC init more, they would make stuff like this MUCH easier
     // https://developer.apple.com/documentation/objectivec/nsobject/1418639-initialize?language=objc
-    public static async initFromArray(rechtsbestand: (Promise<PrologFile> | PrologFile)[] = getRechtsbestand()): Promise<AppState> {
-        const pfs: PrologFile[] = await AppState.awaitPrologFiles(rechtsbestand);
+    public static async initFromArray(rechtsbestand: (Promise<PrologFile> | PrologFile)[] = getRechtsbestand()): Promise<PrologVM> {
+        const pfs: PrologFile[] = await PrologVM.awaitPrologFiles(rechtsbestand);
 
-        const swipl = await AppState.initPrologVM();
+        const swipl = await PrologVM.initPrologVM();
         swipl.initialFactBase = pfs;
         await swipl.addFactBases(pfs);
         return swipl;
     }
 
-    public static async initFromLocalStorage(rechtsbestand: (Promise<PrologFile> | PrologFile)[] = getRechtsbestand()): Promise<AppState> {
+    public static async initFromLocalStorage(rechtsbestand: (Promise<PrologFile> | PrologFile)[] = getRechtsbestand()): Promise<PrologVM> {
         // TODO
         return await this.initFromArray(rechtsbestand);
     }
@@ -94,7 +94,6 @@ export class AppState {
      */
     addFactBase(pf: PrologFile) {
         this.removeFactBaseIfExists(pf.name);
-        
         this.spawnTopLevelDirectoriesFromURL(pf.name);
 
         // see here: https://github.com/JanWielemaker/swi-prolog-wasm?tab=readme-ov-file#usage
@@ -163,16 +162,12 @@ export class AppState {
      * Reboots the prologVM, uses the same fact base as before
      */
     async reboot(): Promise<void> {
-        const temporaryPrologVM = await AppState.initFromArray(this.factBase);
+        const temporaryPrologVM = await PrologVM.initFromArray(this.factBase);
         this.swipl = temporaryPrologVM.swipl;
     }
 
     executeQuery(query: string, input?: Record<string, unknown>): SWIPL.Query {
         return this.swipl.prolog.query(query, input);
-    }
-
-    evaluate() {
-        return "";
     }
 
     public static getUniqueFilename() {

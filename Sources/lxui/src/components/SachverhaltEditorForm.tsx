@@ -1,6 +1,6 @@
 import { Text, Button, Paper, Title } from "@mantine/core";
 import { PrologFile, PrologFileType } from "@/model/PrologFileSystem";
-import { AppState } from "@/model/AppState";
+import { PrologVM } from "@/model/PrologVM";
 import { FactFile } from "./FactFile";
 import { LandesabgabeSachverhalt } from "@/model/PrologTemplates";
 
@@ -15,7 +15,7 @@ export function SachverhaltEditorForm({ factFiles, setFactFiles, width }: {
 }) {
     const filteredFacts = factFiles.filter((x) => x.prologFileType === PrologFileType.FACT);
 
-    function addFactFile(ff: PrologFile = new PrologFile(AppState.getUniqueFilename(), "", new LandesabgabeSachverhalt(), PrologFileType.FACT)) {
+    function addFactFile(ff: PrologFile = new PrologFile(PrologVM.getUniqueFilename(), "", new LandesabgabeSachverhalt(), PrologFileType.FACT)) {
         setFactFiles([...factFiles, ff]);
     }
 

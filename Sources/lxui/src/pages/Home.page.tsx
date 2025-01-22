@@ -113,8 +113,9 @@ export function HomePage({ prologVM }: { prologVM: AppState }) {
         <Button leftSection={"⚡"} disabled>Laden</Button>
         <Button leftSection={"🔐"} disabled>Login</Button>
         {
-          statisticViewOpened ? <Button onClick={showStatisticsButtonClicked} leftSection={"❌"}>Statistiken ausblenden</Button>
-            : <Button onClick={showStatisticsButtonClicked} leftSection={"📊"}>Statistiken einblenden</Button>
+          statisticViewOpened
+            ? <Button onClick={showStatisticsButtonClicked} leftSection={"❌"}>Statistiken ausblenden</Button>
+            : <Button onClick={showStatisticsButtonClicked} leftSection={"📊"} disabled>Statistiken einblenden</Button>
         }
       </Flex>
     </Paper>

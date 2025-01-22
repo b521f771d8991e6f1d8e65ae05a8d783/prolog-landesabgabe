@@ -77,6 +77,19 @@ export class AppState {
         this.addFactBaseEvents.push(listener);
     }
 
+    protected spawnTopLevelDirectoriesFromURL(url: string) {
+        const urlCapped: string = url.startsWith("/") ? url.substring(1) : url;
+        const segments: string[] = urlCapped.split("/");
+        const segmentsWithoutLast = segments.slice(0, segments.length - 1); // the last one is the file itself
+        let previous = "";
+
+        for(const i of segmentsWithoutLast) {
+            this.swipl.FS.mkdir(previous + i);
+            previous += `${previous}/${i}`;
+            console.log(`Created folder: ${previous}`);
+        }
+    }
+
     /**
      * This functions is used to add a fact base to the prolog VM.
      * Listeners are notified when a fact base is added.
@@ -84,14 +97,13 @@ export class AppState {
      * @param pf the Prolog fact base to add
      */
     addFactBase(pf: PrologFile) {
-        console.log(`Loading file: ${pf.name}`);
         this.removeFactBaseIfExists(pf.name);
+        
+        this.spawnTopLevelDirectoriesFromURL(pf.name);
 
-        console.log("efwef")
         // see here: https://github.com/JanWielemaker/swi-prolog-wasm?tab=readme-ov-file#usage
         this.swipl.FS.writeFile(pf.name, pf.evaluatedProlog);
 
-        console.log("Here")
         // https://www.swi-prolog.org/pldoc/doc_for?object=load_files/1
         const query: SWIPL.Query = this.swipl.prolog.query("load_files(File)", {
             // variable bindings go here

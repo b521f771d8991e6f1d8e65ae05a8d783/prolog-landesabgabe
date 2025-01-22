@@ -4,7 +4,6 @@ import Terminal, { ColorMode } from 'react-terminal-ui';
 import { useId, useRef, useState } from "react";
 
 export function ResultView({ code, width }: { code: string, width: number }) {
-    console.log(code);
     return <Paper shadow="sm"
         p="xl"
         m="sm"

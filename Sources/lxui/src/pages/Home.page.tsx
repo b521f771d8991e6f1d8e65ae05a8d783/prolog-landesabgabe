@@ -130,7 +130,7 @@ export function HomePage({ prologVM }: { prologVM: PrologVM }) {
       <Divider />
     </>}
 
-    <AppStateView appState={prologVM} />
+    <AppStateView prologVM={prologVM} />
 
     <Text c="dimmed">
       Ein Projekt der Stabsstelle für Digitalisierung Oberösterreich☕
@@ -168,18 +168,18 @@ function VersionString() {
 *  - creating the Prolog from the output
 *  - re-creating the page from the prolog VM on page reload
 */
-function AppStateView({ appState }: {
-  appState: PrologVM
+function AppStateView({ prologVM }: {
+  prologVM: PrologVM
 }) {
   function mergeFactFiles(pf: PrologFile[]) {
     return factFiles.reduce((p, c) => `${p}\n% Filename: ${c.name}\n${c.evaluatedProlog}`, "");
   }
 
-  const [factFiles, setFactFiles] = useState<PrologFile[]>(appState.getFactBase());
+  const [factFiles, setFactFiles] = useState<PrologFile[]>(prologVM.getFactBase());
   const code = useMemo<string>(() => mergeFactFiles(factFiles), [factFiles]);
 
   useEffect(() => {
-    // update the App State
+    
   }, [factFiles]);
 
   console.log("Loaded fact base: ", factFiles);

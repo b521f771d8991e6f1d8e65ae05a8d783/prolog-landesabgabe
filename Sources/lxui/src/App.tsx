@@ -9,12 +9,12 @@ import { PrologVM } from './model/PrologVM';
 import "./style.css";
 import { shadcnCssVariableResolver } from './cssVariableResolver';
 
-export default function App({ prologVM: appState }: { prologVM: PrologVM }) {
+export default function App({ prologVM }: { prologVM: PrologVM }) {
   return (
     <MantineProvider
       theme={shadcnTheme}
       cssVariablesResolver={shadcnCssVariableResolver}>
-      <Router prologVM={appState} />
+      <Router prologVM={prologVM} />
     </MantineProvider>
   );
 }

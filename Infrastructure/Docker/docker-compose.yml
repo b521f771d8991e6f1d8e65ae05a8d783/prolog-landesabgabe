@@ -10,6 +10,7 @@ services:
       - "1337:1337"
     volumes:
       - ../..:/workspace
+      - lx-cmake-build:/build
   frontend:
     build:
       dockerfile: Dockerfile
@@ -20,6 +21,10 @@ services:
       - "8080:8080"
     volumes:
       - ../../:/workspace
+
+volumes:
+  lx-cmake-build:
+
 
 networks:
   default:

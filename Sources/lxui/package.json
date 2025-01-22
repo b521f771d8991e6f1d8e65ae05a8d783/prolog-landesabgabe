@@ -5,7 +5,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite --host 0.0.0.0 --port 8080",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build --emptyOutDir",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "lint": "npm run eslint && npm run stylelint",

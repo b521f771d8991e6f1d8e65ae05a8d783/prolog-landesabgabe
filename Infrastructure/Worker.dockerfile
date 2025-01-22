@@ -28,7 +28,6 @@ FROM dev AS build
 
 # TODO: build it to a static binary
 
-RUN mkdir /build
 RUN mkdir /source
 
 COPY . /source

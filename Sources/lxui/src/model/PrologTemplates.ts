@@ -79,6 +79,7 @@ export class LandesabgabeSachverhalt {
                 :- discontiguous natuerliche_person/1.
                 :- discontiguous alter/2.
                 :- discontiguous subjekt/2.
+                :- discontiguous objekt/4.
         ` + this.personsWithAssociatedHandlung.keys().reduce((p: string, person: LandesabgabePerson) => {
             const handlungen = this.personsWithAssociatedHandlung.get(person) ?? [];
             return p + joinWithNewLine(person.serialize2Prolog(this.sacherhaltId), handlungen.reduce((p, i: LandesabgabeHandlung) =>

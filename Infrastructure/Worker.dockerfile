@@ -7,7 +7,8 @@ FROM swift:noble AS dev
 RUN swift sdk install https://download.swift.org/swift-6.0.2-release/static-sdk/swift-6.0.2-RELEASE/swift-6.0.2-RELEASE_static-linux-0.0.1.artifactbundle.tar.gz --checksum aa5515476a403797223fc2aad4ca0c3bf83995d5427fb297cab1d93c68cee075
 
 RUN apt update -y && apt upgrade -y && apt install -y curl git gpg cmake \
-    ninja-build gdb clangd clang-format clang-tidy zip python3 swi-prolog
+    ninja-build gdb clangd clang-format clang-tidy zip python3 swi-prolog \
+    cargo rustc
 # clang is already included in the base image
 
 # we do not need to install clang since it is included in the swift:noble image

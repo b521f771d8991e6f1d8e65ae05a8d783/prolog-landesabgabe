@@ -13,8 +13,14 @@ public func configure(withApp app: Application, andLogicVM lvm: LogicVM) throws 
 }
 
 func routes(withApp app: Application, andLogicVM lvm: LogicVM) throws {
-    app.get("fetch-standard-corpus") { req async -> String in
-        return "{}"
+    app.get("fetch-law") { req async throws -> String in
+        guard let kurztitel: String = req.query[String.self, at: "kurztitel"] else {
+            throw Abort(.badRequest)
+        }
+
+        let law = fetchLaw(withName: kurztitel)
+
+        return law
     }
 
     app.get("status") { req async -> String in

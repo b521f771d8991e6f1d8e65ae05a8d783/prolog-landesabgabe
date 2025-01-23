@@ -1,8 +1,9 @@
-import { Paper, Title, Text, Divider, Button } from "@mantine/core";
+import { Paper, Title, Text, Divider, Button, ScrollArea } from "@mantine/core";
 import { CodeView } from "./CodeView";
 import Terminal, { ColorMode } from 'react-terminal-ui';
 import { useState } from "react";
 import { PrologVM } from "@/model/PrologVM";
+import { v7 } from "uuid";
 
 export function ResultView({ code, width, prologVM }: {
     code: string,
@@ -18,7 +19,7 @@ export function ResultView({ code, width, prologVM }: {
         <CodeView code={code} language="prolog" h={300} fileName="result.pl" />
         <Divider my={10} />
         <PrologTerminal prologVM={prologVM} />
-    </Paper>
+    </Paper>;
 }
 
 function PrologTerminal({ prologVM }: {
@@ -31,9 +32,27 @@ function PrologTerminal({ prologVM }: {
     const [terminalState, setTerminalState] = useState<TerminalState>(TerminalState.Open);
     const [terminalLineData, setTerminalLineData] = useState<JSX.Element[]>([]);
 
+    function addLineData(lineData: JSX.Element) {
+        setTerminalLineData([...terminalLineData, lineData]);
+    }
+
     function onExecute(terminalInput: string) {
-        const query = prologVM.executeQuery(terminalInput);
-        console.log("Executed query: ", query.once());
+        const query = prologVM.execute(terminalInput);
+        const queryJSON = JSON.stringify(query, null, 4);
+        addLineData(<>
+            <Text key={v7()}>$ {terminalInput}</Text>
+            <CodeView
+                code={queryJSON}
+                language={"json"}
+                h={300}
+                w={600}
+                fileName="output.json"
+                showButtons={{
+                    magnify: false,
+                    download: false,
+                    createNormFromSelection: false
+                }}/>
+        </>);
     }
 
     function redButtonCallback() {
@@ -55,6 +74,7 @@ function PrologTerminal({ prologVM }: {
             function reopenClicked() {
                 setTerminalState(TerminalState.Open);
             }
+            
             return <Button onClick={reopenClicked} leftSection={"</>"}>Terminal öffnen</Button>;
         }
         case TerminalState.Open:
@@ -66,7 +86,9 @@ function PrologTerminal({ prologVM }: {
                 redBtnCallback={redButtonCallback}
                 yellowBtnCallback={yellowBtnCallback}
                 greenBtnCallback={greenButtonCallback} >
-                {terminalLineData}
+                <ScrollArea h={300}>
+                    {terminalLineData}
+                </ScrollArea>
             </Terminal>;
         case TerminalState.Maximized:
             return <></>;

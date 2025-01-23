@@ -47,7 +47,7 @@ ReactDOM.createRoot(launcher).render(
     </>
 );
 
-PrologVM.initFromLocalStorage().then((pvm) => {
+PrologVM.initFromAppState().then((pvm) => {
     launcher.hidden = true;
     ReactDOM.createRoot(document.getElementById('root')!)
     .render(<App prologVM={pvm} />);

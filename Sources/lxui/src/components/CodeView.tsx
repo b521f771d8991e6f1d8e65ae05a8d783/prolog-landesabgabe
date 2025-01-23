@@ -2,11 +2,16 @@ import { Button, Center, Code, Flex } from "@mantine/core";
 import hljs from "highlight.js";
 import { useEffect, useId } from "react";
 
-export function CodeView({ code, language, h = 300, fileName = "prolog.pl" }: {
+export function CodeView({ code, language, h = 300, fileName = "prolog.pl", showButtons = { download: true, magnify: true, createNormFromSelection: true } }: {
     code: string,
     language: string,
-    h: number,
-    fileName: string
+    h?: number,
+    fileName?: string,
+    showButtons?: {
+        download: boolean,
+        magnify: boolean,
+        createNormFromSelection: boolean
+    }
 }) {
     const codeId = useId();
 
@@ -41,6 +46,7 @@ export function CodeView({ code, language, h = 300, fileName = "prolog.pl" }: {
         document.body.removeChild(downloadLink);
     }
 
+    const showFooter = showButtons.download || showButtons.magnify || showButtons.createNormFromSelection;
 
     // TODO make the "In Norm verwandeln"-Button call an LLM in the Backend and return the correct german law text
     // we will work together on the prompts
@@ -50,7 +56,7 @@ export function CodeView({ code, language, h = 300, fileName = "prolog.pl" }: {
             {code}
         </code>
     </Code>
-        <Center>
+        {showFooter && <Center>
             <Flex className={"select-none"}
                 mih={50}
                 gap="xs"
@@ -58,10 +64,11 @@ export function CodeView({ code, language, h = 300, fileName = "prolog.pl" }: {
                 align="center"
                 direction="row"
                 wrap="wrap">
-                <Button onClick={onDownloadClicked} leftSection={"💾"}>Download</Button>
-                <Button onClick={onFullScreenClicked} leftSection={"💻"}>Vergrößern</Button>
-                <Button disabled leftSection={"🪄"}>In Norm verwandeln</Button>
+                { showButtons.download && <Button onClick={onDownloadClicked} leftSection={"💾"}>Download</Button> }
+                { showButtons.magnify && <Button onClick={onFullScreenClicked} leftSection={"💻"}>Vergrößern</Button> }
+                { showButtons.createNormFromSelection && <Button disabled leftSection={"🪄"}>In Norm verwandeln</Button> }
             </Flex>
         </Center>
+        }
     </>;
 }

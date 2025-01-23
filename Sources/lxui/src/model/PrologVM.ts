@@ -2,22 +2,18 @@ import SWIPL from "swipl-wasm";
 import { getRechtsbestand, PrologFile } from "./PrologFileSystem";
 import { v4 as uuid } from 'uuid';
 
-export type FactBaseListener = (factBase: PrologFile[]) => void;
-
+// AppState is dead, long live the AppState
 export class PrologVM {
     private swipl: SWIPL.SWIPLModule;
     private factBase: PrologFile[];
-    private addFactBaseEvents: FactBaseListener[];
 
     private constructor(swipl: SWIPL.SWIPLModule, factBase: PrologFile[] = []) {
         this.swipl = swipl;
         this.factBase = factBase;
-        this.addFactBaseEvents = [];
     }
 
     private static async initPrologVM(): Promise<PrologVM> {
-        const swipl = new PrologVM(await PrologVM.initializePrologModule());
-        return swipl;
+        return new PrologVM(await PrologVM.initializePrologModule());
     }
 
     private static async awaitPrologFiles(rechtsbestand: (PrologFile | Promise<PrologFile>)[]): Promise<PrologFile[]> {
@@ -30,16 +26,16 @@ export class PrologVM {
 
     // language designers should consider using paradigms such as ObjC init more, they would make stuff like this MUCH easier
     // https://developer.apple.com/documentation/objectivec/nsobject/1418639-initialize?language=objc
-    public static async initFromArray(rechtsbestand: (Promise<PrologFile> | PrologFile)[] = getRechtsbestand()): Promise<PrologVM> {
+    static async initFromArray(rechtsbestand: (Promise<PrologFile> | PrologFile)[] = getRechtsbestand()): Promise<PrologVM> {
         const pfs: PrologFile[] = await PrologVM.awaitPrologFiles(rechtsbestand);
-
         const swipl = await PrologVM.initPrologVM();
         await swipl.addFactBases(pfs);
         return swipl;
     }
 
-    public static async initFromLocalStorage(rechtsbestand: (Promise<PrologFile> | PrologFile)[] = getRechtsbestand()): Promise<PrologVM> {
+    static async initFromAppState(rechtsbestand: (Promise<PrologFile> | PrologFile)[] = getRechtsbestand()): Promise<PrologVM> {
         // TODO
+        // init the PrologVM from Redux
         return await this.initFromArray(rechtsbestand);
     }
 
@@ -49,12 +45,8 @@ export class PrologVM {
         });
     }
 
-    addFactBaseListener(listener: FactBaseListener) {
-        this.addFactBaseEvents.push(listener);
-    }
-
     protected spawnTopLevelDirectoriesFromURL(url: string) {
-        console.log("Creating folder: ", url)
+        console.log("Creating folder: ", url);
         const urlCapped: string = url.startsWith("/") ? url.substring(1) : url;
         const segments: string[] = urlCapped.split("/");
         const segmentsWithoutLast: string[] = segments.slice(0, segments.length - 1); // the last one is the file itself
@@ -85,13 +77,9 @@ export class PrologVM {
             "File": pf.name
         });
         const result = query.once();
-        console.log(`Loaded fact base`, result)
+        console.log(`Loaded fact base`, result);
 
         this.factBase.push(pf);
-
-        for (const listener of this.addFactBaseEvents) {
-            listener(this.factBase);
-        }
     }
 
     addFactBases(pfs: PrologFile[]) {
@@ -108,10 +96,9 @@ export class PrologVM {
             "File": filename
         });
 
-        //console.assert('success' in query.once());
+        console.log("Unloaded fact base", query.once());
         this.swipl.FS.unlink(filename);
         this.factBase = this.factBase.filter((pf: PrologFile) => pf.name !== filename);
-        console.log(`Removed fact base ${filename}`);
     }
 
     removeFactBaseIfExists(filename: string) {
@@ -124,11 +111,40 @@ export class PrologVM {
         return this.factBase.some((x: PrologFile) => x.name === filename);
     }
 
-    executeQuery(query: string, input?: Record<string, unknown>): SWIPL.Query {
+    removeAllFactBases() {
+        for(const i of this.factBase) {
+            assert(this.hasFactBase(i.name));
+            this.removeFactBase(i.name);
+        }
+    }
+
+    healthCheck(): [string, boolean][] {
+        return this.factBase.map((x: PrologFile) => [x.name, this.hasFactBase(x.name)]);
+    }
+
+    healthCheckOK(): boolean {
+        return this.healthCheck().every((x: [string, boolean]) => {
+            if(x[1] === false) {
+                console.error(`Fact base ${x[0]} is faulty`);
+            }
+
+            return x[1];
+        });
+    }
+
+    executeQuery(query: string, input?: Record<string, unknown>, healthCheck: boolean = true): SWIPL.Query {
+        if(healthCheck) {
+            this.healthCheckOK();
+        }
+
         return this.swipl.prolog.query(query, input);
     }
 
-    public static getUniqueFilename() {
+    execute(query: string, input?: Record<string, unknown>, healthCheck: boolean = true) {
+        return this.executeQuery(query, input, healthCheck).once();
+    }
+
+    static getUniqueFilename() {
         return `input_${uuid().replaceAll('-', '_')}.pl`;
     }
 

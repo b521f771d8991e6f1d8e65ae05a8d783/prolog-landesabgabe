@@ -23,5 +23,9 @@
     ],
     "C_Cpp.intelliSenseEngine": "disabled",
     "swift.autoGenerateLaunchConfigurations": false,
-    "swift.sourcekit-lsp.backgroundIndexing": "off"
+    "swift.sourcekit-lsp.backgroundIndexing": "off",
+    "prettier.configPath": "/workspace/Sources/lxui/.prettierrc.mjs",
+    "eslint.workingDirectories": [
+        "/workspace/Sources/lxui/"
+    ]
 }

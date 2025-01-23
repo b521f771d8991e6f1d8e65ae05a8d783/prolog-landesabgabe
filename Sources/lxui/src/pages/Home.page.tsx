@@ -1,8 +1,8 @@
 import { Divider, Paper, Title } from '@mantine/core';
 import { useEffect, useMemo, useState } from "react";
 import { Flex, Button, Text } from "@mantine/core";
-import { AppState, getLocalStorage } from "../model/AppState";
-import { PrologFile } from "@/model/PrologFileSystem";
+import { PrologVM } from "../model/PrologVM";
+import { PrologFile, PrologFileType } from "@/model/PrologFileSystem";
 
 import "highlight.js/styles/github.css";
 
@@ -41,7 +41,7 @@ function setTitle(title: string) {
  * Represents the home page component of the application.
  *
  * @param {Object} props - The properties object.
- * @param {AppState} props.prologVM - The application state managed by Prolog VM.
+ * @param {PrologVM} props.prologVM - The application state managed by Prolog VM.
  *
  * @returns {JSX.Element} The rendered home page component.
  *
@@ -55,15 +55,15 @@ function setTitle(title: string) {
  * This component sets the page title and favicon on mount, and provides a button
  * to reset the application state and reload the page.
  */
-export function HomePage({ prologVM }: { prologVM: AppState }) {
+export function HomePage({ prologVM }: { prologVM: PrologVM }) {
   const [statisticViewOpened, setStatisticViewOpened] = useState<boolean>(false);
 
   function onDeleteButtonClicked() {
-    prologVM.reset();
     window.location.reload();
   }
 
   async function onSaveClicked() {
+    /*
     const storage = getLocalStorage() ?? "[]"; // if there is no object yet created, create an empty array (no object)
 
     // Create a download link
@@ -77,6 +77,7 @@ export function HomePage({ prologVM }: { prologVM: AppState }) {
 
     // Remove the temporary link
     document.body.removeChild(downloadLink);
+    */
   }
 
   function showStatisticsButtonClicked() {
@@ -130,7 +131,7 @@ export function HomePage({ prologVM }: { prologVM: AppState }) {
       <Divider />
     </>}
 
-    <AppStateView appState={prologVM} />
+    <AppView prologVM={prologVM} />
 
     <Text c="dimmed">
       Ein Projekt der Stabsstelle für Digitalisierung Oberösterreich☕
@@ -139,7 +140,7 @@ export function HomePage({ prologVM }: { prologVM: AppState }) {
   </Flex>;
 }
 
-function VersionString() {
+export function VersionString() {
   const [version, setVersion] = useState<JSX.Element>(<></>);
 
   useEffect(() => {
@@ -163,26 +164,27 @@ function VersionString() {
 }
 
 /*
-* The AppStateView is responsible for:
+* The AppView is responsible for:
 *  - displaying prolog files, resulting code, and the form view
 *  - creating the Prolog from the output
 *  - re-creating the page from the prolog VM on page reload
 */
-function AppStateView({ appState }: {
-  appState: AppState
+function AppView({ prologVM }: {
+  prologVM: PrologVM
 }) {
+  const [factBase, setFactFiles] = useState<PrologFile[]>(prologVM.getFactBase());
+  const code = useMemo<string>(() => mergeFactFiles(factBase), [factBase]);
+  
   function mergeFactFiles(pf: PrologFile[]) {
-    return factFiles.reduce((p, c) => `${p}\n% Filename: ${c.name}\n${c.evaluatedProlog}`, "");
+    return pf.reduce((p, c) => `${p}\n% Filename: ${c.name}\n${c.evaluatedProlog}`, "");
   }
 
-  const [factFiles, setFactFiles] = useState<PrologFile[]>(appState.getFactBase());
-  const code = useMemo<string>(() => mergeFactFiles(factFiles), [factFiles]);
-
   useEffect(() => {
-    // update the App State
-  }, [factFiles]);
+    const addedFactFiles = factBase.filter((x) => x.prologFileType === PrologFileType.FACT);
+    prologVM.addFactBases(addedFactFiles);
+  }, [factBase]);
 
-  console.log("Loaded fact base: ", factFiles);
+  console.log("Loaded fact base: ", factBase);
 
   return <Flex
     mih={50}
@@ -192,16 +194,17 @@ function AppStateView({ appState }: {
     direction="row"
     wrap="wrap">
     <PrologFilesAccordion
-      factBase={factFiles}
+      factBase={factBase}
       width={WIDTH} />
 
     <SachverhaltEditorForm
-      factFiles={factFiles}
+      factFiles={factBase}
       setFactFiles={setFactFiles}
       width={WIDTH} />
 
     <ResultView
       code={code}
-      width={WIDTH} />
+      width={WIDTH}
+      prologVM={prologVM}/>
   </Flex >;
 }

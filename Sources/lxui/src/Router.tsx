@@ -1,5 +1,5 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { HomePage } from './pages/Home.page';
+import { createBrowserRouter, RouterProvider } from 'react-router';
+import { HomePage, VersionString } from './pages/Home.page';
 import { PrologVM } from './model/PrologVM';
 
 export function Router({ prologVM }: { prologVM: PrologVM }) {
@@ -8,5 +8,11 @@ export function Router({ prologVM }: { prologVM: PrologVM }) {
       path: '/',
       element: <HomePage prologVM={prologVM} />,
     },
+    {
+      path: '/version',
+      element: <>
+        <VersionString />
+      </>
+    }
   ])} />;
 }

@@ -140,7 +140,7 @@ export function HomePage({ prologVM }: { prologVM: PrologVM }) {
   </Flex>;
 }
 
-function VersionString() {
+export function VersionString() {
   const [version, setVersion] = useState<JSX.Element>(<></>);
 
   useEffect(() => {

@@ -1,9 +1,10 @@
-import { Paper, Title, Text, Divider, Button, ScrollArea } from "@mantine/core";
+import { Paper, Title, Text, Divider, Button, ScrollArea, HoverCard } from "@mantine/core";
 import { CodeView } from "./CodeView";
 import Terminal, { ColorMode } from 'react-terminal-ui';
 import { useState } from "react";
 import { PrologVM } from "@/model/PrologVM";
 import { v7 } from "uuid";
+import { render } from "@test-utils";
 
 export function ResultView({ code, width, prologVM }: {
     code: string,
@@ -37,7 +38,7 @@ function PrologTerminal({ prologVM }: {
     }
 
     function onExecute(terminalInput: string) {
-        const query = prologVM.execute(terminalInput);
+        const query: any[] = prologVM.execute(terminalInput);
         const queryJSON = JSON.stringify(query, null, 4);
         addLineData(<>
             <Text key={v7()}>$ {terminalInput}</Text>
@@ -45,7 +46,6 @@ function PrologTerminal({ prologVM }: {
                 code={queryJSON}
                 language={"json"}
                 h={300}
-                w={600}
                 fileName="output.json"
                 showButtons={{
                     magnify: false,
@@ -67,6 +67,20 @@ function PrologTerminal({ prologVM }: {
         setTerminalState(TerminalState.Maximized);
     }
 
+    function renderTerminal() {
+        return <Terminal
+            key={v7()}
+            name="Prolog Terminal"
+            colorMode={ColorMode.Dark}
+            height={"300"}
+            onInput={onExecute}
+            redBtnCallback={redButtonCallback}
+            yellowBtnCallback={yellowBtnCallback}
+            greenBtnCallback={greenButtonCallback} >
+            {terminalLineData}
+        </Terminal>;
+    }
+
     switch (terminalState) {
         case TerminalState.Closed:
             return <></>;
@@ -78,19 +92,10 @@ function PrologTerminal({ prologVM }: {
             return <Button onClick={reopenClicked} leftSection={"</>"}>Terminal öffnen</Button>;
         }
         case TerminalState.Open:
-            return <Terminal
-                name="Prolog Terminal"
-                colorMode={ColorMode.Dark}
-                height={"300"}
-                onInput={onExecute}
-                redBtnCallback={redButtonCallback}
-                yellowBtnCallback={yellowBtnCallback}
-                greenBtnCallback={greenButtonCallback} >
-                <ScrollArea h={300}>
-                    {terminalLineData}
-                </ScrollArea>
-            </Terminal>;
+            return renderTerminal();
         case TerminalState.Maximized:
-            return <></>;
+            return <>
+                    {renderTerminal()}
+            </>;
     };
 }

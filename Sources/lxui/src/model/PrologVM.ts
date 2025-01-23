@@ -46,7 +46,6 @@ export class PrologVM {
     }
 
     protected spawnTopLevelDirectoriesFromURL(url: string) {
-        console.log("Creating folder: ", url);
         const urlCapped: string = url.startsWith("/") ? url.substring(1) : url;
         const segments: string[] = urlCapped.split("/");
         const segmentsWithoutLast: string[] = segments.slice(0, segments.length - 1); // the last one is the file itself
@@ -54,6 +53,7 @@ export class PrologVM {
 
         for(const i of segmentsWithoutLast) {
             current = `${current}/${i}`;
+            console.log("Creating folder: ", i);
             this.swipl.FS.mkdir(current);
         }
     }
@@ -140,8 +140,18 @@ export class PrologVM {
         return this.swipl.prolog.query(query, input);
     }
 
-    execute(query: string, input?: Record<string, unknown>, healthCheck: boolean = true) {
-        return this.executeQuery(query, input, healthCheck).once();
+    execute(queryString: string, input?: Record<string, unknown>, healthCheck: boolean = true): any[] {
+        let ret: any[] = [];
+        let query = this.executeQuery(queryString, input, healthCheck);
+        let current: any;
+
+        do {
+            current = query.next()
+            ret.push(current.value);
+            console.log("Got result: ", current);
+        } while('done' in current && !current.done);
+
+        return ret;
     }
 
     static getUniqueFilename() {

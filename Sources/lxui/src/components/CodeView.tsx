@@ -2,7 +2,7 @@ import { Button, Center, Code, Flex } from "@mantine/core";
 import hljs from "highlight.js";
 import { useEffect, useId } from "react";
 
-export function CodeView({ code, language, h = 300, fileName = "prolog.pl", showButtons = { download: true, magnify: true, createNormFromSelection: true } }: {
+export function CodeView({ code, language, h = undefined, fileName = "prolog.pl", showButtons = { download: true, magnify: true, createNormFromSelection: true } }: {
     code: string,
     language: string,
     h?: number,

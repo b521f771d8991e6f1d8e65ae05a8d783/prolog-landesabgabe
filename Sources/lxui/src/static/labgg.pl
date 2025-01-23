@@ -1,6 +1,8 @@
 % file_search_path(stdlib, './stdlib').
 %:- use_module(stdlib(stdlib)).
 
+:- style_check(-singleton).
+
 langtitel(labgg,
     "Landesgesetz über eine Landesabgabe für das obertägige Gewinnen mineralischer Rohstoffe (Oö. Landschaftsabgabegesetz)").
 titel(labgg, "Oö. Landschaftsabgabegesetz").

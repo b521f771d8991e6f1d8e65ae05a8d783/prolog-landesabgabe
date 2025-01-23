@@ -4,9 +4,10 @@ import Terminal, { ColorMode } from 'react-terminal-ui';
 import { useState } from "react";
 import { PrologVM } from "@/model/PrologVM";
 
-export function ResultView({ code, width}: {
+export function ResultView({ code, width, prologVM }: {
     code: string,
-    width: number
+    width: number,
+    prologVM: PrologVM
 }) {
     return <Paper shadow="sm"
         p="xl"
@@ -16,11 +17,13 @@ export function ResultView({ code, width}: {
         <Text>Gesamter Prolog-Code:</Text>
         <CodeView code={code} language="prolog" h={300} fileName="result.pl" />
         <Divider my={10} />
-        <PrologTerminal />
+        <PrologTerminal prologVM={prologVM} />
     </Paper>
 }
 
-function PrologTerminal({  }: {}) {
+function PrologTerminal({ prologVM }: {
+    prologVM: PrologVM
+}) {
     enum TerminalState {
         Closed, Minimized, Open, Maximized
     }
@@ -29,7 +32,8 @@ function PrologTerminal({  }: {}) {
     const [terminalLineData, setTerminalLineData] = useState<JSX.Element[]>([]);
 
     function onExecute(terminalInput: string) {
-        
+        const query = prologVM.executeQuery(terminalInput);
+        console.log("Executed query: ", query.once());
     }
 
     function redButtonCallback() {

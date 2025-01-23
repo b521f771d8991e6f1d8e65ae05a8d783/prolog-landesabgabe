@@ -1,8 +1,8 @@
 import { Divider, Paper, Title } from '@mantine/core';
 import { useEffect, useMemo, useState } from "react";
 import { Flex, Button, Text } from "@mantine/core";
-import { PrologVM, getLocalStorage } from "../model/PrologVM";
-import { PrologFile } from "@/model/PrologFileSystem";
+import { PrologVM } from "../model/PrologVM";
+import { PrologFile, PrologFileType } from "@/model/PrologFileSystem";
 
 import "highlight.js/styles/github.css";
 
@@ -59,11 +59,11 @@ export function HomePage({ prologVM }: { prologVM: PrologVM }) {
   const [statisticViewOpened, setStatisticViewOpened] = useState<boolean>(false);
 
   function onDeleteButtonClicked() {
-    prologVM.reset();
     window.location.reload();
   }
 
   async function onSaveClicked() {
+    /*
     const storage = getLocalStorage() ?? "[]"; // if there is no object yet created, create an empty array (no object)
 
     // Create a download link
@@ -77,6 +77,7 @@ export function HomePage({ prologVM }: { prologVM: PrologVM }) {
 
     // Remove the temporary link
     document.body.removeChild(downloadLink);
+    */
   }
 
   function showStatisticsButtonClicked() {
@@ -130,7 +131,7 @@ export function HomePage({ prologVM }: { prologVM: PrologVM }) {
       <Divider />
     </>}
 
-    <AppStateView prologVM={prologVM} />
+    <AppView prologVM={prologVM} />
 
     <Text c="dimmed">
       Ein Projekt der Stabsstelle für Digitalisierung Oberösterreich☕
@@ -163,26 +164,27 @@ function VersionString() {
 }
 
 /*
-* The AppStateView is responsible for:
+* The AppView is responsible for:
 *  - displaying prolog files, resulting code, and the form view
 *  - creating the Prolog from the output
 *  - re-creating the page from the prolog VM on page reload
 */
-function AppStateView({ prologVM }: {
+function AppView({ prologVM }: {
   prologVM: PrologVM
 }) {
+  const [factBase, setFactFiles] = useState<PrologFile[]>(prologVM.getFactBase());
+  const code = useMemo<string>(() => mergeFactFiles(factBase), [factBase]);
+  
   function mergeFactFiles(pf: PrologFile[]) {
-    return factFiles.reduce((p, c) => `${p}\n% Filename: ${c.name}\n${c.evaluatedProlog}`, "");
+    return pf.reduce((p, c) => `${p}\n% Filename: ${c.name}\n${c.evaluatedProlog}`, "");
   }
 
-  const [factFiles, setFactFiles] = useState<PrologFile[]>(prologVM.getFactBase());
-  const code = useMemo<string>(() => mergeFactFiles(factFiles), [factFiles]);
-
   useEffect(() => {
-    
-  }, [factFiles]);
+    const addedFactFiles = factBase.filter((x) => x.prologFileType === PrologFileType.FACT);
+    prologVM.addFactBases(addedFactFiles);
+  }, [factBase]);
 
-  console.log("Loaded fact base: ", factFiles);
+  console.log("Loaded fact base: ", factBase);
 
   return <Flex
     mih={50}
@@ -192,16 +194,17 @@ function AppStateView({ prologVM }: {
     direction="row"
     wrap="wrap">
     <PrologFilesAccordion
-      factBase={factFiles}
+      factBase={factBase}
       width={WIDTH} />
 
     <SachverhaltEditorForm
-      factFiles={factFiles}
+      factFiles={factBase}
       setFactFiles={setFactFiles}
       width={WIDTH} />
 
     <ResultView
       code={code}
-      width={WIDTH} />
+      width={WIDTH}
+      prologVM={prologVM}/>
   </Flex >;
 }

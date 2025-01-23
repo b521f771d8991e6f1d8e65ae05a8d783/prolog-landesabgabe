@@ -4,22 +4,14 @@ import { v4 as uuid } from 'uuid';
 
 export type FactBaseListener = (factBase: PrologFile[]) => void;
 
-const LOCAL_STORAGE_KEY: string = "factBase";
-
-export function getLocalStorage(): string | null {
-    return localStorage.getItem(LOCAL_STORAGE_KEY);
-}
-
 export class PrologVM {
     private swipl: SWIPL.SWIPLModule;
     private factBase: PrologFile[];
-    private initialFactBase: PrologFile[];
     private addFactBaseEvents: FactBaseListener[];
 
     private constructor(swipl: SWIPL.SWIPLModule, factBase: PrologFile[] = []) {
         this.swipl = swipl;
         this.factBase = factBase;
-        this.initialFactBase = this.factBase;
         this.addFactBaseEvents = [];
     }
 
@@ -42,7 +34,6 @@ export class PrologVM {
         const pfs: PrologFile[] = await PrologVM.awaitPrologFiles(rechtsbestand);
 
         const swipl = await PrologVM.initPrologVM();
-        swipl.initialFactBase = pfs;
         await swipl.addFactBases(pfs);
         return swipl;
     }
@@ -50,17 +41,6 @@ export class PrologVM {
     public static async initFromLocalStorage(rechtsbestand: (Promise<PrologFile> | PrologFile)[] = getRechtsbestand()): Promise<PrologVM> {
         // TODO
         return await this.initFromArray(rechtsbestand);
-    }
-
-    public static hasLocalStorageFactBase(): boolean {
-        // TODO
-        return localStorage.getItem(LOCAL_STORAGE_KEY) !== null;
-    }
-
-    public saveToLocalStorage() {
-        // TODO
-        localStorage.removeItem(LOCAL_STORAGE_KEY);
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(this.factBase));
     }
 
     private static async initializePrologModule(): Promise<SWIPL.SWIPLModule> {
@@ -104,17 +84,14 @@ export class PrologVM {
             // variable bindings go here
             "File": pf.name
         });
-
-        //console.assert(query.once().success === true);
-        console.log(`Loaded prolog file: ${pf.name}`);
+        const result = query.once();
+        console.log(`Loaded fact base`, result)
 
         this.factBase.push(pf);
 
         for (const listener of this.addFactBaseEvents) {
             listener(this.factBase);
         }
-
-        this.saveToLocalStorage();
     }
 
     addFactBases(pfs: PrologFile[]) {
@@ -145,25 +122,6 @@ export class PrologVM {
 
     hasFactBase(filename: string): boolean {
         return this.factBase.some((x: PrologFile) => x.name === filename);
-    }
-
-    /*
-     * Resets the prolog VM to its initial state.
-     *  - fact base listeners are not deleted, they are kept!
-     *  - the fact base is reset to the initial fact base
-    */
-    async reset() {
-        localStorage.removeItem(LOCAL_STORAGE_KEY);
-        this.factBase = this.initialFactBase;
-        this.reboot(); // this does not reset the fact base!
-    }
-
-    /**
-     * Reboots the prologVM, uses the same fact base as before
-     */
-    async reboot(): Promise<void> {
-        const temporaryPrologVM = await PrologVM.initFromArray(this.factBase);
-        this.swipl = temporaryPrologVM.swipl;
     }
 
     executeQuery(query: string, input?: Record<string, unknown>): SWIPL.Query {

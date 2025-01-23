@@ -136,5 +136,6 @@ add_custom_target(SwiftPackage
     -Xswiftc -I${CMAKE_CURRENT_SOURCE_DIR}/Sources/LogicKit/include
     -Xswiftc -L${CMAKE_CURRENT_SOURCE_DIR}/Sources/LogicKit/include
     ${SWIFTC_DEPENDENCY_LIBRARIES}
+    -Xswiftc -Ltarget/debug -Xswiftc -lCorpus
 )
 add_dependencies(SwiftPackage ${TARGETS} CargoPackage)

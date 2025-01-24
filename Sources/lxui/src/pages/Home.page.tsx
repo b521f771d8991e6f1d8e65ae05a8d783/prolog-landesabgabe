@@ -110,7 +110,7 @@ export function HomePage({ prologVM }: { prologVM: PrologVM }) {
         wrap="wrap">
         <Button leftSection={"📅"} disabled>Historie</Button>
         <Button onClick={onDeleteButtonClicked} leftSection={"🗑"}>Alles löschen</Button>
-        <Button onClick={onSaveClicked} leftSection={"💾"}>Speichern</Button>
+        <Button onClick={onSaveClicked} leftSection={"💾"} disabled>Speichern</Button>
         <Button leftSection={"⚡"} disabled>Laden</Button>
         <Button leftSection={"🔐"} disabled>Login</Button>
         {

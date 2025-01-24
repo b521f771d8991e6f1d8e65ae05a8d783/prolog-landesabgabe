@@ -37,7 +37,6 @@ function PersonDetail({ person }: { person: LandesabgabePerson }) {
         <Text>Name: {person.vorname}</Text>
         <Text>Vorname: {person.nachname}</Text>
         <Text>Alter: {person.alter}</Text>
-        <Text>Interne ID: {person.personId}</Text>
     </>
 }
 
@@ -108,7 +107,7 @@ function TableHeader() {
 
 function HandlungViewer({ handlung }: { handlung: LandesabgabeHandlung }) {
     return <Table.Tr>
-        <Table.Td>{handlung.date.toISOString()}</Table.Td>
+        <Table.Td>{handlung.date.getDay()}.{handlung.date.getUTCMonth()}.{handlung.date.getFullYear()}</Table.Td>
         <Table.Td>{handlung.gefördert}</Table.Td>
         <Table.Td>{handlung.einheit}</Table.Td>
     </Table.Tr >;

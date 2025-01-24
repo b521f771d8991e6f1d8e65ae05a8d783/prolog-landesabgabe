@@ -43,20 +43,29 @@ function PrologResults({ prologVM }: { prologVM: PrologVM }) {
         const queryResult = prologVM.execute(query);
         const person = prologVM.lookupPersonByID(personID)!;
 
-        return isPrologFalse(queryResult) ? <div key={v7()}></div> 
+        return isPrologFalse(queryResult) ? undefined
                 : <List.Item key={v7()}>{person.vorname} {person.nachname}</List.Item>;
     }
 
     const registeredSachverhalte = prologVM.getFacts();
     const sachverhalteWithAssociatedPersonIDs: [PrologFile, string[]][] =
-        registeredSachverhalte.map((pf) => [pf, pf.sachverhalt!.persons.map((p) => p.personId)]);
+        registeredSachverhalte.map((pf) =>
+            [pf, pf.sachverhalt!.persons.map((p) => p.personId)]);
         
     const listItems = sachverhalteWithAssociatedPersonIDs.map(([prologFile, personIDs]) => {
+        const personsSubjectToLandesabgabe = personIDs
+            .map((personID) =>processPerson(prologFile.sachverhalt!, personID))
+            .filter((x): x is JSX.Element => !!x);
+
         return <div key={v7()}>
-            <List.Item>In Datei {prologFile.name}:</List.Item>
-            <List withPadding listStyleType="disc" key={v7()}>
-                { personIDs.map((personID) => processPerson(prologFile.sachverhalt!, personID)) }
-            </List>
+            {
+                personsSubjectToLandesabgabe.length > 0 && <>
+                    <List.Item>In Datei "<i>{prologFile.name}</i>":</List.Item>
+                    <List withPadding listStyleType="disc" key={v7()}>
+                        { personsSubjectToLandesabgabe }
+                    </List>
+                </>
+            }
         </div>
     });
 

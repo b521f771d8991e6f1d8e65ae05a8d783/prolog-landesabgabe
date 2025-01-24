@@ -2,6 +2,7 @@ import { LandesabgabeHandlung, LandesabgabePerson, LandesabgabeSachverhalt } fro
 import { Text, Paper, Button, Title, NumberInput, Table, Divider } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { useState } from "react";
+import { v7 } from "uuid";
 
 interface PersonDetailFormProps {
     person: LandesabgabePerson,
@@ -73,7 +74,7 @@ function HandlungenTableBody({ handlungen, setDate, setGefördert, date, geförd
     addButtonClicked: any
 }) {
     return <Table.Tbody>
-        {handlungen.map((x) => <HandlungViewer handlung={x} />)}
+        {handlungen.map((x) => <HandlungViewer key={v7()} handlung={x} />)}
 
         <Table.Tr>
             <Table.Td>

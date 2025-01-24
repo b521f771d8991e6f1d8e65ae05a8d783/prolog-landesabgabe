@@ -6,11 +6,13 @@ import { PrologVM } from "@/model/PrologVM";
 import { v7 } from "uuid";
 import { LandesabgabeSachverhalt } from "@/model/PrologTemplates";
 
-export function ResultView({ code, width, prologVM }: {
+interface ResultViewProp {
     code: string,
     width: number,
     prologVM: PrologVM
-}) {
+}
+
+export function ResultView({ code, width, prologVM }: ResultViewProp) {
     return <Paper shadow="sm"
         p="xl"
         m="sm"
@@ -32,7 +34,7 @@ export function ResultView({ code, width, prologVM }: {
 function PrologResults({ prologVM }: { prologVM: PrologVM }) {
     function processPerson(sachverhalt: LandesabgabeSachverhalt, personID: string) {
         const query = `abgabepflichtig(labgg, ${sachverhalt.sacherhaltId}, ${personID}).`;
-        return <List.Item>
+        return <List.Item key={v7()}>
             <Text>{personID}</Text>
             <DisplayPrologQuery queryString={query} prologVM={prologVM}/>
         </List.Item>;
@@ -42,12 +44,12 @@ function PrologResults({ prologVM }: { prologVM: PrologVM }) {
     const sachverhalteWithAssociatedPersonIDs: [LandesabgabeSachverhalt, string[]][] =
         registeredSachverhalte.map((s) => [s, s.persons.map((p) => p.personId)]);
     const listItems = sachverhalteWithAssociatedPersonIDs.map(([sachverhalt, personIDs]) => {
-        return <>
+        return <div key={v7()}>
             <List.Item>{sachverhalt.sacherhaltId}</List.Item>
             <List withPadding listStyleType="disc">
                 { personIDs.map((personID) => processPerson(sachverhalt, personID)) }
             </List>
-        </>
+        </div>
     });
 
     return <>
@@ -81,12 +83,12 @@ function PrologTerminal({ prologVM }: {
     }
 
     function onExecute(terminalInput: string) {
-        addLineData(<>
+        addLineData(<div key={v7()}>
             <Text key={v7()}>$ {terminalInput}</Text>
             <DisplayPrologQuery
                 queryString={terminalInput}
                 prologVM={prologVM} />
-        </>);
+        </div>);
     }
 
     function redButtonCallback() {

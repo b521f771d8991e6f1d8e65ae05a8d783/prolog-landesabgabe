@@ -4,7 +4,7 @@ import Terminal, { ColorMode } from 'react-terminal-ui';
 import { useState } from "react";
 import { PrologVM } from "@/model/PrologVM";
 import { v7 } from "uuid";
-import { LandesabgabePerson, LandesabgabeSachverhalt } from "@/model/PrologTemplates";
+import { LandesabgabeSachverhalt } from "@/model/PrologTemplates";
 
 export function ResultView({ code, width, prologVM }: {
     code: string,
@@ -30,6 +30,14 @@ export function ResultView({ code, width, prologVM }: {
 }
 
 function PrologResults({ prologVM }: { prologVM: PrologVM }) {
+    function processPerson(sachverhalt: LandesabgabeSachverhalt, personID: string) {
+        const query = `abgabepflichtig(labgg, ${sachverhalt.sacherhaltId}, ${personID}).`;
+        return <List.Item>
+            <Text>{personID}</Text>
+            <DisplayPrologQuery queryString={query} prologVM={prologVM}/>
+        </List.Item>;
+    }
+
     const registeredSachverhalte = prologVM.getSachverhalte();
     const sachverhalteWithAssociatedPersonIDs: [LandesabgabeSachverhalt, string[]][] =
         registeredSachverhalte.map((s) => [s, s.persons.map((p) => p.personId)]);
@@ -37,12 +45,7 @@ function PrologResults({ prologVM }: { prologVM: PrologVM }) {
         return <>
             <List.Item>{sachverhalt.sacherhaltId}</List.Item>
             <List withPadding listStyleType="disc">
-                {
-                    personIDs.map((personID) => {
-                        const query = `abgabepflichtig(labgg, ${sachverhalt.sacherhaltId}, ${personID}).`;
-                        return <DisplayPrologQuery queryString={query} prologVM={prologVM}/>;
-                    })
-                }
+                { personIDs.map((personID) => processPerson(sachverhalt, personID)) }
             </List>
         </>
     });

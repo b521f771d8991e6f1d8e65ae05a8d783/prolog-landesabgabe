@@ -3,11 +3,13 @@ import { Text, Paper, Button, Title, NumberInput, Table, Divider } from "@mantin
 import { DateInput } from "@mantine/dates";
 import { useState } from "react";
 
-export function PersonDetailForm({ person, handlungen, addToJoinTable }: {
+interface PersonDetailFormProps {
     person: LandesabgabePerson,
     handlungen: LandesabgabeHandlung[]
     addToJoinTable: (p: LandesabgabePerson, h: LandesabgabeHandlung) => void
-}) {
+}
+
+export function PersonDetailForm({ person, handlungen, addToJoinTable }: PersonDetailFormProps) {
     const [date, setDate] = useState<Date>(new Date(Date.now()));
     const [gefördert, setGefördert] = useState<number>(0);
 
@@ -34,6 +36,7 @@ function PersonDetail({ person }: { person: LandesabgabePerson }) {
         <Text>Name: {person.vorname}</Text>
         <Text>Vorname: {person.nachname}</Text>
         <Text>Alter: {person.alter}</Text>
+        <Text>Interne ID: {person.personId}</Text>
     </>
 }
 
@@ -84,7 +87,7 @@ function HandlungenTableBody({ handlungen, setDate, setGefördert, date, geförd
             <Table.Td>
                 <Button disabled={date === undefined || date === null || gefördert === undefined || gefördert === 0 || gefördert === null}
                     onClick={addButtonClicked}
-                    leftSection={"🔢"}>
+                    leftSection={"✍️"}>
                     Eintrag hinzufügen
                 </Button>
             </Table.Td>

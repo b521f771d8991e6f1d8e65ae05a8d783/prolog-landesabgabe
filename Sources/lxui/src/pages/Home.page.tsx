@@ -156,10 +156,8 @@ function AppView({ prologVM }: {
     return pf.reduce((p, c) => `${p}\n% Filename: ${c.name}\n${c.evaluatedProlog}`, "");
   }
 
-  useEffect(() => {
-    const addedFactFiles = factBase.filter((x) => x.prologFileType === PrologFileType.FACT);
-    prologVM.addFactBases(addedFactFiles);
-  }, [factBase]);
+  const addedFactFiles = factBase.filter((x) => x.prologFileType === PrologFileType.FACT);
+  prologVM.addFactBases(addedFactFiles);
 
   console.log("Loaded fact base: ", factBase);
 

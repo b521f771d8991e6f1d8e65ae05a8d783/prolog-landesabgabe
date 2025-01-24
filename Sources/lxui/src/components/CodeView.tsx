@@ -1,7 +1,6 @@
 import { Button, Center, Code, Flex } from "@mantine/core";
 import hljs from "highlight.js";
 import { useEffect, useId, useState } from "react";
-import { G } from "react-router/dist/development/fog-of-war-Ckdfl79L";
 
 export function CodeView({ code, language, h = undefined, fileName = "prolog.pl", showButtons = { download: true, magnify: true, createNormFromSelection: true, copy: true } }: {
     code: string,
@@ -53,6 +52,14 @@ export function CodeView({ code, language, h = undefined, fileName = "prolog.pl"
     </>;
 }
 
+/**
+ * A button component that opens a new window displaying the provided text content.
+ *
+ * @param {Object} props - The properties object.
+ * @param {string} props.text - The text content to be displayed in the new window.
+ *
+ * @returns {JSX.Element} The rendered button component.
+ */
 function MagnifyButton({text}: {text: string}) {
     function onFullScreenClicked() {
         // open a new window containing pf.content
@@ -64,6 +71,15 @@ function MagnifyButton({text}: {text: string}) {
     return <Button onClick={onFullScreenClicked} leftSection={"💻"}>Vergrößern</Button>;
 }
 
+/**
+ * A button component that triggers the download of a text file when clicked.
+ *
+ * @param {Object} props - The properties object.
+ * @param {string} props.text - The text content to be downloaded.
+ * @param {string} props.fileName - The name of the file to be downloaded.
+ *
+ * @returns {JSX.Element} A button element that initiates the download.
+ */
 function DownloadButton({text, fileName}: {text: string, fileName: string}) {
     function onDownloadClicked() {
         const downloadLink = document.createElement('a');
@@ -84,6 +100,15 @@ function DownloadButton({text, fileName}: {text: string, fileName: string}) {
     return <Button onClick={onDownloadClicked} leftSection={"💾"}>Download</Button>;
 }
 
+/**
+ * A button component that copies the provided text to the clipboard when clicked.
+ * The button's text, left section, and color change temporarily to indicate the copy action.
+ *
+ * @param {Object} props - The properties object.
+ * @param {string} props.text - The text to be copied to the clipboard.
+ *
+ * @returns {JSX.Element} The rendered button component.
+ */
 function CopyButton({text}: {text: string}) {
     const copyButtonOriginalText = "Kopieren";
     const copyButtonOriginalEmoji = "📋";
@@ -106,5 +131,9 @@ function CopyButton({text}: {text: string}) {
         }, 1000);
     }
 
-    return <Button onClick={onCopyClicked} leftSection={copyButtonLeftSection} color={copyButtonColor}>{ copyButtonText }</Button>;
+    return <Button onClick={onCopyClicked}
+              leftSection={copyButtonLeftSection}
+              color={copyButtonColor}>
+                { copyButtonText }
+            </Button>;
 }

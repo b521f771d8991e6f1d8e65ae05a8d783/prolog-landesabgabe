@@ -1,6 +1,7 @@
 import SWIPL from "swipl-wasm";
-import { getRechtsbestand, PrologFile } from "./PrologFileSystem";
+import { getRechtsbestand, PrologFile, PrologFileType } from "./PrologFileSystem";
 import { v4 as uuid } from 'uuid';
+import { LandesabgabePerson, LandesabgabeSachverhalt } from "./PrologTemplates";
 
 // AppState is dead, long live the AppState
 export class PrologVM {
@@ -148,7 +149,6 @@ export class PrologVM {
         do {
             current = query.next()
             ret.push(current.value);
-            console.log("Got result: ", current);
         } while('done' in current && !current.done);
 
         return ret;
@@ -158,7 +158,38 @@ export class PrologVM {
         return `input_${uuid().replaceAll('-', '_')}.pl`;
     }
 
+    // TODO move this out of this file, does not fit well here
+
+    /**
+     * 
+     * @returns an array of prolog files that include both facts and laws
+     */
     getFactBase(): PrologFile[] {
         return this.factBase;
+    }
+
+    /**
+     * 
+     * @returns an array of prolog files that includes only facts
+     */
+    getFacts(): PrologFile[] {
+        return this.getFactBase().filter((x) => x.prologFileType === PrologFileType.FACT);
+    }
+
+    getSachverhalte(): LandesabgabeSachverhalt[] {
+        return this.getFacts().map((f) => f.sachverhalt!);
+    }
+
+    /**
+     * 
+     * @returns an array of prolog files that includes only laws
+     */
+    getLaws(): PrologFile[] {
+        return this.getFactBase().filter((x) => x.prologFileType === PrologFileType.LAW);
+    }
+
+    lookupPersonByID(personID: string): LandesabgabePerson | undefined {
+        return this.getFacts().flatMap((x) => 
+            x.sachverhalt!.persons.filter((p) => p.personId === personID))[0];
     }
 }

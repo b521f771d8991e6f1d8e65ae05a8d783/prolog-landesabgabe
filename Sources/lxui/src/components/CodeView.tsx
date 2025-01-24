@@ -1,8 +1,9 @@
 import { Button, Center, Code, Flex } from "@mantine/core";
 import hljs from "highlight.js";
-import { useEffect, useId } from "react";
+import { useEffect, useId, useState } from "react";
+import { G } from "react-router/dist/development/fog-of-war-Ckdfl79L";
 
-export function CodeView({ code, language, h = undefined, fileName = "prolog.pl", showButtons = { download: true, magnify: true, createNormFromSelection: true } }: {
+export function CodeView({ code, language, h = undefined, fileName = "prolog.pl", showButtons = { download: true, magnify: true, createNormFromSelection: true, copy: true } }: {
     code: string,
     language: string,
     h?: number,
@@ -10,7 +11,8 @@ export function CodeView({ code, language, h = undefined, fileName = "prolog.pl"
     showButtons?: {
         download: boolean,
         magnify: boolean,
-        createNormFromSelection: boolean
+        createNormFromSelection: boolean,
+        copy: boolean
     }
 }) {
     const codeId = useId();
@@ -22,29 +24,6 @@ export function CodeView({ code, language, h = undefined, fileName = "prolog.pl"
             hljs.highlightElement(codeElement);
         }
     }, [code]);
-
-    function onFullScreenClicked() {
-        // open a new window containing pf.content
-        // TODO make this more beautiful
-        const blob = URL.createObjectURL(new Blob([code], { type: "text/plain" }));
-        window.open(blob);
-    }
-
-    function onDownloadClicked() {
-        const downloadLink = document.createElement('a');
-        downloadLink.setAttribute('href', 'data:application/octet-stream;charset=utf-8,' + encodeURIComponent(code));
-
-        const fileNameSanitized = fileName.startsWith("-") ? fileName.substring(1) : fileName;
-
-        downloadLink.setAttribute('download', fileNameSanitized);
-
-        // Append the link to the document and click it
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-
-        // Remove the temporary link
-        document.body.removeChild(downloadLink);
-    }
 
     const showFooter = showButtons.download || showButtons.magnify || showButtons.createNormFromSelection;
 
@@ -64,11 +43,68 @@ export function CodeView({ code, language, h = undefined, fileName = "prolog.pl"
                 align="center"
                 direction="row"
                 wrap="wrap">
-                { showButtons.download && <Button onClick={onDownloadClicked} leftSection={"💾"}>Download</Button> }
-                { showButtons.magnify && <Button onClick={onFullScreenClicked} leftSection={"💻"}>Vergrößern</Button> }
+                { showButtons.copy && <CopyButton text={code}/>}
+                { showButtons.download && <DownloadButton text={code} fileName={fileName}/> }
+                { showButtons.magnify && <MagnifyButton text={code}/> }
                 { showButtons.createNormFromSelection && <Button disabled leftSection={"🪄"}>In Norm verwandeln</Button> }
             </Flex>
         </Center>
         }
     </>;
+}
+
+function MagnifyButton({text}: {text: string}) {
+    function onFullScreenClicked() {
+        // open a new window containing pf.content
+        // TODO make this more beautiful
+        const blob = URL.createObjectURL(new Blob([text], { type: "text/plain" }));
+        window.open(blob);
+    }
+
+    return <Button onClick={onFullScreenClicked} leftSection={"💻"}>Vergrößern</Button>;
+}
+
+function DownloadButton({text, fileName}: {text: string, fileName: string}) {
+    function onDownloadClicked() {
+        const downloadLink = document.createElement('a');
+        downloadLink.setAttribute('href', 'data:application/octet-stream;charset=utf-8,' + encodeURIComponent(text));
+
+        const fileNameSanitized = fileName.startsWith("-") ? fileName.substring(1) : fileName;
+
+        downloadLink.setAttribute('download', fileNameSanitized);
+
+        // Append the link to the document and click it
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+
+        // Remove the temporary link
+        document.body.removeChild(downloadLink);
+    }
+
+    return <Button onClick={onDownloadClicked} leftSection={"💾"}>Download</Button>;
+}
+
+function CopyButton({text}: {text: string}) {
+    const copyButtonOriginalText = "Kopieren";
+    const copyButtonOriginalEmoji = "📋";
+    const copyButtonOriginalColor = "black";
+
+    const [copyButtonText, setCopyButtonText] = useState<string>(copyButtonOriginalText);
+    const [copyButtonLeftSection, setCopyButtonLeftSection] = useState<string>(copyButtonOriginalEmoji);
+    const [copyButtonColor, setCopyButtonColor] = useState<string>(copyButtonOriginalColor);
+
+    function onCopyClicked() {
+        navigator.clipboard.writeText(text);
+        setCopyButtonText("Kopiert!");
+        setCopyButtonLeftSection("👌");
+        setCopyButtonColor("green");
+
+        setTimeout(() => {
+            setCopyButtonText(copyButtonOriginalText);
+            setCopyButtonLeftSection(copyButtonOriginalEmoji);
+            setCopyButtonColor(copyButtonOriginalColor);
+        }, 1000);
+    }
+
+    return <Button onClick={onCopyClicked} leftSection={copyButtonLeftSection} color={copyButtonColor}>{ copyButtonText }</Button>;
 }

@@ -67,11 +67,21 @@ export class LandesabgabeSachverhalt {
         return ret;
     }
 
-    serialize2Prolog(): string {
-        function joinWithNewLine(a: string, b: string) {
-            return `${a}\n${b}`;
-        }
+    private static joinSachverhalt(svs: LandesabgabeHandlung[]): LandesabgabeHandlung {
+        // this is cheating, TODO do that properly in Prolog!!!!
+        return new LandesabgabeHandlung(new Date(Date.now()), svs.reduce((i, l) => i + (l.gefördert ?? 0), 0));
+    }
 
+    private reduceSachverhaltToProlog(p: string, person: LandesabgabePerson): string {
+        const handlungen = this.personsWithAssociatedHandlung.get(person) ?? [];
+        return `
+            ${p}
+            ${person.serialize2Prolog(this.sacherhaltId)}
+            ${LandesabgabeSachverhalt.joinSachverhalt(handlungen).serialize2Prolog(this.sacherhaltId, person.personId)}
+        `;
+    }
+
+    serialize2Prolog(): string {
         return `% Sachverhalt
                 :- discontiguous verbum/3.
                 :- discontiguous nachname/2.
@@ -82,11 +92,7 @@ export class LandesabgabeSachverhalt {
                 :- discontiguous objekt/4.
                 :- discontiguous verwertet_am/2.
                 :- discontiguous gefoerdert/3.
-        ` + this.personsWithAssociatedHandlung.keys().reduce((p: string, person: LandesabgabePerson) => {
-            const handlungen = this.personsWithAssociatedHandlung.get(person) ?? [];
-            return p + joinWithNewLine(person.serialize2Prolog(this.sacherhaltId), handlungen.reduce((p, i: LandesabgabeHandlung) =>
-                joinWithNewLine(p, i.serialize2Prolog(this.sacherhaltId, person.personId)), ""));
-        }, "");
+        ` + this.personsWithAssociatedHandlung.keys().reduce((x, y) => this.reduceSachverhaltToProlog(x, y), "");
     }
 }
 

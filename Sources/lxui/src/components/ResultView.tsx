@@ -45,7 +45,9 @@ function PrologResults({ prologVM }: { prologVM: PrologVM }) {
         registeredSachverhalte.map((s) => [s, s.persons.map((p) => p.personId)]);
     const listItems = sachverhalteWithAssociatedPersonIDs.map(([sachverhalt, personIDs]) => {
         return <div key={v7()}>
-            <List.Item>{sachverhalt.sacherhaltId}</List.Item>
+            <List.Item>
+                <Text>Abgabepflichtige Personen im Sachverhalt '{sachverhalt.sacherhaltId}'</Text>
+            </List.Item>
             <List withPadding listStyleType="disc">
                 { personIDs.map((personID) => processPerson(sachverhalt, personID)) }
             </List>
@@ -60,10 +62,10 @@ function PrologResults({ prologVM }: { prologVM: PrologVM }) {
         }
 
         {
-            listItems.length > 0 && <>
-                <Text>Abgabepflichtige Personen:</Text>
+            listItems.length > 0 && <details>
+                <summary>Abgabepflichtige Personen:</summary>
                 <List>{ listItems }</List>
-            </>
+            </details>
         }
     </>;
 }

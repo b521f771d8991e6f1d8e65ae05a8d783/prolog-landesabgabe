@@ -40,9 +40,10 @@ function PrologResults({ prologVM }: { prologVM: PrologVM }) {
     function processPerson(sachverhalt: LandesabgabeSachverhalt, personID: string) {
         const query = `abgabepflichtig(labgg, ${sachverhalt.sacherhaltId}, ${personID}).`;
         const queryResult = prologVM.execute(query);
+        const person = prologVM.lookupPersonByID(personID)!;
 
         return isPrologFalse(queryResult) ? <div key={v7()}></div> 
-                : <List.Item key={v7()}>{personID}</List.Item>;
+                : <List.Item key={v7()}>{person.vorname} {person.nachname}</List.Item>;
     }
 
     const registeredSachverhalte = prologVM.getSachverhalte();

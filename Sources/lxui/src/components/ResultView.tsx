@@ -31,9 +31,21 @@ export function ResultView({ code, width, prologVM }: {
 
 function PrologResults({ prologVM }: { prologVM: PrologVM }) {
     const registeredSachverhalte = prologVM.getSachverhalte();
-    const getPersonsIDsInSachverhalte: [LandesabgabeSachverhalt, string[]][] =
+    const sachverhalteWithAssociatedPersonIDs: [LandesabgabeSachverhalt, string[]][] =
         registeredSachverhalte.map((s) => [s, s.persons.map((p) => p.personId)]);
-    const listItems: JSX.Element[] = [];
+    const listItems = sachverhalteWithAssociatedPersonIDs.map(([sachverhalt, personIDs]) => {
+        return <>
+            <List.Item>{sachverhalt.sacherhaltId}</List.Item>
+            <List withPadding listStyleType="disc">
+                {
+                    personIDs.map((personID) => {
+                        const query = `abgabepflichtig(labgg, ${sachverhalt.sacherhaltId}, ${personID}).`;
+                        return <DisplayPrologQuery queryString={query} prologVM={prologVM}/>;
+                    })
+                }
+            </List>
+        </>
+    });
 
     return <>
         { 

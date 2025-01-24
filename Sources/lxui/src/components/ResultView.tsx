@@ -1,10 +1,9 @@
-import { Paper, Title, Text, Divider, Button, ScrollArea, HoverCard } from "@mantine/core";
+import { Paper, Title, Text, Divider, Button, List, Center } from "@mantine/core";
 import { CodeView } from "./CodeView";
 import Terminal, { ColorMode } from 'react-terminal-ui';
 import { useState } from "react";
 import { PrologVM } from "@/model/PrologVM";
 import { v7 } from "uuid";
-import { render } from "@test-utils";
 
 export function ResultView({ code, width, prologVM }: {
     code: string,
@@ -19,8 +18,32 @@ export function ResultView({ code, width, prologVM }: {
         <Text>Gesamter Prolog-Code:</Text>
         <CodeView code={code} language="prolog" h={300} fileName="result.pl" />
         <Divider my={10} />
+        <PrologResults prologVM={prologVM} />
+        <Divider my={10} />
         <PrologTerminal prologVM={prologVM} />
     </Paper>;
+}
+
+function PrologResults({ prologVM }: { prologVM: PrologVM }) {
+    const r = prologVM.getFactBase();
+    const listItems: JSX.Element[] = [];
+
+    return <>
+        { 
+            listItems.length === 0  && <Center><Text>
+                keine abgabepflichtigen Personen gefunden
+            </Text></Center>
+        }
+
+        {
+            listItems.length > 0 && <>
+                <Text>Abgabepflichtige Personen:</Text>
+                <List>
+                    { listItems.map((x) => <List.Item>{x}</List.Item>) }
+                </List>
+            </>
+        }
+    </>;
 }
 
 function PrologTerminal({ prologVM }: {
@@ -89,7 +112,11 @@ function PrologTerminal({ prologVM }: {
                 setTerminalState(TerminalState.Open);
             }
             
-            return <Button onClick={reopenClicked} leftSection={"</>"}>Terminal öffnen</Button>;
+            return <Button
+                onClick={reopenClicked}
+                leftSection={"</>"}>
+                    Terminal öffnen
+            </Button>;
         }
         case TerminalState.Open:
             return renderTerminal();

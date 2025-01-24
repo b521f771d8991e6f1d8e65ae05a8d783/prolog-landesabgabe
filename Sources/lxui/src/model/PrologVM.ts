@@ -1,5 +1,5 @@
 import SWIPL from "swipl-wasm";
-import { getRechtsbestand, PrologFile } from "./PrologFileSystem";
+import { getRechtsbestand, PrologFile, PrologFileType } from "./PrologFileSystem";
 import { v4 as uuid } from 'uuid';
 
 // AppState is dead, long live the AppState
@@ -148,7 +148,6 @@ export class PrologVM {
         do {
             current = query.next()
             ret.push(current.value);
-            console.log("Got result: ", current);
         } while('done' in current && !current.done);
 
         return ret;
@@ -160,5 +159,13 @@ export class PrologVM {
 
     getFactBase(): PrologFile[] {
         return this.factBase;
+    }
+
+    getFacts(): PrologFile[] {
+        return this.getFactBase().filter((x) => x.prologFileType === PrologFileType.FACT);
+    }
+
+    getLaws(): PrologFile[] {
+        return this.getFactBase().filter((x) => x.prologFileType === PrologFileType.LAW);
     }
 }

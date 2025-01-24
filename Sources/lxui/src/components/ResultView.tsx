@@ -31,13 +31,18 @@ export function ResultView({ code, width, prologVM }: ResultViewProp) {
     </Paper>;
 }
 
+function isPrologFalse(a: any[]): boolean {
+    const filtered = a.filter((v): v is any => !!v);
+    return filtered.length === 0;
+}
+
 function PrologResults({ prologVM }: { prologVM: PrologVM }) {
     function processPerson(sachverhalt: LandesabgabeSachverhalt, personID: string) {
         const query = `abgabepflichtig(labgg, ${sachverhalt.sacherhaltId}, ${personID}).`;
-        return <List.Item key={v7()}>
-            <Text>{personID}</Text>
-            <DisplayPrologQuery queryString={query} prologVM={prologVM}/>
-        </List.Item>;
+        const queryResult = prologVM.execute(query);
+
+        return isPrologFalse(queryResult) ? <div key={v7()}></div> 
+                : <List.Item key={v7()}>{personID}</List.Item>;
     }
 
     const registeredSachverhalte = prologVM.getSachverhalte();
@@ -45,10 +50,8 @@ function PrologResults({ prologVM }: { prologVM: PrologVM }) {
         registeredSachverhalte.map((s) => [s, s.persons.map((p) => p.personId)]);
     const listItems = sachverhalteWithAssociatedPersonIDs.map(([sachverhalt, personIDs]) => {
         return <div key={v7()}>
-            <List.Item>
-                <Text>Abgabepflichtige Personen im Sachverhalt '{sachverhalt.sacherhaltId}'</Text>
-            </List.Item>
-            <List withPadding listStyleType="disc">
+            <List.Item>{sachverhalt.sacherhaltId}</List.Item>
+            <List withPadding listStyleType="disc" key={v7()}>
                 { personIDs.map((personID) => processPerson(sachverhalt, personID)) }
             </List>
         </div>
@@ -62,7 +65,7 @@ function PrologResults({ prologVM }: { prologVM: PrologVM }) {
         }
 
         {
-            listItems.length > 0 && <details>
+            listItems.length > 0 && <details open>
                 <summary>Abgabepflichtige Personen:</summary>
                 <List>{ listItems }</List>
             </details>

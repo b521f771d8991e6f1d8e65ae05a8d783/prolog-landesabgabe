@@ -74,11 +74,10 @@ export class LandesabgabeSachverhalt {
 
     private reduceSachverhaltToProlog(p: string, person: LandesabgabePerson): string {
         const handlungen = this.personsWithAssociatedHandlung.get(person) ?? [];
-        return `
-            ${p}
+        return `${p}
             ${person.serialize2Prolog(this.sacherhaltId)}
-            ${LandesabgabeSachverhalt.joinSachverhalt(handlungen).serialize2Prolog(this.sacherhaltId, person.personId)}
-        `;
+        ` + (handlungen.length === 0 ? ""
+                : LandesabgabeSachverhalt.joinSachverhalt(handlungen).serialize2Prolog(this.sacherhaltId, person.personId));
     }
 
     serialize2Prolog(): string {

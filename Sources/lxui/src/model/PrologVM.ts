@@ -1,6 +1,7 @@
 import SWIPL from "swipl-wasm";
 import { getRechtsbestand, PrologFile, PrologFileType } from "./PrologFileSystem";
 import { v4 as uuid } from 'uuid';
+import { LandesabgabeSachverhalt } from "./PrologTemplates";
 
 // AppState is dead, long live the AppState
 export class PrologVM {
@@ -157,14 +158,30 @@ export class PrologVM {
         return `input_${uuid().replaceAll('-', '_')}.pl`;
     }
 
+    /**
+     * 
+     * @returns an array of prolog files that include both facts and laws
+     */
     getFactBase(): PrologFile[] {
         return this.factBase;
     }
 
+    /**
+     * 
+     * @returns an array of prolog files that includes only facts
+     */
     getFacts(): PrologFile[] {
         return this.getFactBase().filter((x) => x.prologFileType === PrologFileType.FACT);
     }
 
+    getSachverhalte(): LandesabgabeSachverhalt[] {
+        return this.getFacts().map((f) => f.sachverhalt!);
+    }
+
+    /**
+     * 
+     * @returns an array of prolog files that includes only laws
+     */
     getLaws(): PrologFile[] {
         return this.getFactBase().filter((x) => x.prologFileType === PrologFileType.LAW);
     }

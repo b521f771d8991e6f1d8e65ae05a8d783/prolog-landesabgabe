@@ -4,6 +4,7 @@ import Terminal, { ColorMode } from 'react-terminal-ui';
 import { useState } from "react";
 import { PrologVM } from "@/model/PrologVM";
 import { v7 } from "uuid";
+import { LandesabgabePerson, LandesabgabeSachverhalt } from "@/model/PrologTemplates";
 
 export function ResultView({ code, width, prologVM }: {
     code: string,
@@ -15,32 +16,36 @@ export function ResultView({ code, width, prologVM }: {
         m="sm"
         w={width}>
         <Title>Ergebnisse</Title>
-        <Text>Gesamter Prolog-Code:</Text>
-        <CodeView code={code} language="prolog" h={300} fileName="result.pl" />
+        <details>
+            <summary>Gesamter Prolog-Code:</summary>
+            <CodeView code={code} language="prolog" h={300} fileName="result.pl" />
+        </details>
         <Divider my={10} />
         <PrologResults prologVM={prologVM} />
         <Divider my={10} />
-        <PrologTerminal prologVM={prologVM} />
+        <Center>
+            <PrologTerminal prologVM={prologVM} />
+        </Center>
     </Paper>;
 }
 
 function PrologResults({ prologVM }: { prologVM: PrologVM }) {
-    const r = prologVM.getFactBase();
+    const registeredSachverhalte = prologVM.getSachverhalte();
+    const getPersonsIDsInSachverhalte: [LandesabgabeSachverhalt, string[]][] =
+        registeredSachverhalte.map((s) => [s, s.persons.map((p) => p.personId)]);
     const listItems: JSX.Element[] = [];
 
     return <>
         { 
-            listItems.length === 0  && <Center><Text>
-                keine abgabepflichtigen Personen gefunden
-            </Text></Center>
+            listItems.length === 0  && <Center>
+                <Text>Keine abgabepflichtigen Personen gefunden</Text>
+            </Center>
         }
 
         {
             listItems.length > 0 && <>
                 <Text>Abgabepflichtige Personen:</Text>
-                <List>
-                    { listItems.map((x) => <List.Item>{x}</List.Item>) }
-                </List>
+                <List>{ listItems }</List>
             </>
         }
     </>;
@@ -53,7 +58,7 @@ function PrologTerminal({ prologVM }: {
         Closed, Minimized, Open, Maximized
     }
 
-    const [terminalState, setTerminalState] = useState<TerminalState>(TerminalState.Open);
+    const [terminalState, setTerminalState] = useState<TerminalState>(TerminalState.Minimized);
     const [terminalLineData, setTerminalLineData] = useState<JSX.Element[]>([]);
 
     function addLineData(lineData: JSX.Element) {
@@ -61,20 +66,11 @@ function PrologTerminal({ prologVM }: {
     }
 
     function onExecute(terminalInput: string) {
-        const query: any[] = prologVM.execute(terminalInput);
-        const queryJSON = JSON.stringify(query, null, 4);
         addLineData(<>
             <Text key={v7()}>$ {terminalInput}</Text>
-            <CodeView
-                code={queryJSON}
-                language={"json"}
-                h={300}
-                fileName="output.json"
-                showButtons={{
-                    magnify: false,
-                    download: false,
-                    createNormFromSelection: false
-                }}/>
+            <DisplayPrologQuery
+                queryString={terminalInput}
+                prologVM={prologVM} />
         </>);
     }
 
@@ -125,4 +121,34 @@ function PrologTerminal({ prologVM }: {
                     {renderTerminal()}
             </>;
     };
+}
+
+interface DisplayPrologQueryProps {
+    queryString: string,
+    prologVM: PrologVM
+}
+
+function DisplayPrologQuery({ queryString, prologVM }: DisplayPrologQueryProps) {
+    const query: any[] = prologVM.execute(queryString);
+    return <DisplayObjectAsJson object={query} />;
+}
+
+interface DisplayObjectAsJsonProps {
+    object: any,
+    indentation?: number
+}
+
+function DisplayObjectAsJson({object, indentation = 4}: DisplayObjectAsJsonProps) {
+    const json = JSON.stringify(object, null, indentation);
+    return <CodeView
+        code={json}
+        language={"json"}
+        h={300}
+        fileName="output.json"
+        showButtons={{
+            magnify: false,
+            download: false,
+            createNormFromSelection: false,
+            copy: false
+    }}/>;
 }

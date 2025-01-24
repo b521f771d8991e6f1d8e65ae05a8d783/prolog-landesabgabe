@@ -20,6 +20,10 @@ export function CodeView({ code, language, h = undefined, fileName = "prolog.pl"
         const codeElement = document.getElementById(codeId);
 
         if (codeElement) {
+            if (codeElement.hasAttribute("data-highlighted")) {
+                codeElement.removeAttribute("data-highlighted");
+            }
+
             hljs.highlightElement(codeElement);
         }
     }, [code]);

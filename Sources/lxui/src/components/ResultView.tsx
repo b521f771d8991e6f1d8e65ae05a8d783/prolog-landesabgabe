@@ -1,26 +1,88 @@
-import { Paper, Title, Text, Divider, Button, ScrollArea, HoverCard } from "@mantine/core";
+import { Paper, Title, Text, Divider, Button, List, Center } from "@mantine/core";
 import { CodeView } from "./CodeView";
 import Terminal, { ColorMode } from 'react-terminal-ui';
 import { useState } from "react";
 import { PrologVM } from "@/model/PrologVM";
 import { v7 } from "uuid";
-import { render } from "@test-utils";
+import { LandesabgabeSachverhalt } from "@/model/PrologTemplates";
+import { PrologFile } from "@/model/PrologFileSystem";
 
-export function ResultView({ code, width, prologVM }: {
+interface ResultViewProp {
     code: string,
     width: number,
     prologVM: PrologVM
-}) {
+}
+
+export function ResultView({ code, width, prologVM }: ResultViewProp) {
     return <Paper shadow="sm"
         p="xl"
         m="sm"
         w={width}>
         <Title>Ergebnisse</Title>
-        <Text>Gesamter Prolog-Code:</Text>
-        <CodeView code={code} language="prolog" h={300} fileName="result.pl" />
+        <details>
+            <summary>Gesamter Prolog-Code:</summary>
+            <CodeView code={code} language="prolog" h={300} fileName="result.pl" />
+        </details>
         <Divider my={10} />
-        <PrologTerminal prologVM={prologVM} />
+        <PrologResults prologVM={prologVM} />
+        <Divider my={10} />
+        <Center>
+            <PrologTerminal prologVM={prologVM} />
+        </Center>
     </Paper>;
+}
+
+function isPrologFalse(a: any[]): boolean {
+    const filtered = a.filter((v): v is any => !!v);
+    return filtered.length === 0;
+}
+
+function PrologResults({ prologVM }: { prologVM: PrologVM }) {
+    function processPerson(sachverhalt: LandesabgabeSachverhalt, personID: string) {
+        const query = `abgabepflichtig(labgg, ${sachverhalt.sacherhaltId}, ${personID}).`;
+        const queryResult = prologVM.execute(query);
+        const person = prologVM.lookupPersonByID(personID)!;
+
+        return isPrologFalse(queryResult) ? undefined
+                : <List.Item key={v7()}>{person.vorname} {person.nachname}</List.Item>;
+    }
+
+    const registeredSachverhalte = prologVM.getFacts();
+    const sachverhalteWithAssociatedPersonIDs: [PrologFile, string[]][] =
+        registeredSachverhalte.map((pf) =>
+            [pf, pf.sachverhalt!.persons.map((p) => p.personId)]);
+        
+    const listItems = sachverhalteWithAssociatedPersonIDs.map(([prologFile, personIDs]) => {
+        const personsSubjectToLandesabgabe = personIDs
+            .map((personID) =>processPerson(prologFile.sachverhalt!, personID))
+            .filter((x): x is JSX.Element => !!x);
+
+        return <div key={v7()}>
+            {
+                personsSubjectToLandesabgabe.length > 0 && <>
+                    <List.Item>In Datei "<i>{prologFile.name}</i>":</List.Item>
+                    <List withPadding listStyleType="disc" key={v7()}>
+                        { personsSubjectToLandesabgabe }
+                    </List>
+                </>
+            }
+        </div>
+    });
+
+    return <>
+        { 
+            listItems.length === 0  && <Center>
+                <Text>Keine abgabepflichtigen Personen gefunden</Text>
+            </Center>
+        }
+
+        {
+            listItems.length > 0 && <details open>
+                <summary>Abgabepflichtige Personen:</summary>
+                <List>{ listItems }</List>
+            </details>
+        }
+    </>;
 }
 
 function PrologTerminal({ prologVM }: {
@@ -30,7 +92,7 @@ function PrologTerminal({ prologVM }: {
         Closed, Minimized, Open, Maximized
     }
 
-    const [terminalState, setTerminalState] = useState<TerminalState>(TerminalState.Open);
+    const [terminalState, setTerminalState] = useState<TerminalState>(TerminalState.Minimized);
     const [terminalLineData, setTerminalLineData] = useState<JSX.Element[]>([]);
 
     function addLineData(lineData: JSX.Element) {
@@ -38,21 +100,12 @@ function PrologTerminal({ prologVM }: {
     }
 
     function onExecute(terminalInput: string) {
-        const query: any[] = prologVM.execute(terminalInput);
-        const queryJSON = JSON.stringify(query, null, 4);
-        addLineData(<>
+        addLineData(<div key={v7()}>
             <Text key={v7()}>$ {terminalInput}</Text>
-            <CodeView
-                code={queryJSON}
-                language={"json"}
-                h={300}
-                fileName="output.json"
-                showButtons={{
-                    magnify: false,
-                    download: false,
-                    createNormFromSelection: false
-                }}/>
-        </>);
+            <DisplayPrologQuery
+                queryString={terminalInput}
+                prologVM={prologVM} />
+        </div>);
     }
 
     function redButtonCallback() {
@@ -89,7 +142,11 @@ function PrologTerminal({ prologVM }: {
                 setTerminalState(TerminalState.Open);
             }
             
-            return <Button onClick={reopenClicked} leftSection={"</>"}>Terminal öffnen</Button>;
+            return <Button
+                onClick={reopenClicked}
+                leftSection={"</>"}>
+                    Terminal öffnen
+            </Button>;
         }
         case TerminalState.Open:
             return renderTerminal();
@@ -98,4 +155,34 @@ function PrologTerminal({ prologVM }: {
                     {renderTerminal()}
             </>;
     };
+}
+
+interface DisplayPrologQueryProps {
+    queryString: string,
+    prologVM: PrologVM
+}
+
+function DisplayPrologQuery({ queryString, prologVM }: DisplayPrologQueryProps) {
+    const query: any[] = prologVM.execute(queryString);
+    return <DisplayObjectAsJson object={query} />;
+}
+
+interface DisplayObjectAsJsonProps {
+    object: any,
+    indentation?: number
+}
+
+function DisplayObjectAsJson({object, indentation = 4}: DisplayObjectAsJsonProps) {
+    const json = JSON.stringify(object, null, indentation);
+    return <CodeView
+        code={json}
+        language={"json"}
+        h={300}
+        fileName="output.json"
+        showButtons={{
+            magnify: false,
+            download: false,
+            createNormFromSelection: false,
+            copy: false
+    }}/>;
 }

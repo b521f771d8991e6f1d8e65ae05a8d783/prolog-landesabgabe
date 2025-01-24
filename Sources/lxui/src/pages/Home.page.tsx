@@ -10,8 +10,8 @@ import logo from "../static/logo.svg";
 import { SachverhaltEditorForm } from '@/components/SachverhaltEditorForm';
 import { PrologFilesAccordion } from '@/components/PrologFilesAccordion';
 import { ResultView } from '@/components/ResultView';
-import { defaultConfig } from '@/config/ServerConfig';
 import { StatisticsView } from '@/components/StatisticsView';
+import { VersionString } from '@/components/VersionString';
 
 const DOWNLOAD_FILE_DEFAULT_NAME = "Sachverhalt.sv";
 export const WIDTH = 550;
@@ -110,7 +110,7 @@ export function HomePage({ prologVM }: { prologVM: PrologVM }) {
         wrap="wrap">
         <Button leftSection={"📅"} disabled>Historie</Button>
         <Button onClick={onDeleteButtonClicked} leftSection={"🗑"}>Alles löschen</Button>
-        <Button onClick={onSaveClicked} leftSection={"💾"}>Speichern</Button>
+        <Button onClick={onSaveClicked} leftSection={"💾"} disabled>Speichern</Button>
         <Button leftSection={"⚡"} disabled>Laden</Button>
         <Button leftSection={"🔐"} disabled>Login</Button>
         {
@@ -134,33 +134,10 @@ export function HomePage({ prologVM }: { prologVM: PrologVM }) {
     <AppView prologVM={prologVM} />
 
     <Text c="dimmed">
-      Ein Projekt der Stabsstelle für Digitalisierung Oberösterreich☕
+      Ein Projekt der Stabsstelle für Digitalisierung Oberösterreich 🤖📈
     </Text>
-    <VersionString />
+    <Text c="dimmed">Version: <VersionString /></Text>
   </Flex>;
-}
-
-export function VersionString() {
-  const [version, setVersion] = useState<JSX.Element>(<></>);
-
-  useEffect(() => {
-    async function d() {
-      const versionRequest = await fetch(`${defaultConfig.getServerProtocol()}://${defaultConfig.getServerName()}:${defaultConfig.getServerPort()}/version`, {
-        mode: "cors"
-      });
-
-      if (!versionRequest.ok) {
-        console.error(versionRequest);
-        setVersion(<Text c="red">Could not connect to server</Text>);
-      }
-
-      setVersion(<Text c="dimmed">Version: {await versionRequest.text()}</Text >);
-    }
-
-    d();
-  }, []);
-
-  return version;
 }
 
 /*
@@ -179,10 +156,8 @@ function AppView({ prologVM }: {
     return pf.reduce((p, c) => `${p}\n% Filename: ${c.name}\n${c.evaluatedProlog}`, "");
   }
 
-  useEffect(() => {
-    const addedFactFiles = factBase.filter((x) => x.prologFileType === PrologFileType.FACT);
-    prologVM.addFactBases(addedFactFiles);
-  }, [factBase]);
+  const addedFactFiles = factBase.filter((x) => x.prologFileType === PrologFileType.FACT);
+  prologVM.addFactBases(addedFactFiles);
 
   console.log("Loaded fact base: ", factBase);
 

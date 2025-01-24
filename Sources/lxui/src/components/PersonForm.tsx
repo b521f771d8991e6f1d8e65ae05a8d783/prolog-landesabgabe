@@ -2,12 +2,15 @@ import { LandesabgabeHandlung, LandesabgabePerson, LandesabgabeSachverhalt } fro
 import { Text, Paper, Button, Title, NumberInput, Table, Divider } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { useState } from "react";
+import { v7 } from "uuid";
 
-export function PersonDetailForm({ person, handlungen, addToJoinTable }: {
+interface PersonDetailFormProps {
     person: LandesabgabePerson,
     handlungen: LandesabgabeHandlung[]
     addToJoinTable: (p: LandesabgabePerson, h: LandesabgabeHandlung) => void
-}) {
+}
+
+export function PersonDetailForm({ person, handlungen, addToJoinTable }: PersonDetailFormProps) {
     const [date, setDate] = useState<Date>(new Date(Date.now()));
     const [gefördert, setGefördert] = useState<number>(0);
 
@@ -70,7 +73,7 @@ function HandlungenTableBody({ handlungen, setDate, setGefördert, date, geförd
     addButtonClicked: any
 }) {
     return <Table.Tbody>
-        {handlungen.map((x) => <HandlungViewer handlung={x} />)}
+        {handlungen.map((x) => <HandlungViewer key={v7()} handlung={x} />)}
 
         <Table.Tr>
             <Table.Td>
@@ -84,7 +87,7 @@ function HandlungenTableBody({ handlungen, setDate, setGefördert, date, geförd
             <Table.Td>
                 <Button disabled={date === undefined || date === null || gefördert === undefined || gefördert === 0 || gefördert === null}
                     onClick={addButtonClicked}
-                    leftSection={"🔢"}>
+                    leftSection={"✍️"}>
                     Eintrag hinzufügen
                 </Button>
             </Table.Td>
@@ -104,7 +107,7 @@ function TableHeader() {
 
 function HandlungViewer({ handlung }: { handlung: LandesabgabeHandlung }) {
     return <Table.Tr>
-        <Table.Td>{handlung.date.toISOString()}</Table.Td>
+        <Table.Td>{handlung.date.getDay()}.{handlung.date.getUTCMonth()}.{handlung.date.getFullYear()}</Table.Td>
         <Table.Td>{handlung.gefördert}</Table.Td>
         <Table.Td>{handlung.einheit}</Table.Td>
     </Table.Tr >;

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { PrologVM } from "@/model/PrologVM";
 import { v7 } from "uuid";
 import { LandesabgabeSachverhalt } from "@/model/PrologTemplates";
+import { PrologFile } from "@/model/PrologFileSystem";
 
 interface ResultViewProp {
     code: string,
@@ -46,14 +47,15 @@ function PrologResults({ prologVM }: { prologVM: PrologVM }) {
                 : <List.Item key={v7()}>{person.vorname} {person.nachname}</List.Item>;
     }
 
-    const registeredSachverhalte = prologVM.getSachverhalte();
-    const sachverhalteWithAssociatedPersonIDs: [LandesabgabeSachverhalt, string[]][] =
-        registeredSachverhalte.map((s) => [s, s.persons.map((p) => p.personId)]);
-    const listItems = sachverhalteWithAssociatedPersonIDs.map(([sachverhalt, personIDs]) => {
+    const registeredSachverhalte = prologVM.getFacts();
+    const sachverhalteWithAssociatedPersonIDs: [PrologFile, string[]][] =
+        registeredSachverhalte.map((pf) => [pf, pf.sachverhalt!.persons.map((p) => p.personId)]);
+        
+    const listItems = sachverhalteWithAssociatedPersonIDs.map(([prologFile, personIDs]) => {
         return <div key={v7()}>
-            <List.Item>{sachverhalt.sacherhaltId}</List.Item>
+            <List.Item>In Datei {prologFile.name}:</List.Item>
             <List withPadding listStyleType="disc" key={v7()}>
-                { personIDs.map((personID) => processPerson(sachverhalt, personID)) }
+                { personIDs.map((personID) => processPerson(prologFile.sachverhalt!, personID)) }
             </List>
         </div>
     });

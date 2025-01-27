@@ -1,4 +1,4 @@
-import { TaskResult, TaskStatus } from "@/util/RestService"
+import { TaskResult, TaskStatus } from "@/util/Task"
 import { Text, Paper } from "@mantine/core"
 import { UseQueryResult } from "@tanstack/react-query"
 

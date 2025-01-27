@@ -1,6 +1,7 @@
 import { QueryClient, useQuery, useQueryClient, UseQueryResult } from '@tanstack/react-query';
+import { TaskResult } from './Task';
 
-export interface PrototypeRequestBody {
+interface PrototypeRequestBody {
   taskConfiguration: {
     args: any[];
     lang: string;
@@ -19,31 +20,61 @@ export interface PrototypeRequestBody {
   };
 }
 
-export enum TaskStatus {
-  NOT_STARTED,
-  UPLOADING = 'UPLOADING',
-  PENDING = 'PENDING',
-  PROGRESS = 'PROGRESS',
-  SUCCESS = 'SUCCESS',
-  FAILURE = 'FAILURE',
-  ABORTED = 'ABORTED',
-  FINISHED = 'FINISHED',
-}
+const buildPrototypeRequestBody = (args: any[], task: string): PrototypeRequestBody => {
+  return {
+    taskConfiguration: {
+      args: args,
+      lang: 'py',
+      id: '',
+      root_id: '',
+      parent_id: '',
+      group_id: '',
+    },
+    metaConfiguration: {
+      contentEncoding: 'UTF-8',
+      contentType: 'application/json',
+      replyTo: 'response_prototype_8',
+      headerTask: 'task',
+      headerTaskId: 'taskId',
+      task: task,
+    },
+  };
+};
 
-export enum TaskName {
-  MSG_PROPOSAL_GEN = 'nlp_workers.generate_mail_proposal',
-  SUMMARIZE_ATTACHMENT = 'nlp_workers.summarize_attachments',
-}
+const buildHeaders = (): any => {
+  const credentials = btoa(`use:pw}`);
+  return {
+    'Content-Type': 'application/json',
+    Accept: '*/*',
+    Authorization: `Basic ${credentials}`, // FIXME change to Keycloak OAuth2
+  };
+};
 
-export interface TaskResult {
-  task_id: string;
-  status: TaskStatus;
-  result: string;
-  score: number;
-  sourceLanguage: string;
-  targetLanguage: string;
-}
+const buildRequestInit = (
+  mode: RequestMode,
+  method: string,
+  headers: any,
+  body?: any
+): RequestInit => {
+  let requestInit = {
+    mode: mode,
+    method: method,
+    headers: headers,
+    body: null,
+  };
+  if (body) {
+    requestInit.body = body;
+  }
+  return requestInit;
+};
 
+async function post<T>(url: URL, body: any): Promise<T> {
+  const headers = buildHeaders();
+  const options: RequestInit = buildRequestInit('cors', 'POST', headers, JSON.stringify(body));
+  const response = await fetch(url, options);
+  return await response.json();
+}
+  
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -79,58 +110,3 @@ export function usePostTaskStatusRequest(id: string): UseQueryResult<TaskResult,
     enabled: false,
   });
 }
-
-async function post<T>(url: URL, body: any): Promise<T> {
-  const headers = buildHeaders();
-  const options: RequestInit = buildRequestInit('cors', 'POST', headers, JSON.stringify(body));
-  const response = await fetch(url, options);
-  return await response.json();
-}
-
-const buildHeaders = (): any => {
-  const credentials = btoa(`use:pw}`);
-  return {
-    'Content-Type': 'application/json',
-    Accept: '*/*',
-    Authorization: `Basic ${credentials}`, // FIXME change to Keycloak OAuth2
-  };
-};
-
-const buildRequestInit = (
-  mode: RequestMode,
-  method: string,
-  headers: any,
-  body?: any
-): RequestInit => {
-  let requestInit = {
-    mode: mode,
-    method: method,
-    headers: headers,
-    body: null,
-  };
-  if (body) {
-    requestInit.body = body;
-  }
-  return requestInit;
-};
-
-const buildPrototypeRequestBody = (args: any[], task: string): PrototypeRequestBody => {
-  return {
-    taskConfiguration: {
-      args: args,
-      lang: 'py',
-      id: '',
-      root_id: '',
-      parent_id: '',
-      group_id: '',
-    },
-    metaConfiguration: {
-      contentEncoding: 'UTF-8',
-      contentType: 'application/json',
-      replyTo: 'response_prototype_8',
-      headerTask: 'task',
-      headerTaskId: 'taskId',
-      task: task,
-    },
-  };
-};

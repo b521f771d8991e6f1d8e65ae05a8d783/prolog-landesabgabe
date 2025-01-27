@@ -1,12 +1,7 @@
-build*
 *.cache
 result
-.build*
+.build
 vcpkg_installed
-
-# Added by cargo
-
+/out
 /target
-
-
 generated

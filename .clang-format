@@ -1,4 +1,4 @@
-BasedOnStyle:  GNU
+BasedOnStyle: GNU
 ContinuationIndentWidth: 2
 MaxEmptyLinesToKeep: 1
 PointerAlignment: Right

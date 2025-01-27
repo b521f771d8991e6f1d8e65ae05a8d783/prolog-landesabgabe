@@ -8,7 +8,7 @@ RUN swift sdk install https://download.swift.org/swift-6.0.2-release/static-sdk/
 
 RUN apt update -y && apt upgrade -y && apt install -y curl git gpg cmake \
     ninja-build gdb clangd clang-format clang-tidy zip python3 swi-prolog \
-    cargo rustc
+    cargo rustc rust-src rustfmt
 # clang is already included in the base image
 
 # we do not need to install clang since it is included in the swift:noble image

@@ -4,4 +4,4 @@ result
 vcpkg_installed
 /out
 /target
-generated
+/generated

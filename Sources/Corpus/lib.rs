@@ -10,7 +10,7 @@ pub fn fetch_from_corpus(file_path: &str) -> String {
 
 #[swift_bridge::bridge]
 mod ffi {
-    extern "Swift" {
+    extern "Rust" {
         pub fn fetch_from_corpus(file_path: &str) -> String;
     }
 }

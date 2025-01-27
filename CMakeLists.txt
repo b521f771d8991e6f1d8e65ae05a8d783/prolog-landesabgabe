@@ -113,9 +113,17 @@ string(TOLOWER "${CMAKE_BUILD_TYPE}" SWIFT_BUILD_TYPE)
 
 find_program(CARGO_EXE NAMES "cargo" REQUIRED)
 
+if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
+  set(CARGO_FLAGS --release)
+else()
+  set(CARGO_FLAGS)
+endif()
+
 add_custom_target(CargoPackage
-  COMMAND  ${CARGO_EXE} "build"
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  COMMAND
+    ${CARGO_EXE} "build" ${CARGO_FLAGS}
+  WORKING_DIRECTORY
+    ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 add_custom_target(SwiftPackage

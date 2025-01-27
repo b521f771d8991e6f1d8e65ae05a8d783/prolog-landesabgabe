@@ -29,21 +29,20 @@ FROM dev AS build
 
 # TODO: build it to a static binary
 
-RUN mkdir /source
-RUN mkdir /build
-VOLUME [ "/build" ]
+RUN mkdir /workspace
 
-COPY . /source
+COPY . /workspace
+WORKDIR /workspace
 
-RUN cmake -S /source -B /build -G Ninja --preset release-x86-64-unknown-linux-gnu
-RUN ninja -C /build SwiftPackage
-RUN strip /build/.build/release/LX
+RUN cmake --preset debug-x86-64-unknown-linux-gnu -S. -Bout/build/debug-x86-64-unknown-linux-gnu -GNinja
+RUN ninja -C out/build/debug-x86-64-unknown-linux-gnu SwiftPackage
+RUN strip .build/debug/LX
 
 # TODO switch to alpine:latest once we can build it statically
 FROM swift:noble AS run
 
 RUN mkdir /app
-COPY --from=build /build/.build/release/LX /app
+COPY --from=build /workspace/.build/debug/LX /app
 
 CMD [ "/app/LX" ]
 EXPOSE 1337

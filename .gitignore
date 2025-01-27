@@ -4,6 +4,7 @@ result
 vcpkg_installed
 /out
 /target
+build
 /generated
 /*.o
 /*.d

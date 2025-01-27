@@ -2,6 +2,12 @@
 
 import PackageDescription
 
+#if DEBUG
+    let buildType = "debug"
+#else
+    let buildType = "release"
+#endif
+
 let package = Package(
     name: "LX",
     products: [
@@ -27,8 +33,10 @@ let package = Package(
             ],
             linkerSettings: [
                 .unsafeFlags([
-                    "generated/SwiftBridgeCore.swift", "generated/LX-rs/LX-rs.swift",
-                    "-import-objc-header", "bridging-header.h", "-Ltarget/debug", "-lcorpus",
+                    "generated/SwiftBridgeCore.swift",
+                    "generated/LX-rs/LX-rs.swift",
+                    "-import-objc-header", "bridging-header.h",
+                    "-Ltarget/\(buildType)", "-lcorpus",
                 ])
             ])
     ],

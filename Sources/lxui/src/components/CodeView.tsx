@@ -1,37 +1,43 @@
 import { useEffect, useId, useState } from 'react';
 import hljs from 'highlight.js';
 import { Button, Center, Code, Flex } from '@mantine/core';
-import { TaskResult, usePostNormTransformationTaskStartRequest } from '@/util/RestService';
-import { QueryObserverResult, UseQueryResult } from '@tanstack/react-query';
-import { Button, Center, Code, Flex } from "@mantine/core";
-import hljs from "highlight.js";
-import { useEffect, useId, useState } from "react";
+import { usePostNormTransformationTaskStartRequest } from '@/util/RestService';
+import { TaskResultView } from './TaskResultView';
+import { TaskResultFetchingErrorView } from './TaskResultFetchingErrorView';
 
-export function CodeView({ code, language, h = undefined, fileName = "prolog.pl", showButtons = { download: true, magnify: true, createNormFromSelection: true, copy: true } }: {
-    code: string,
-    language: string,
-    h?: number,
-    fileName?: string,
-    showButtons?: {
-        download: boolean,
-        magnify: boolean,
-        createNormFromSelection: boolean,
-        copy: boolean
-    }
+export function CodeView({
+  code,
+  language,
+  h = undefined,
+  fileName = 'prolog.pl',
+  showButtons = { download: true, magnify: true, createNormFromSelection: true, copy: true },
+}: {
+  code: string;
+  language: string;
+  h?: number;
+  fileName?: string;
+  showButtons?: {
+    download: boolean;
+    magnify: boolean;
+    createNormFromSelection: boolean;
+    copy: boolean;
+  };
 }) {
-    const codeId = useId();
+  const codeId = useId();
+  const codeElement = document.getElementById(codeId);
+  const [norms, setNorms] = useState<string[]>([]);
+  const [taskId, setTaskId] = useState<string | null>(null);
+  const [isErrorTaskStart, setIsErrorTaskStart] = useState<boolean>(false);
 
   useEffect(() => {
-    const codeElement = document.getElementById(codeId);
+    if (codeElement) {
+      if (codeElement.hasAttribute('data-highlighted')) {
+        codeElement.removeAttribute('data-highlighted');
+      }
 
-        if (codeElement) {
-            if (codeElement.hasAttribute("data-highlighted")) {
-                codeElement.removeAttribute("data-highlighted");
-            }
-
-            hljs.highlightElement(codeElement);
-        }
-    }, [code]);
+      hljs.highlightElement(codeElement);
+    }
+  }, [code]);
 
   const onFullScreenClicked = (): void => {
     // open a new window containing pf.content
@@ -62,14 +68,25 @@ export function CodeView({ code, language, h = undefined, fileName = "prolog.pl"
   const onTransformToNormClicked = (): void => {
     const selection = window.getSelection()!.toString();
     assert(code.includes(selection.toString()));
-    setNormTransformationTask(usePostNormTransformationTaskStartRequest(selection));
+    setTaskId(() => null);
+    setIsErrorTaskStart(() => false);
+    const promisedTask = usePostNormTransformationTaskStartRequest(selection).promise;
+    promisedTask
+      .then((result) => setTaskId(result.task_id))
+      .catch((_error) => setIsErrorTaskStart(true));
+  };
+
+  const addNorm = (norm: string) => {
+    norms.push(norm);
+    setNorms(() => norms);
   };
 
   const enableNormButton = (): boolean => {
     const selection = window.getSelection();
     return selection !== null && selection.rangeCount > 0 && code.includes(selection.toString());
   };
-    const showFooter = showButtons.download || showButtons.magnify || showButtons.createNormFromSelection;
+  const showFooter =
+    showButtons.download || showButtons.magnify || showButtons.createNormFromSelection;
 
   // TODO make the "In Norm verwandeln"-Button call an LLM in the Backend and return the correct german law text
   // we will work together on the prompts
@@ -81,32 +98,35 @@ export function CodeView({ code, language, h = undefined, fileName = "prolog.pl"
           {code}
         </code>
       </Code>
-      {showFooter && <Center>
-        <Flex
-          className={'select-none'}
-          mih={50}
-          gap="xs"
-          justify="center"
-          align="center"
-          direction="row"
-          wrap="wrap"
-        >
-            { showButtons.copy && <CopyButton text={code}/>}
-            { showButtons.download && <DownloadButton text={code} fileName={fileName}/> }
-            { showButtons.magnify && <MagnifyButton text={code}/> }
-          <Button
-            disabled={!enableNormButton}
-            onClick={onTransformToNormClicked}
-            leftSection={'🪄'}
+      {showFooter && (
+        <Center>
+          <Flex
+            className={'select-none'}
+            mih={50}
+            gap="xs"
+            justify="center"
+            align="center"
+            direction="row"
+            wrap="wrap"
           >
-            In Norm verwandeln
-          </Button>
-        </Flex>
-      </Center>
-      }
+            {showButtons.copy && <CopyButton text={code} />}
+            {showButtons.download && <DownloadButton text={code} fileName={fileName} />}
+            {showButtons.magnify && <MagnifyButton text={code} />}
+            <Button
+              disabled={!enableNormButton}
+              onClick={onTransformToNormClicked}
+              leftSection={'🪄'}
+            >
+              In Norm verwandeln
+            </Button>
+          </Flex>
+          {taskId !== null && <TaskResultView taskId={taskId} addNorm={addNorm} />}
+          {isErrorTaskStart && <TaskResultFetchingErrorView/>}
+        </Center>
+      )}
     </>
   );
-};
+}
 
 /**
  * A button component that opens a new window displaying the provided text content.
@@ -116,15 +136,19 @@ export function CodeView({ code, language, h = undefined, fileName = "prolog.pl"
  *
  * @returns {JSX.Element} The rendered button component.
  */
-function MagnifyButton({text}: {text: string}) {
-    function onFullScreenClicked() {
-        // open a new window containing pf.content
-        // TODO make this more beautiful
-        const blob = URL.createObjectURL(new Blob([text], { type: "text/plain" }));
-        window.open(blob);
-    }
+function MagnifyButton({ text }: { text: string }) {
+  function onFullScreenClicked() {
+    // open a new window containing pf.content
+    // TODO make this more beautiful
+    const blob = URL.createObjectURL(new Blob([text], { type: 'text/plain' }));
+    window.open(blob);
+  }
 
-    return <Button onClick={onFullScreenClicked} leftSection={"💻"}>Vergrößern</Button>;
+  return (
+    <Button onClick={onFullScreenClicked} leftSection={'💻'}>
+      Vergrößern
+    </Button>
+  );
 }
 
 /**
@@ -136,24 +160,31 @@ function MagnifyButton({text}: {text: string}) {
  *
  * @returns {JSX.Element} A button element that initiates the download.
  */
-function DownloadButton({text, fileName}: {text: string, fileName: string}) {
-    function onDownloadClicked() {
-        const downloadLink = document.createElement('a');
-        downloadLink.setAttribute('href', 'data:application/octet-stream;charset=utf-8,' + encodeURIComponent(text));
+function DownloadButton({ text, fileName }: { text: string; fileName: string }) {
+  function onDownloadClicked() {
+    const downloadLink = document.createElement('a');
+    downloadLink.setAttribute(
+      'href',
+      'data:application/octet-stream;charset=utf-8,' + encodeURIComponent(text)
+    );
 
-        const fileNameSanitized = fileName.startsWith("-") ? fileName.substring(1) : fileName;
+    const fileNameSanitized = fileName.startsWith('-') ? fileName.substring(1) : fileName;
 
-        downloadLink.setAttribute('download', fileNameSanitized);
+    downloadLink.setAttribute('download', fileNameSanitized);
 
-        // Append the link to the document and click it
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
+    // Append the link to the document and click it
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
 
-        // Remove the temporary link
-        document.body.removeChild(downloadLink);
-    }
+    // Remove the temporary link
+    document.body.removeChild(downloadLink);
+  }
 
-    return <Button onClick={onDownloadClicked} leftSection={"💾"}>Download</Button>;
+  return (
+    <Button onClick={onDownloadClicked} leftSection={'💾'}>
+      Download
+    </Button>
+  );
 }
 
 /**
@@ -165,31 +196,32 @@ function DownloadButton({text, fileName}: {text: string, fileName: string}) {
  *
  * @returns {JSX.Element} The rendered button component.
  */
-function CopyButton({text}: {text: string}) {
-    const copyButtonOriginalText = "Kopieren";
-    const copyButtonOriginalEmoji = "📋";
-    const copyButtonOriginalColor = "black";
+function CopyButton({ text }: { text: string }) {
+  const copyButtonOriginalText = 'Kopieren';
+  const copyButtonOriginalEmoji = '📋';
+  const copyButtonOriginalColor = 'black';
 
-    const [copyButtonText, setCopyButtonText] = useState<string>(copyButtonOriginalText);
-    const [copyButtonLeftSection, setCopyButtonLeftSection] = useState<string>(copyButtonOriginalEmoji);
-    const [copyButtonColor, setCopyButtonColor] = useState<string>(copyButtonOriginalColor);
+  const [copyButtonText, setCopyButtonText] = useState<string>(copyButtonOriginalText);
+  const [copyButtonLeftSection, setCopyButtonLeftSection] =
+    useState<string>(copyButtonOriginalEmoji);
+  const [copyButtonColor, setCopyButtonColor] = useState<string>(copyButtonOriginalColor);
 
-    function onCopyClicked() {
-        navigator.clipboard.writeText(text);
-        setCopyButtonText("Kopiert!");
-        setCopyButtonLeftSection("👌");
-        setCopyButtonColor("green");
+  function onCopyClicked() {
+    navigator.clipboard.writeText(text);
+    setCopyButtonText('Kopiert!');
+    setCopyButtonLeftSection('👌');
+    setCopyButtonColor('green');
 
-        setTimeout(() => {
-            setCopyButtonText(copyButtonOriginalText);
-            setCopyButtonLeftSection(copyButtonOriginalEmoji);
-            setCopyButtonColor(copyButtonOriginalColor);
-        }, 1000);
-    }
+    setTimeout(() => {
+      setCopyButtonText(copyButtonOriginalText);
+      setCopyButtonLeftSection(copyButtonOriginalEmoji);
+      setCopyButtonColor(copyButtonOriginalColor);
+    }, 1000);
+  }
 
-    return <Button onClick={onCopyClicked}
-                   leftSection={copyButtonLeftSection}
-                   color={copyButtonColor}>
-        { copyButtonText }
-    </Button>;
+  return (
+    <Button onClick={onCopyClicked} leftSection={copyButtonLeftSection} color={copyButtonColor}>
+      {copyButtonText}
+    </Button>
+  );
 }

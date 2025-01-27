@@ -9,14 +9,21 @@ export enum TaskStatus {
   FINISHED = 'FINISHED',
 }
 
-export function isProcessing(status: TaskStatus) {
+export function isTaskProcessing(status: TaskStatus): boolean {
   return status === TaskStatus.PENDING || status === TaskStatus.PROGRESS;
 }
 
-export function isFinished(status: TaskStatus) {
+export function isTaskFinished(status: TaskStatus): boolean {
   return (
     status === TaskStatus.FAILURE || status === TaskStatus.SUCCESS || status == TaskStatus.ABORTED
   );
+}
+
+export function isTaskSuccessful(status: TaskStatus): boolean {
+  return status === TaskStatus.SUCCESS;
+}
+export function isTaskErronous(status: TaskStatus): boolean {
+  return status === TaskStatus.FAILURE || status == TaskStatus.ABORTED;
 }
 
 export enum TaskName {

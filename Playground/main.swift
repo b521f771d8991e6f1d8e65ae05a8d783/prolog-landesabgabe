@@ -1,4 +1,4 @@
-// swiftc main.swift ../generated/SwiftBridgeCore.swift ../generated/LX-rs/LX-rs.swift -import-objc-header ../bridging-header.h -L ../target/debug -lcorpus
+// swiftc main.swift ../generated/SwiftBridgeCore.swift ../generated/LX-rs/LX-rs.swift -import-objc-header ../bridging-header.h -L../target/debug -lcorpus
 
 import Foundation
 

@@ -10,7 +10,7 @@ let package = Package(
             targets: ["LX"])
     ],
     dependencies: [
-        .package(url: "https://github.com/vapor/vapor", from: "4.106.4"),
+        .package(url: "https://github.com/vapor/vapor", from: "4.106.4")
     ],
     targets: [
         .executableTarget(
@@ -18,7 +18,19 @@ let package = Package(
             dependencies: [
                 .product(name: "Vapor", package: "Vapor")
             ],
-            swiftSettings: [.interoperabilityMode(.Cxx)])
+            swiftSettings: [
+                .interoperabilityMode(.Cxx),
+                .unsafeFlags([
+                    "generated/SwiftBridgeCore.swift", "generated/LX-rs/LX-rs.swift",
+                    "-import-objc-header", "bridging-header.h",
+                ]),
+            ],
+            linkerSettings: [
+                .unsafeFlags([
+                    "generated/SwiftBridgeCore.swift", "generated/LX-rs/LX-rs.swift",
+                    "-import-objc-header", "bridging-header.h", "-Ltarget/debug", "-lcorpus",
+                ])
+            ])
     ],
     cxxLanguageStandard: .cxx20
 )

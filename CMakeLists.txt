@@ -111,9 +111,11 @@ endforeach()
 
 string(TOLOWER "${CMAKE_BUILD_TYPE}" SWIFT_BUILD_TYPE)
 
+find_program(CARGO_EXE NAMES "cargo" REQUIRED)
+
 add_custom_target(CargoPackage
-  COMMAND
-    "cargo" "build"
+  COMMAND  ${CARGO_EXE} "build"
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 add_custom_target(SwiftPackage
@@ -136,6 +138,5 @@ add_custom_target(SwiftPackage
     -Xswiftc -I${CMAKE_CURRENT_SOURCE_DIR}/Sources/LogicKit/include
     -Xswiftc -L${CMAKE_CURRENT_SOURCE_DIR}/Sources/LogicKit/include
     ${SWIFTC_DEPENDENCY_LIBRARIES}
-    -Xswiftc -Ltarget/debug -Xswiftc -lCorpus
 )
 add_dependencies(SwiftPackage ${TARGETS} CargoPackage)

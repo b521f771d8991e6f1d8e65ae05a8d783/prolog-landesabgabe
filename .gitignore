@@ -5,3 +5,7 @@ vcpkg_installed
 /out
 /target
 /generated
+/*.o
+/*.d
+/*.swiftdeps
+/*.swiftdeps~

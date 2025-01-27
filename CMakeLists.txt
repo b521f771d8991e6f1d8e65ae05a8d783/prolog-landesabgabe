@@ -115,8 +115,10 @@ find_program(CARGO_EXE NAMES "cargo" REQUIRED)
 
 if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
   set(CARGO_FLAGS --release)
+  set(SWIFT_BUILD_TYPE release)
 else()
   set(CARGO_FLAGS)
+  set(SWIFT_BUILD_TYPE debug)
 endif()
 
 add_custom_target(CargoPackage

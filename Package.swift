@@ -5,7 +5,8 @@ import PackageDescription
 #if DEBUG
     let buildType = "debug"
 #else
-    let buildType = "release"
+    // TODO rename this
+    let buildType = "debug"
 #endif
 
 let package = Package(

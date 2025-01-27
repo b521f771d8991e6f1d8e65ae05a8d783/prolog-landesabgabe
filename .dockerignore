@@ -1,6 +1,7 @@
 /.vscode
 /Docs
 /Scripts
+/Infrastructure
 /README.md
 /.devcontainer
 /Sources/lxui

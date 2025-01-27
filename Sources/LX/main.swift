@@ -12,13 +12,28 @@ public func configure(withApp app: Application, andLogicVM lvm: LogicVM) throws 
     try routes(withApp: app, andLogicVM: lvm)
 }
 
+func isAlpha(_ str: String) -> Bool {
+    return str.range(of: "^[a-zA-Z]+$", options: .regularExpression) != nil
+}
+
 func routes(withApp app: Application, andLogicVM lvm: LogicVM) throws {
     app.get("fetch-law") { req async throws -> String in
         guard let kurztitel: String = req.query[String.self, at: "kurztitel"] else {
             throw Abort(.badRequest)
         }
 
-        let law = fetchLaw(withName: kurztitel)
+        if !isAlpha(kurztitel) {
+            #if DEBUG
+                print("Possibly malicious request encountered: \(kurztitel)")
+            #else
+                print("Logged possible malicious request. Use a debug build to log it")
+            #endif
+            throw Abort(.notAcceptable)
+        }
+
+        guard let law = fetchLaw(withName: kurztitel) else {
+            throw Abort(.notFound)
+        }
 
         return law
     }

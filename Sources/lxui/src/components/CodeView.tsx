@@ -86,9 +86,9 @@ export function CodeView({
   };
 
   const onTransformToNormClicked = (): void => {
-    assert(code.includes(selection.toString()));
     setTaskId(() => null);
     setIsErrorTaskStart(() => false);
+    // FIXME --> produces hook call error
     const promisedTask = usePostNormTransformationTaskStartRequest(selection).promise;
     promisedTask
       .then((result) => setTaskId(result.task_id))
@@ -101,7 +101,7 @@ export function CodeView({
   };
 
   const enableNormButton = (): boolean => {
-    return selection.length > 0 && code.includes(selection.toString());
+    return selection.length > 0 && code.includes(selection);
   };
   const showFooter =
     showButtons.download || showButtons.magnify || showButtons.createNormFromSelection;

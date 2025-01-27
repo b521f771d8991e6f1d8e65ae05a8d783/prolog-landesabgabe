@@ -83,9 +83,9 @@ export const queryClient = new QueryClient({
   },
 });
 
-export function usePostNormTransformationTaskStartRequest(
+export const usePostNormTransformationTaskStartRequest = (
   selection: string
-): UseQueryResult<TaskResult, Error> {
+): UseQueryResult<TaskResult, Error> => {
   return useQuery({
     queryKey: ['postNormTransformationTask'],
     queryFn: () =>
@@ -97,7 +97,7 @@ export function usePostNormTransformationTaskStartRequest(
   });
 }
 
-export function usePostTaskStatusRequest(id: string): UseQueryResult<TaskResult, Error> {
+export const usePostTaskStatusRequest = (id: string): UseQueryResult<TaskResult, Error> => {
   return useQuery({
     queryKey: ['postNormTransformationTask'],
     queryFn: () =>

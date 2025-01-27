@@ -3,6 +3,7 @@ import { LandesabgabePerson, LandesabgabeHandlung } from "@/model/PrologTemplate
 import { Title, Text, Flex, NumberInput, Input, Button, Center, Divider } from "@mantine/core";
 import { useState } from "react";
 import { PersonDetailForm } from "./PersonForm";
+import { v7 } from "uuid";
 
 export function FactFile({ prologFile, setPrologFile }: {
     prologFile: PrologFile,
@@ -30,13 +31,13 @@ export function FactFile({ prologFile, setPrologFile }: {
     }
 
     function renderPersonDetailForm(x: LandesabgabePerson) {
-        return <>
+        return <div key={v7()}>
             <PersonDetailForm
                 person={x}
                 handlungen={handlungen.get(x)!} // ! ist allowed here because we are iterating over the map in the lambda anyway
                 addToJoinTable={addToJoinTable} />
             <Divider my="md" />
-        </>
+        </div>
     }
 
     // TODO remove the Divider following the last item

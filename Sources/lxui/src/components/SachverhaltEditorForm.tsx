@@ -1,8 +1,9 @@
 import { Text, Button, Paper, Title } from "@mantine/core";
 import { PrologFile, PrologFileType } from "@/model/PrologFileSystem";
-import { AppState } from "@/model/AppState";
+import { PrologVM } from "@/model/PrologVM";
 import { FactFile } from "./FactFile";
 import { LandesabgabeSachverhalt } from "@/model/PrologTemplates";
+import { v7 } from "uuid";
 
 /*
 * This component is used to edit a LandesabgabeSachverhalt.
@@ -15,7 +16,7 @@ export function SachverhaltEditorForm({ factFiles, setFactFiles, width }: {
 }) {
     const filteredFacts = factFiles.filter((x) => x.prologFileType === PrologFileType.FACT);
 
-    function addFactFile(ff: PrologFile = new PrologFile(AppState.getUniqueFilename(), "", new LandesabgabeSachverhalt(), PrologFileType.FACT)) {
+    function addFactFile(ff: PrologFile = new PrologFile(PrologVM.getUniqueFilename(), "", new LandesabgabeSachverhalt(), PrologFileType.FACT)) {
         setFactFiles([...factFiles, ff]);
     }
 
@@ -31,6 +32,7 @@ export function SachverhaltEditorForm({ factFiles, setFactFiles, width }: {
 
         {filteredFacts.length > 0
             ? filteredFacts.map((x: PrologFile) => <FactFile
+                key={v7()}
                 prologFile={x}
                 setPrologFile={updatePrologFile} />)
             : <Text>Keine Fakten gefunden</Text>

@@ -1,5 +1,10 @@
 FROM node:lts-alpine AS dev
 
+RUN apk update
+RUN apk upgrade
+
+RUN apk add git
+
 FROM dev AS build
 
 RUN mkdir /build

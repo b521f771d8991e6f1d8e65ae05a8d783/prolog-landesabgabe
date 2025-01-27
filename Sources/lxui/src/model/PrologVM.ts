@@ -1,35 +1,20 @@
 import SWIPL from "swipl-wasm";
-import { getRechtsbestand, PrologFile } from "./PrologFileSystem";
+import { getRechtsbestand, PrologFile, PrologFileType } from "./PrologFileSystem";
 import { v4 as uuid } from 'uuid';
+import { LandesabgabePerson, LandesabgabeSachverhalt } from "./PrologTemplates";
 
-export type FactBaseListener = (factBase: PrologFile[]) => void;
-
-const LOCAL_STORAGE_KEY: string = "factBase";
-
-export function getLocalStorage(): string | null {
-    return localStorage.getItem(LOCAL_STORAGE_KEY);
-}
-
-export class AppState {
+// AppState is dead, long live the AppState
+export class PrologVM {
     private swipl: SWIPL.SWIPLModule;
     private factBase: PrologFile[];
-    private initialFactBase: PrologFile[];
-    private addFactBaseEvents: FactBaseListener[];
 
     private constructor(swipl: SWIPL.SWIPLModule, factBase: PrologFile[] = []) {
         this.swipl = swipl;
         this.factBase = factBase;
-        this.initialFactBase = this.factBase;
-        this.addFactBaseEvents = [];
     }
 
-    private static async initPrologVM(): Promise<AppState> {
-        const swipl = new AppState(await AppState.initializePrologModule());
-
-        // TODO make this more generic
-        swipl.swipl.FS.mkdir("src");
-        swipl.swipl.FS.mkdir("src/static");
-        return swipl;
+    private static async initPrologVM(): Promise<PrologVM> {
+        return new PrologVM(await PrologVM.initializePrologModule());
     }
 
     private static async awaitPrologFiles(rechtsbestand: (PrologFile | Promise<PrologFile>)[]): Promise<PrologFile[]> {
@@ -42,29 +27,17 @@ export class AppState {
 
     // language designers should consider using paradigms such as ObjC init more, they would make stuff like this MUCH easier
     // https://developer.apple.com/documentation/objectivec/nsobject/1418639-initialize?language=objc
-    public static async initFromArray(rechtsbestand: (Promise<PrologFile> | PrologFile)[] = getRechtsbestand()): Promise<AppState> {
-        const pfs: PrologFile[] = await AppState.awaitPrologFiles(rechtsbestand);
-
-        const swipl = await AppState.initPrologVM();
-        swipl.initialFactBase = pfs;
+    static async initFromArray(rechtsbestand: (Promise<PrologFile> | PrologFile)[] = getRechtsbestand()): Promise<PrologVM> {
+        const pfs: PrologFile[] = await PrologVM.awaitPrologFiles(rechtsbestand);
+        const swipl = await PrologVM.initPrologVM();
         await swipl.addFactBases(pfs);
         return swipl;
     }
 
-    public static async initFromLocalStorage(rechtsbestand: (Promise<PrologFile> | PrologFile)[] = getRechtsbestand()): Promise<AppState> {
+    static async initFromAppState(rechtsbestand: (Promise<PrologFile> | PrologFile)[] = getRechtsbestand()): Promise<PrologVM> {
         // TODO
+        // init the PrologVM from Redux
         return await this.initFromArray(rechtsbestand);
-    }
-
-    public static hasLocalStorageFactBase(): boolean {
-        // TODO
-        return localStorage.getItem(LOCAL_STORAGE_KEY) !== null;
-    }
-
-    public saveToLocalStorage() {
-        // TODO
-        localStorage.removeItem(LOCAL_STORAGE_KEY);
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(this.factBase));
     }
 
     private static async initializePrologModule(): Promise<SWIPL.SWIPLModule> {
@@ -73,20 +46,16 @@ export class AppState {
         });
     }
 
-    addFactBaseListener(listener: FactBaseListener) {
-        this.addFactBaseEvents.push(listener);
-    }
-
     protected spawnTopLevelDirectoriesFromURL(url: string) {
         const urlCapped: string = url.startsWith("/") ? url.substring(1) : url;
         const segments: string[] = urlCapped.split("/");
-        const segmentsWithoutLast = segments.slice(0, segments.length - 1); // the last one is the file itself
-        let previous = "";
+        const segmentsWithoutLast: string[] = segments.slice(0, segments.length - 1); // the last one is the file itself
+        let current: string = "";
 
         for(const i of segmentsWithoutLast) {
-            this.swipl.FS.mkdir(previous + i);
-            previous += `${previous}/${i}`;
-            console.log(`Created folder: ${previous}`);
+            current = `${current}/${i}`;
+            console.log("Creating folder: ", i);
+            this.swipl.FS.mkdir(current);
         }
     }
 
@@ -98,7 +67,6 @@ export class AppState {
      */
     addFactBase(pf: PrologFile) {
         this.removeFactBaseIfExists(pf.name);
-        
         this.spawnTopLevelDirectoriesFromURL(pf.name);
 
         // see here: https://github.com/JanWielemaker/swi-prolog-wasm?tab=readme-ov-file#usage
@@ -109,17 +77,10 @@ export class AppState {
             // variable bindings go here
             "File": pf.name
         });
-
-        //console.assert(query.once().success === true);
-        console.log(`Loaded prolog file: ${pf.name}`);
+        const result = query.once();
+        console.log(`Loaded fact base`, result);
 
         this.factBase.push(pf);
-
-        for (const listener of this.addFactBaseEvents) {
-            listener(this.factBase);
-        }
-
-        this.saveToLocalStorage();
     }
 
     addFactBases(pfs: PrologFile[]) {
@@ -136,10 +97,9 @@ export class AppState {
             "File": filename
         });
 
-        //console.assert('success' in query.once());
+        console.log("Unloaded fact base", query.once());
         this.swipl.FS.unlink(filename);
         this.factBase = this.factBase.filter((pf: PrologFile) => pf.name !== filename);
-        console.log(`Removed fact base ${filename}`);
     }
 
     removeFactBaseIfExists(filename: string) {
@@ -152,38 +112,84 @@ export class AppState {
         return this.factBase.some((x: PrologFile) => x.name === filename);
     }
 
-    /*
-     * Resets the prolog VM to its initial state.
-     *  - fact base listeners are not deleted, they are kept!
-     *  - the fact base is reset to the initial fact base
-    */
-    async reset() {
-        localStorage.removeItem(LOCAL_STORAGE_KEY);
-        this.factBase = this.initialFactBase;
-        this.reboot(); // this does not reset the fact base!
+    removeAllFactBases() {
+        for(const i of this.factBase) {
+            assert(this.hasFactBase(i.name));
+            this.removeFactBase(i.name);
+        }
     }
 
-    /**
-     * Reboots the prologVM, uses the same fact base as before
-     */
-    async reboot(): Promise<void> {
-        const temporaryPrologVM = await AppState.initFromArray(this.factBase);
-        this.swipl = temporaryPrologVM.swipl;
+    healthCheck(): [string, boolean][] {
+        return this.factBase.map((x: PrologFile) => [x.name, this.hasFactBase(x.name)]);
     }
 
-    executeQuery(query: string, input?: Record<string, unknown>): SWIPL.Query {
+    healthCheckOK(): boolean {
+        return this.healthCheck().every((x: [string, boolean]) => {
+            if(x[1] === false) {
+                console.error(`Fact base ${x[0]} is faulty`);
+            }
+
+            return x[1];
+        });
+    }
+
+    executeQuery(query: string, input?: Record<string, unknown>, healthCheck: boolean = true): SWIPL.Query {
+        if(healthCheck) {
+            this.healthCheckOK();
+        }
+
         return this.swipl.prolog.query(query, input);
     }
 
-    evaluate() {
-        return "";
+    execute(queryString: string, input?: Record<string, unknown>, healthCheck: boolean = true): any[] {
+        let ret: any[] = [];
+        let query = this.executeQuery(queryString, input, healthCheck);
+        let current: any;
+
+        do {
+            current = query.next()
+            ret.push(current.value);
+        } while('done' in current && !current.done);
+
+        return ret;
     }
 
-    public static getUniqueFilename() {
+    static getUniqueFilename() {
         return `input_${uuid().replaceAll('-', '_')}.pl`;
     }
 
+    // TODO move this out of this file, does not fit well here
+
+    /**
+     * 
+     * @returns an array of prolog files that include both facts and laws
+     */
     getFactBase(): PrologFile[] {
         return this.factBase;
+    }
+
+    /**
+     * 
+     * @returns an array of prolog files that includes only facts
+     */
+    getFacts(): PrologFile[] {
+        return this.getFactBase().filter((x) => x.prologFileType === PrologFileType.FACT);
+    }
+
+    getSachverhalte(): LandesabgabeSachverhalt[] {
+        return this.getFacts().map((f) => f.sachverhalt!);
+    }
+
+    /**
+     * 
+     * @returns an array of prolog files that includes only laws
+     */
+    getLaws(): PrologFile[] {
+        return this.getFactBase().filter((x) => x.prologFileType === PrologFileType.LAW);
+    }
+
+    lookupPersonByID(personID: string): LandesabgabePerson | undefined {
+        return this.getFacts().flatMap((x) => 
+            x.sachverhalt!.persons.filter((p) => p.personId === personID))[0];
     }
 }

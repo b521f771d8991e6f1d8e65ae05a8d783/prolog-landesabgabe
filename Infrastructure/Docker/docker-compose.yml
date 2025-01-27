@@ -20,6 +20,10 @@ services:
       - "8080:8080"
     volumes:
       - ../../:/workspace
+  prolog-ide:
+    image: swipl/swish:latest
+    ports:
+      - "3050:3050"
 
 networks:
   default:

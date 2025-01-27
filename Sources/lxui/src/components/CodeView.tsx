@@ -1,9 +1,10 @@
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import hljs from 'highlight.js';
-import { Button, Center, Code, Flex } from '@mantine/core';
+import { Box, Button, Center, Code, Flex, LoadingOverlay } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 import { usePostNormTransformationTaskStartRequest } from '@/util/RestService';
-import { TaskResultView } from './TaskResultView';
 import { TaskResultFetchingErrorView } from './TaskResultFetchingErrorView';
+import { TaskResultView } from './TaskResultView';
 
 export function CodeView({
   code,
@@ -25,9 +26,11 @@ export function CodeView({
 }) {
   const codeId = useId();
   const codeElement = document.getElementById(codeId);
+  const[selection, setSelection] = useState<string>('')
   const [norms, setNorms] = useState<string[]>([]);
   const [taskId, setTaskId] = useState<string | null>(null);
   const [isErrorTaskStart, setIsErrorTaskStart] = useState<boolean>(false);
+  const [visible, { toggle }] = useDisclosure(false);
 
   useEffect(() => {
     if (codeElement) {
@@ -37,6 +40,23 @@ export function CodeView({
 
       hljs.highlightElement(codeElement);
     }
+    const handleMouseUp = () => {
+      const selection = window.getSelection();
+      if (selection) {
+        const selectedText = selection.toString();
+        if (code.includes(selectedText)) {
+          setSelection(selectedText);
+        } else {
+          setSelection('');
+        }
+      }
+    };
+  
+    document.addEventListener('mouseup', handleMouseUp);
+  
+    return () => {
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
   }, [code]);
 
   const onFullScreenClicked = (): void => {
@@ -66,7 +86,6 @@ export function CodeView({
   };
 
   const onTransformToNormClicked = (): void => {
-    const selection = window.getSelection()!.toString();
     assert(code.includes(selection.toString()));
     setTaskId(() => null);
     setIsErrorTaskStart(() => false);
@@ -82,8 +101,7 @@ export function CodeView({
   };
 
   const enableNormButton = (): boolean => {
-    const selection = window.getSelection();
-    return selection !== null && selection.rangeCount > 0 && code.includes(selection.toString());
+    return selection.length > 0 && code.includes(selection.toString());
   };
   const showFooter =
     showButtons.download || showButtons.magnify || showButtons.createNormFromSelection;
@@ -113,15 +131,22 @@ export function CodeView({
             {showButtons.download && <DownloadButton text={code} fileName={fileName} />}
             {showButtons.magnify && <MagnifyButton text={code} />}
             <Button
-              disabled={!enableNormButton}
+              disabled={!enableNormButton()}
               onClick={onTransformToNormClicked}
               leftSection={'🪄'}
             >
               In Norm verwandeln
             </Button>
           </Flex>
-          {taskId !== null && <TaskResultView taskId={taskId} addNorm={addNorm} />}
-          {isErrorTaskStart && <TaskResultFetchingErrorView/>}
+          <Box pos="relative">
+            <LoadingOverlay
+              visible={visible}
+              zIndex={1000}
+              overlayProps={{ radius: 'sm', blur: 2 }}
+            />
+            {taskId !== null && <TaskResultView taskId={taskId} addNorm={addNorm} />}
+            {isErrorTaskStart && <TaskResultFetchingErrorView />}
+          </Box>
         </Center>
       )}
     </>

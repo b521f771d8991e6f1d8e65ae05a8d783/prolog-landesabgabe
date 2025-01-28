@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.28)
 project(LX LANGUAGES Swift CXX C)
 
 include(CTest)
-include(Build/BuildInformation.cmake)
+include(Build/BuildInformation/BuildInformation.cmake)
 include(Dependencies/Dependencies.cmake)
 
 # configuration for our targets

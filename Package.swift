@@ -9,6 +9,8 @@ import PackageDescription
     let buildType = "debug"
 #endif
 
+let rustBridgingHeader = "Build/FFI/rust-bridging-header.h"
+
 let package = Package(
     name: "LX",
     products: [
@@ -29,14 +31,14 @@ let package = Package(
                 .interoperabilityMode(.Cxx),
                 .unsafeFlags([
                     "generated/SwiftBridgeCore.swift", "generated/LX-rs/LX-rs.swift",
-                    "-import-objc-header", "bridging-header.h",
+                    "-import-objc-header", rustBridgingHeader,
                 ]),
             ],
             linkerSettings: [
                 .unsafeFlags([
                     "generated/SwiftBridgeCore.swift",
                     "generated/LX-rs/LX-rs.swift",
-                    "-import-objc-header", "bridging-header.h",
+                    "-import-objc-header", rustBridgingHeader,
                     "-Ltarget/\(buildType)", "-lcorpus",
                 ])
             ])

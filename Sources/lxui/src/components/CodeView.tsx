@@ -1,10 +1,17 @@
 import { useEffect, useId, useRef, useState } from 'react';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import hljs from 'highlight.js';
 import { Box, Button, Center, Code, Flex, LoadingOverlay } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { usePostNormTransformationTaskStartRequest } from '@/util/RestService';
+import {
+  persister,
+  queryClient,
+  usePostNormTransformationTaskStartRequest,
+} from '@/util/RestService';
 import { TaskResultFetchingErrorView } from './TaskResultFetchingErrorView';
 import { TaskResultView } from './TaskResultView';
+import { TaskStartRequest } from './TaskStartRequest';
 
 export function CodeView({
   code,
@@ -26,10 +33,11 @@ export function CodeView({
 }) {
   const codeId = useId();
   const codeElement = document.getElementById(codeId);
-  const[selection, setSelection] = useState<string>('')
+  const [selection, setSelection] = useState<string>('');
   const [norms, setNorms] = useState<string[]>([]);
   const [taskId, setTaskId] = useState<string | null>(null);
-  const [isErrorTaskStart, setIsErrorTaskStart] = useState<boolean>(false);
+  const [isTaskError, setIsTaskError] = useState<boolean>(false);
+  const [isTaskRequestInProgress, setIsTaskRequestInProgress] = useState<boolean>(false);
   const [visible, { toggle }] = useDisclosure(false);
 
   useEffect(() => {
@@ -51,9 +59,9 @@ export function CodeView({
         }
       }
     };
-  
+
     document.addEventListener('mouseup', handleMouseUp);
-  
+
     return () => {
       document.removeEventListener('mouseup', handleMouseUp);
     };
@@ -87,12 +95,8 @@ export function CodeView({
 
   const onTransformToNormClicked = (): void => {
     setTaskId(() => null);
-    setIsErrorTaskStart(() => false);
-    // FIXME --> produces hook call error
-    const promisedTask = usePostNormTransformationTaskStartRequest(selection).promise;
-    promisedTask
-      .then((result) => setTaskId(result.task_id))
-      .catch((_error) => setIsErrorTaskStart(true));
+    setIsTaskError(() => false);
+    setIsTaskRequestInProgress(true);
   };
 
   const addNorm = (norm: string) => {
@@ -103,6 +107,13 @@ export function CodeView({
   const enableNormButton = (): boolean => {
     return selection.length > 0 && code.includes(selection);
   };
+
+  const updateTaskId = (taskId: string) => {
+    setIsTaskRequestInProgress(() => false);
+    setIsTaskError(() => false);
+    setTaskId(() => taskId);
+  };
+
   const showFooter =
     showButtons.download || showButtons.magnify || showButtons.createNormFromSelection;
 
@@ -138,15 +149,22 @@ export function CodeView({
               In Norm verwandeln
             </Button>
           </Flex>
-          <Box pos="relative">
-            <LoadingOverlay
-              visible={visible}
-              zIndex={1000}
-              overlayProps={{ radius: 'sm', blur: 2 }}
-            />
-            {taskId !== null && <TaskResultView taskId={taskId} addNorm={addNorm} />}
-            {isErrorTaskStart && <TaskResultFetchingErrorView />}
-          </Box>
+
+          <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
+            <Box pos="relative">
+              <LoadingOverlay
+                visible={visible}
+                zIndex={1000}
+                overlayProps={{ radius: 'sm', blur: 2 }}
+              />
+              {taskId !== null && <TaskResultView taskId={taskId} addNorm={addNorm} />}
+              {isTaskRequestInProgress && (
+                <TaskStartRequest selection={selection} setTaskId={updateTaskId} />
+              )}
+              {isTaskError && <TaskResultFetchingErrorView />}
+            </Box>
+            <ReactQueryDevtools initialIsOpen />
+          </PersistQueryClientProvider>
         </Center>
       )}
     </>

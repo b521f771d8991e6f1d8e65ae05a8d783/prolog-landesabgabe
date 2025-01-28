@@ -1,5 +1,6 @@
 import { QueryClient, useQuery, useQueryClient, UseQueryResult } from '@tanstack/react-query';
 import { TaskResult } from './Task';
+import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
 
 interface PrototypeRequestBody {
   taskConfiguration: {
@@ -74,7 +75,11 @@ async function post<T>(url: URL, body: any): Promise<T> {
   const response = await fetch(url, options);
   return await response.json();
 }
-  
+ 
+export const persister = createSyncStoragePersister({
+  storage: window.localStorage,
+})
+
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

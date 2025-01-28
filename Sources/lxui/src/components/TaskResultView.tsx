@@ -1,6 +1,7 @@
 import { Box, Button, LoadingOverlay, Paper, Text } from '@mantine/core';
 import { usePostTaskStatusRequest } from '@/util/RestService';
 import { isTaskErronous, isTaskProcessing, isTaskSuccessful } from '@/util/Task';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface TaskResultViewProps {
   taskId: string;
@@ -8,6 +9,7 @@ interface TaskResultViewProps {
 }
 
 export const TaskResultView = ({ taskId, addNorm }: TaskResultViewProps) => {
+  const queryClient = useQueryClient();
   const { data, error, isLoading, isError, isSuccess } = usePostTaskStatusRequest(taskId);
 
   const renderTaskResult = () => {

@@ -1,26 +1,22 @@
 import { LandesabgabeHandlung, LandesabgabePerson, LandesabgabeSachverhalt } from "@/model/PrologTemplates";
 import { Text, Paper, Button, Title, NumberInput, Table, Divider } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { v7 } from "uuid";
 
-export function PersonForm({ person, addHandlung }: {
+interface PersonDetailFormProps {
     person: LandesabgabePerson,
-    addHandlung: (handlung: LandesabgabeHandlung) => void
-}) {
-    const [handlungen, setHandlungen] = useState<LandesabgabeHandlung[]>([]);
+    handlungen: LandesabgabeHandlung[]
+    addToJoinTable: (p: LandesabgabePerson, h: LandesabgabeHandlung) => void
+}
+
+export function PersonDetailForm({ person, handlungen, addToJoinTable }: PersonDetailFormProps) {
     const [date, setDate] = useState<Date>(new Date(Date.now()));
     const [gefördert, setGefördert] = useState<number>(0);
 
     function addButtonClicked() {
-        setHandlungen([
-            ...handlungen,
-            new LandesabgabeHandlung(person, date, gefördert)
-        ]);
+        addToJoinTable(person, new LandesabgabeHandlung(date, gefördert));
     }
-
-    useEffect(() => {
-        handlungen.forEach((handlung) => addHandlung(handlung));
-    }, [handlungen]);
 
     return <Paper shadow="sm" p="xl" m="sm">
         <Title order={5}>Abgabenakt von "{person.vorname}"</Title>
@@ -38,8 +34,8 @@ export function PersonForm({ person, addHandlung }: {
 
 function PersonDetail({ person }: { person: LandesabgabePerson }) {
     return <>
-        <Text>Name: {person.vorname}</Text>
-        <Text>Vorname: {person.nachname}</Text>
+        <Text>Name: {person.nachname}</Text>
+        <Text>Vorname: {person.vorname}</Text>
         <Text>Alter: {person.alter}</Text>
     </>
 }
@@ -77,7 +73,7 @@ function HandlungenTableBody({ handlungen, setDate, setGefördert, date, geförd
     addButtonClicked: any
 }) {
     return <Table.Tbody>
-        {handlungen.map((x) => <HandlungViewer handlung={x} />)}
+        {handlungen.map((x) => <HandlungViewer key={v7()} handlung={x} />)}
 
         <Table.Tr>
             <Table.Td>
@@ -90,7 +86,8 @@ function HandlungenTableBody({ handlungen, setDate, setGefördert, date, geförd
 
             <Table.Td>
                 <Button disabled={date === undefined || date === null || gefördert === undefined || gefördert === 0 || gefördert === null}
-                    onClick={addButtonClicked}>
+                    onClick={addButtonClicked}
+                    leftSection={"✍️"}>
                     Eintrag hinzufügen
                 </Button>
             </Table.Td>
@@ -110,7 +107,7 @@ function TableHeader() {
 
 function HandlungViewer({ handlung }: { handlung: LandesabgabeHandlung }) {
     return <Table.Tr>
-        <Table.Td>{handlung.date.toISOString()}</Table.Td>
+        <Table.Td>{handlung.date.getDay()}.{handlung.date.getUTCMonth()}.{handlung.date.getFullYear()}</Table.Td>
         <Table.Td>{handlung.gefördert}</Table.Td>
         <Table.Td>{handlung.einheit}</Table.Td>
     </Table.Tr >;

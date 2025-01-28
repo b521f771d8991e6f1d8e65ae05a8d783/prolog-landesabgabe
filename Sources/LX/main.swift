@@ -12,7 +12,58 @@ public func configure(withApp app: Application, andLogicVM lvm: LogicVM) throws 
     try routes(withApp: app, andLogicVM: lvm)
 }
 
+func isAlpha(_ str: String) -> Bool {
+    return str.range(of: "^[a-zA-Z]+$", options: .regularExpression) != nil
+}
+
+func fetchLaw(withName name: String) -> String? {
+    let resourceName = "\(name).pl"
+
+    guard let rustResource = fetch_from_corpus(resourceName) else {
+        return nil
+    }
+
+    let resource = rustResource.toString()
+    return resource
+}
+
+func fetchCorpus() -> [String] {
+    return list_corpus().map { $0.as_str().toString() }
+}
+
 func routes(withApp app: Application, andLogicVM lvm: LogicVM) throws {
+    app.get("fetch-law") { req async throws -> String in
+        guard let kurztitel = req.query[String.self, at: "kurztitel"] else {
+            let corpus = fetchCorpus()
+            do {
+                let jsonData = try JSONEncoder().encode(corpus)
+
+                guard let jsonString = String(data: jsonData, encoding: .utf8) else {
+                    throw Abort(.internalServerError)
+                }
+
+                return jsonString
+            } catch {
+                throw Abort(.internalServerError)
+            }
+        }
+
+        if !isAlpha(kurztitel) {
+            #if DEBUG
+                print("Possibly malicious request encountered: \(kurztitel)")
+            #else
+                print("Logged possible malicious request. Use a debug build to log it")
+            #endif
+            throw Abort(.notAcceptable)
+        }
+
+        guard let law = fetchLaw(withName: kurztitel) else {
+            throw Abort(.notFound)
+        }
+
+        return law
+    }
+
     app.get("status") { req async -> String in
         return "OK"
     }
@@ -53,7 +104,7 @@ func configure(app a: Application) {
     // cors-Middleware sollte vor der Standard-Fehler-Middleware mit `at: .beginning` stehen
     app.middleware.use(cors, at: .beginning)
 
-    app.http.server.configuration.hostname = "0.0.0.0"
+    app.http.server.configuration.hostname = "worker"
     app.http.server.configuration.port = 1337
     app.http.server.configuration.serverName = "LX"
 }

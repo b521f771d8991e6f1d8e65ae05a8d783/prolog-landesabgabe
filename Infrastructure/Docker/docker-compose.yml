@@ -1,0 +1,30 @@
+name: lx
+services:
+  worker:
+    build:
+      dockerfile: Infrastructure/Worker.dockerfile
+      target: ${WORKER_TARGET_STAGE}
+      context: ../..
+    tty: true
+    ports:
+      - "1337:1337"
+    volumes:
+      - ../..:/workspace
+  frontend:
+    build:
+      dockerfile: Dockerfile
+      target: ${FRONTEND_TARGET_STAGE}
+      context: ../../Sources/lxui
+    tty: true
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../../:/workspace
+  prolog-ide:
+    image: swipl/swish:latest
+    ports:
+      - "3050:3050"
+
+networks:
+  default:
+    name: "lx"

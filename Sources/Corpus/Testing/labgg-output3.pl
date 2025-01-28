@@ -1,5 +1,9 @@
+
+% Filename: /src/static/labgg.pl
 % file_search_path(stdlib, './stdlib').
 %:- use_module(stdlib(stdlib)).
+
+:- style_check(-singleton).
 
 langtitel(labgg,
     "Landesgesetz über eine Landesabgabe für das obertägige Gewinnen mineralischer Rohstoffe (Oö. Landschaftsabgabegesetz)").
@@ -190,3 +194,31 @@ abgabepflichtig(labgg, Sachverhalt, Person) :-
     objekt(Sachverhalt, Person, Verbum, Objekt),
     abgabe_auf(labgg, landesabgabe, oberoesterreich, Verbum),
     \+ ausnahme(labgg, Person, Verbum, Objekt).
+% Filename: input_daae9163_4606_43b7_b9e4_3f978456a54e.pl
+% Sachverhalt
+                :- discontiguous verbum/3.
+                :- discontiguous nachname/2.
+                :- discontiguous vorname/2.
+                :- discontiguous natuerliche_person/1.
+                :- discontiguous alter/2.
+                :- discontiguous subjekt/2.
+                :- discontiguous objekt/4.
+                :- discontiguous verwertet_am/2.
+                :- discontiguous gefoerdert/3.
+        
+            
+        % Person
+        subjekt(sachverhalt_11ecba201a3445a39eeaec391f6fbd30, person_d6798eaee1644f2ca98b1102344f292e).
+        vorname(person_d6798eaee1644f2ca98b1102344f292e, "Test").
+        nachname(person_d6798eaee1644f2ca98b1102344f292e, "Test").
+        natuerliche_person(person_d6798eaee1644f2ca98b1102344f292e).
+        alter(person_d6798eaee1644f2ca98b1102344f292e, 12).
+        
+        
+        
+        % Handlung
+        verbum(sachverhalt_11ecba201a3445a39eeaec391f6fbd30, person_d6798eaee1644f2ca98b1102344f292e, bergbau(gewinnen, obertags, mineralische_rohstoffe)).
+        objekt(sachverhalt_11ecba201a3445a39eeaec391f6fbd30, person_d6798eaee1644f2ca98b1102344f292e, bergbau(gewinnen, obertags, mineralische_rohstoffe), gestein_6b334f830368414184a06d52f07d63c3).
+        gefoerdert(gestein_6b334f830368414184a06d52f07d63c3, 7, tonne).
+        verwertet_am(gestein_6b334f830368414184a06d52f07d63c3, date(2025, 0, 5, 0, 0, 0, Off, TZ, DST)).
+        

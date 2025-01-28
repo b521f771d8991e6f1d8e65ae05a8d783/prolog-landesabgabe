@@ -1,6 +1,9 @@
 {
     "name": "Backend",
-    "dockerComposeFile": "../../Infrastructure/docker-compose.dev.yml",
+    "dockerComposeFile": [
+        "docker-compose.yml",
+        "../../Infrastructure/Docker/docker-compose.yml"
+    ],
     "service": "worker",
     "customizations": {
         "vscode": {
@@ -17,7 +20,8 @@
                 "sswg.swift-lang",
                 "james-yu.latex-workshop",
                 "vscodevim.vim",
-                "arthurwang.vsc-prolog"
+                "arthurwang.vsc-prolog",
+                "rust-lang.rust-analyzer"
             ]
         }
     },

@@ -2,6 +2,15 @@
 
 import PackageDescription
 
+#if DEBUG
+    let buildType = "debug"
+#else
+    // TODO rename this
+    let buildType = "debug"
+#endif
+
+let rustBridgingHeader = "Build/FFI/rust-bridging-header.h"
+
 let package = Package(
     name: "LX",
     products: [
@@ -10,8 +19,7 @@ let package = Package(
             targets: ["LX"])
     ],
     dependencies: [
-        .package(url: "https://github.com/vapor/vapor", from: "4.106.4"),
-        .package(url: "https://github.com/apple/swift-log", from: "1.6.1"),
+        .package(url: "https://github.com/vapor/vapor", from: "4.106.4")
     ],
     targets: [
         .executableTarget(
@@ -19,7 +27,21 @@ let package = Package(
             dependencies: [
                 .product(name: "Vapor", package: "Vapor")
             ],
-            swiftSettings: [.interoperabilityMode(.Cxx)])
+            swiftSettings: [
+                .interoperabilityMode(.Cxx),
+                .unsafeFlags([
+                    "generated/SwiftBridgeCore.swift", "generated/LX-rs/LX-rs.swift",
+                    "-import-objc-header", rustBridgingHeader,
+                ]),
+            ],
+            linkerSettings: [
+                .unsafeFlags([
+                    "generated/SwiftBridgeCore.swift",
+                    "generated/LX-rs/LX-rs.swift",
+                    "-import-objc-header", rustBridgingHeader,
+                    "-Ltarget/\(buildType)", "-lcorpus",
+                ])
+            ])
     ],
     cxxLanguageStandard: .cxx20
 )

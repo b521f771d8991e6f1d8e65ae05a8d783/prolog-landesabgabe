@@ -29,9 +29,35 @@ constexpr bool isDirty(@GIT_DIRTY@);
 
 constexpr const char* buildType("@BUILD_TYPE@");
 
-constexpr unsigned buildYear(@BUILD_YEAR@);
-constexpr unsigned buildMonth(0x@BUILD_MONTH@);
-constexpr unsigned buildDay(0x@BUILD_DAY@);
+constexpr std::string_view buildDayString("@BUILD_DAY@");
+
+constexpr unsigned unsignedFromChar(const char& c) {
+  switch(c) {
+    case '0': return 0;   
+    case '1': return 1;
+    case '2': return 2;
+    case '3': return 3;
+    case '4': return 4;
+    case '5': return 5;
+    case '6': return 6;
+    case '7': return 7;
+    case '8': return 8;
+    case '9': return 9;
+    default: return 99999;
+  }
+}
+
+constexpr unsigned unsignedFromString(const std::string_view& str) {
+    unsigned result = 0;
+    for (char c: str) {
+        result = result * 10 + unsignedFromChar(c); // we could also do c - '0' but that would not be standard compatible
+    }
+    return result;
+}
+
+constexpr unsigned buildYear(unsignedFromString("@BUILD_YEAR@"));
+constexpr unsigned buildMonth(unsignedFromString("@BUILD_MONTH@"));
+constexpr unsigned buildDay(unsignedFromString("@BUILD_DAY@"));
 
 class VersionString {
 private:
@@ -94,10 +120,10 @@ public:
     return std::to_string(this->buildYear)
       + '.' + std::to_string(this->buildMonth)
       + '.' + std::to_string(this->buildDay)
-      + '-' + std::string(this->gitHash)
-      + (this->isDirty ? std::string("-dirty-") : std::string(""))
+      + '(' + std::string(this->buildType) + ')'
       + '-' + std::string(this->gitBranch)
-      + '(' + std::string(this->buildType) + ')';
+      + '-' + std::string(this->gitHash)
+      + (this->isDirty ? std::string("(dirty)") : std::string(""));
   }
 
   #if __cplusplus >= 202002L

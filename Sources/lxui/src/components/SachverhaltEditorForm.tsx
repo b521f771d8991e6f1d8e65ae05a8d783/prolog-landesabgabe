@@ -1,36 +1,40 @@
 import { Text, Button, Paper, Title } from "@mantine/core";
-import { useEffect, useMemo, useState } from "react";
-import { AddFactFileFunction, PrologFile, PrologFileType } from "@/model/PrologFileSystem";
-import { AppState } from "@/model/AppState";
+import { PrologFile, PrologFileType } from "@/model/PrologFileSystem";
+import { PrologVM } from "@/model/PrologVM";
 import { FactFile } from "./FactFile";
+import { LandesabgabeSachverhalt } from "@/model/PrologTemplates";
+import { v7 } from "uuid";
 
 /*
 * This component is used to edit a LandesabgabeSachverhalt.
 * It allows adding multiple Personen to the Sachverhalt.
 */
-export function SachverhaltEditorForm({ addFacts, initialFactBase, width }: {
-    addFacts: AddFactFileFunction,
-    initialFactBase: PrologFile[],
+export function SachverhaltEditorForm({ factFiles, setFactFiles, width }: {
+    factFiles: PrologFile[],
+    setFactFiles: (pfs: PrologFile[]) => void
     width: number
 }) {
-    const facts = useMemo<PrologFile[]>(() =>
-        initialFactBase.filter((x) => x.prologFileType === PrologFileType.FACT),
-        [initialFactBase]);
-    const [currentPrologFiles, setCurrentPrologFiles] = useState<PrologFile[]>(facts);
+    const filteredFacts = factFiles.filter((x) => x.prologFileType === PrologFileType.FACT);
 
-    function addFactBase() {
-        setCurrentPrologFiles([
-            ...currentPrologFiles,
-            new PrologFile(AppState.getUniqueFilename(), "", [], [], PrologFileType.FACT)
-        ]);
+    function addFactFile(ff: PrologFile = new PrologFile(PrologVM.getUniqueFilename(), "", new LandesabgabeSachverhalt(), PrologFileType.FACT)) {
+        setFactFiles([...factFiles, ff]);
+    }
+
+    function updatePrologFile(pf: PrologFile) {
+        const newFactSet = factFiles.filter((x) => x.name !== pf.name);
+        newFactSet.push(pf);
+        setFactFiles(newFactSet);
     }
 
     return <Paper shadow="sm" p="xl" m="sm" w={width}>
         <Title>Faktenbasis bearbeiten</Title>
-        <Button onClick={addFactBase}>Neue Faktenbasis</Button>
+        <Button onClick={() => addFactFile()} leftSection={"➕"}>Neue Faktenbasis</Button>
 
-        {currentPrologFiles.length > 0
-            ? currentPrologFiles.map((x: PrologFile) => <FactFile prologFile={x} />)
+        {filteredFacts.length > 0
+            ? filteredFacts.map((x: PrologFile) => <FactFile
+                key={v7()}
+                prologFile={x}
+                setPrologFile={updatePrologFile} />)
             : <Text>Keine Fakten gefunden</Text>
         }
     </Paper>;

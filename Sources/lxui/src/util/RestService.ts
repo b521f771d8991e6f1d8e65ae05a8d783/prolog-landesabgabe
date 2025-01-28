@@ -92,7 +92,7 @@ export const usePostNormTransformationTaskStartRequest = (
   selection: string
 ): UseQueryResult<TaskResult, Error> => {
   return useQuery({
-    queryKey: ['postNormTransformationTask'],
+    queryKey: ['postNormTransformationTaskStartRequest'],
     queryFn: () =>
       post<TaskResult>(
         new URL('https://localhost:4020/prototype-pipeline/v0/prototype/8/task/celery/start/'),
@@ -104,7 +104,7 @@ export const usePostNormTransformationTaskStartRequest = (
 
 export const usePostTaskStatusRequest = (id: string): UseQueryResult<TaskResult, Error> => {
   return useQuery({
-    queryKey: ['postNormTransformationTask'],
+    queryKey: ['postCeleryTaskStatusRequest'],
     queryFn: () =>
       post<TaskResult>(
         new URL(

@@ -1,6 +1,5 @@
+import { defaultConfig } from "@/config/ServerConfig";
 import { LandesabgabeSachverhalt } from "./PrologTemplates";
-
-export const labbgPl = new URL("../static/labgg.pl", import.meta.url);
 
 export enum PrologFileType {
     LAW, FACT
@@ -47,11 +46,26 @@ export class PrologFile {
     }
 }
 
-export const defaultFileSet: [URL] = [labbgPl];
+function generateDownloadURL(lawName: string) {
+    return `${defaultConfig.getServerProtocol()}://${defaultConfig.getServerName()}:${defaultConfig.getServerPort()}/fetch-law?kurztitel=${lawName}`;
+}
 
-export function getRechtsbestand(fileSet: URL[] = defaultFileSet): Promise<PrologFile>[] {
-    return fileSet.map(async (url: URL): Promise<PrologFile> => {
-        const text = await (await fetch(url)).text();
-        return new PrologFile(url.pathname, text, undefined, PrologFileType.LAW)
-    });
+export const defaultLawSet: [string] = [
+    "labgg"
+];
+
+export async function downloadLaw(fileName: string) {
+    console.log(`Trying to download "${fileName}"`)
+    const request = await fetch(generateDownloadURL(fileName));
+
+    if(!request.ok) {
+        throw request.status;
+    }
+
+    const text = await (request).text();
+    return new PrologFile(fileName, text, undefined, PrologFileType.LAW);
+}
+
+export function getRechtsbestand(fileSet: string[] = defaultLawSet): Promise<PrologFile>[] {
+    return fileSet.map(downloadLaw);
 }

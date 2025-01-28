@@ -7,7 +7,8 @@ FROM swift:noble AS dev
 RUN swift sdk install https://download.swift.org/swift-6.0.2-release/static-sdk/swift-6.0.2-RELEASE/swift-6.0.2-RELEASE_static-linux-0.0.1.artifactbundle.tar.gz --checksum aa5515476a403797223fc2aad4ca0c3bf83995d5427fb297cab1d93c68cee075
 
 RUN apt update -y && apt upgrade -y && apt install -y curl git gpg cmake \
-    ninja-build gdb clangd clang-format clang-tidy zip python3 swi-prolog
+    ninja-build gdb clangd clang-format clang-tidy zip python3 swi-prolog \
+    cargo rustc rust-src rustfmt
 # clang is already included in the base image
 
 # we do not need to install clang since it is included in the swift:noble image
@@ -28,21 +29,20 @@ FROM dev AS build
 
 # TODO: build it to a static binary
 
-RUN mkdir /source
-RUN mkdir /build
-VOLUME [ "/build" ]
+RUN mkdir /workspace
 
-COPY . /source
+COPY . /workspace
+WORKDIR /workspace
 
-RUN cmake -S /source -B /build -G Ninja --preset release-x86-64-unknown-linux-gnu
-RUN ninja -C /build SwiftPackage
-RUN strip /build/.build/release/LX
+RUN cmake --preset debug-x86-64-unknown-linux-gnu -S. -Bout/build/debug-x86-64-unknown-linux-gnu -GNinja
+RUN ninja -C out/build/debug-x86-64-unknown-linux-gnu SwiftPackage
+RUN strip .build/debug/LX
 
 # TODO switch to alpine:latest once we can build it statically
 FROM swift:noble AS run
 
 RUN mkdir /app
-COPY --from=build /build/.build/release/LX /app
+COPY --from=build /workspace/.build/debug/LX /app
 
 CMD [ "/app/LX" ]
 EXPOSE 1337

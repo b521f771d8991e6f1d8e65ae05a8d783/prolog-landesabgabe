@@ -58,7 +58,7 @@ export function FactFile({ prologFile, setPrologFile }: {
     </>;
 }
 
-function Toolbar({ vorname, setVorname, nachname, setNachname, alter, setAlter, addButtonClicked }: {
+interface ToolbarProps {
     vorname: string,
     setVorname: any,
     nachname: string,
@@ -66,7 +66,9 @@ function Toolbar({ vorname, setVorname, nachname, setNachname, alter, setAlter, 
     alter: number,
     setAlter: any,
     addButtonClicked: any
-}) {
+}
+
+function Toolbar({ vorname, setVorname, nachname, setNachname, alter, setAlter, addButtonClicked }: ToolbarProps) {
     return <Flex
         mih={50}
         gap="xs"

@@ -1,5 +1,6 @@
 {
   inputs = {
+    # https://github.com/NixOS/nixpkgs/commit/8b27c1239e5c421a2bbc2c65d52e4a6fbf2ff296
     nixpkgs.url = "github:NixOS/nixpkgs/8b27c1239e5c421a2bbc2c65d52e4a6fbf2ff296";
     flake-utils.url = "github:numtide/flake-utils/04c1b180862888302ddfb2e3ad9eaa63afc60cf8";
   };
@@ -24,19 +25,27 @@
           git
           curl
 
-          # to run the web app
-          nodejs_23
-
           # for building the documentation
           texliveFull
           
+          
+          # for the web part
+          nodejs_22
+
+
           # for the web part
           nodejs_22
 
           # build tools
           cmake
           ninja
+          # clang is included in the frontend
           swift
+          cargo
+          rustc
+
+          # frontend
+          nodejs_23
       ];
 
       environment = {};

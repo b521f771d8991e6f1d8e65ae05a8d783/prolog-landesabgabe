@@ -2,7 +2,7 @@ import { Divider, Paper, Title } from '@mantine/core';
 import { useEffect, useMemo, useState } from "react";
 import { Flex, Button, Text } from "@mantine/core";
 import { PrologVM } from "../model/PrologVM";
-import { PrologFile, PrologFileType } from "@/model/PrologFileSystem";
+import { downloadLaw, PrologFile, PrologFileType } from "@/model/PrologFileSystem";
 
 import "highlight.js/styles/github.css";
 
@@ -156,6 +156,20 @@ function AppView({ prologVM }: {
     return pf.reduce((p, c) => `${p}\n% Filename: ${c.name}\n${c.evaluatedProlog}`, "");
   }
 
+  async function addToFactBase(newLawShortTitle: string): Promise<boolean> {
+    try {
+      if(factBase.some((x) => x.name === newLawShortTitle)) {
+        throw new Error("This law has already been added");
+      }
+
+      const newPrologFile = await downloadLaw(newLawShortTitle);
+      setFactFiles([...factBase, newPrologFile]);
+      return true;
+    } catch(err) {
+      return false;
+    } 
+  }
+
   const addedFactFiles = factBase.filter((x) => x.prologFileType === PrologFileType.FACT);
   prologVM.addFactBases(addedFactFiles);
 
@@ -170,7 +184,8 @@ function AppView({ prologVM }: {
     wrap="wrap">
     <PrologFilesAccordion
       factBase={factBase}
-      width={WIDTH} />
+      width={WIDTH}
+      addToFactBase={addToFactBase} />
 
     <SachverhaltEditorForm
       factFiles={factBase}

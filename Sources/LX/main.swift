@@ -16,10 +16,36 @@ func isAlpha(_ str: String) -> Bool {
     return str.range(of: "^[a-zA-Z]+$", options: .regularExpression) != nil
 }
 
+func fetchLaw(withName name: String) -> String? {
+    let resourceName = "\(name).pl"
+
+    guard let rustResource = fetch_from_corpus(resourceName) else {
+        return nil
+    }
+
+    let resource = rustResource.toString()
+    return resource
+}
+
+func fetchCorpus() -> [String] {
+    return list_corpus().map { $0.as_str().toString() }
+}
+
 func routes(withApp app: Application, andLogicVM lvm: LogicVM) throws {
     app.get("fetch-law") { req async throws -> String in
-        guard let kurztitel: String = req.query[String.self, at: "kurztitel"] else {
-            throw Abort(.badRequest)
+        guard let kurztitel = req.query[String.self, at: "kurztitel"] else {
+            let corpus = fetchCorpus()
+            do {
+                let jsonData = try JSONEncoder().encode(corpus)
+
+                guard let jsonString = String(data: jsonData, encoding: .utf8) else {
+                    throw Abort(.internalServerError)
+                }
+
+                return jsonString
+            } catch {
+                throw Abort(.internalServerError)
+            }
         }
 
         if !isAlpha(kurztitel) {

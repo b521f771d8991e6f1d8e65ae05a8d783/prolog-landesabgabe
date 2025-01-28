@@ -9,7 +9,7 @@ edition = "2021"
 swift-bridge-build = "0.1"
 
 [dependencies]
-rust-embed = "8.5"
+rust-embed = { version = "8.5", features = ["include-exclude", "debug-embed", "compression"] }
 swift-bridge = "0.1"
 
 [lib]

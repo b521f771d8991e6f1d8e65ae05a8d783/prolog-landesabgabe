@@ -54,9 +54,18 @@ export const defaultLawSet: [string] = [
     "labgg"
 ];
 
+export async function downloadLaw(fileName: string) {
+    console.log(`Trying to download "${fileName}"`)
+    const request = await fetch(generateDownloadURL(fileName));
+
+    if(!request.ok) {
+        throw request.status;
+    }
+
+    const text = await (request).text();
+    return new PrologFile(fileName, text, undefined, PrologFileType.LAW);
+}
+
 export function getRechtsbestand(fileSet: string[] = defaultLawSet): Promise<PrologFile>[] {
-    return fileSet.map(async (lawName: string): Promise<PrologFile> => {
-        const text = await (await fetch(generateDownloadURL(lawName))).text();
-        return new PrologFile(lawName, text, undefined, PrologFileType.LAW)
-    });
+    return fileSet.map(downloadLaw);
 }

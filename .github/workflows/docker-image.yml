@@ -45,5 +45,5 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
         image: ${{ github.repository }}
-        tags: land-ooe/prolog-landesabgabe-frontend:latest,"land-ooe/prolog-landesabgabe-frontend:${{ env.GITHUB_SHA }}"
-        labels: land-ooe/prolog-landesabgabe-frontend:latest,"land-ooe/prolog-landesabgabe-frontend:${{ env.GITHUB_SHA }}"
+        tags: land-ooe/prolog-landesabgabe-frontend:latest #,land-ooe/prolog-landesabgabe-frontend:${{ env.GITHUB_SHA }}
+        labels: land-ooe/prolog-landesabgabe-frontend:latest #,land-ooe/prolog-landesabgabe-frontend:${{ env.GITHUB_SHA }}

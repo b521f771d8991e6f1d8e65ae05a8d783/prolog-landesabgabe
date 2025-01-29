@@ -2,9 +2,9 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "stable" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "stable" ]
 
 jobs:
 
@@ -14,5 +14,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+    - name: Build the Worker image
+      run: docker build . --file Infrastructure/Worker.dockerfile --tag lxui-worker:$(date +%s)
+    - name: Build the Frontend image
+      run: docker build . --file Sources/lxui/Dockerfile --tag lxui-frontend:$(date +%s)

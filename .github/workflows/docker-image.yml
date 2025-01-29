@@ -25,11 +25,25 @@ jobs:
         registry: containers.github.scch.at
         username: ${{ github.actor }}
         password: ${{ github.token }}
+#    - name: Build and push image
+#      uses: docker/build-push-action@v5
+#      with:
+#        push: true
+#        file: ./Sources/lxui/Dockerfile
+#        context: ./Sources/lxui/
+#        platforms: linux/amd64
+#        labels: lxui-frontend:$(date +%s)
+#        image: ${{ github.repository }}
+#        tags: ${{ steps.meta.outputs.tags }}
     - name: Build and push image
       uses: docker/build-push-action@v5
       with:
-        file: ./Sources/lxui/Dockerfile
-        context: ./Sources/lxui/
+        push: true
+        file: ./Infrastructure/Worker.dockerfile
+        context: .
         platforms: linux/amd64
-        labels: lxui-frontend:$(date +%s)
+        labels: lxui-worker:$(date +%s)
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
         image: ${{ github.repository }}
+        tags: ${{ steps.meta.outputs.tags }}

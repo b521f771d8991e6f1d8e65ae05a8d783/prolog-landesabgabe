@@ -36,6 +36,6 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         file: ./Sources/lxui/Dockerfile
-        context: .
+        context: ./Sources/lxui/
         platforms: linux/amd64
         labels: lxui-frontend:$(date +%s)

@@ -31,7 +31,6 @@ jobs:
         file: ./Infrastructure/Worker.dockerfile
         context: .
         platforms: linux/amd64
-        tags: lxui-worker:$(date +%s)
         labels: lxui-worker:$(date +%s)
     - name: Build and push image
       uses: docker/build-push-action@v5
@@ -39,5 +38,4 @@ jobs:
         file: ./Sources/lxui/Dockerfile
         context: .
         platforms: linux/amd64
-        tags: lxui-frontend:$(date +%s)
         labels: lxui-frontend:$(date +%s)

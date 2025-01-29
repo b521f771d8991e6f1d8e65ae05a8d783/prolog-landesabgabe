@@ -25,6 +25,11 @@ jobs:
         registry: containers.github.scch.at
         username: ${{ github.actor }}
         password: ${{ github.token }}
+    - name: Extract metadata for the Docker image
+      id: meta
+      uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 #    - name: Build and push image
 #      uses: docker/build-push-action@v5
 #      with:
@@ -42,8 +47,8 @@ jobs:
         file: ./Infrastructure/Worker.dockerfile
         context: .
         platforms: linux/amd64
-        labels: lxui-worker:$(date +%s)
         cache-from: type=gha
         cache-to: type=gha,mode=max
         image: ${{ github.repository }}
         tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}

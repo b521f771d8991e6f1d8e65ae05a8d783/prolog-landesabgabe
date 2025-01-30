@@ -32,7 +32,7 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
         labels: land-ooe/lxui-frontend:latest
-        tags: lxui-frontend:latest
+        tags: land-ooe/lxui-frontend:latest
     #- name: Build and push image
     #  uses: docker/build-push-action@v5
     #  with:

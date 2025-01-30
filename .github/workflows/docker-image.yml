@@ -28,7 +28,7 @@ jobs:
     - name: Build and push image
       uses: docker/build-push-action@v5
       with:
-        #push: true
+        push: true
         file: ./Sources/lxui/Dockerfile
         context: ./Sources/lxui/
         platforms: linux/amd64

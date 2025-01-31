@@ -26,10 +26,10 @@ jobs:
       id: meta
       uses: docker/metadata-action@v4
       with:
-        images:  containers.github.scch.at/Land-OOE/prolog-landesabgabe
+        images:  containers.github.scch.at/Land-OOE/prolog-landesabgabe-frontend
         tags: |
-            type=ref,event=branch,prefix=frontend-
-            type=ref,event=tag,pattern=frontend-
+            type=ref,event=branch,prefix=
+            type=ref,event=tag,pattern=
     - name: Build and push image
       uses: docker/build-push-action@v5
       with:

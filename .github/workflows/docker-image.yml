@@ -43,7 +43,7 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
         tags: ${{ steps.frontend-meta.outputs.tags }}
-        labels: ${{ steps.frontend-meta.outputs.labels }};containers.github.scch.at/Land-OOE/prolog-landesabgabe-frontend:latest
+        labels: ${{ steps.frontend-meta.outputs.labels }};containers.github.scch.at/Land-OOE/prolog-landesabgabe-frontend:${GITHUB_REF##*/}-latest
     - name: Extract metadata (tags, labels) for Docker
       id: backend-meta
       uses: docker/metadata-action@v4
@@ -62,4 +62,4 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
         tags: ${{ steps.backend-meta.outputs.tags }}
-        labels: ${{ steps.backend-meta.outputs.labels }};containers.github.scch.at/Land-OOE/prolog-landesabgabe-backend:latest
+        labels: ${{ steps.backend-meta.outputs.labels }};containers.github.scch.at/Land-OOE/prolog-landesabgabe-backend:${GITHUB_REF##*/}-latest

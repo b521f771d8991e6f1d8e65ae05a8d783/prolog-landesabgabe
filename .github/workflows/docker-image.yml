@@ -24,9 +24,9 @@ jobs:
         password: ${{ github.token }}
     - name: Extract metadata (tags, labels) for Docker
       id: meta
-      uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+      uses: docker/metadata-action@v4
       with:
-        images: Land-OOE/prolog-landesabgabe
+        images:  containers.github.scch.at/Land-OOE/prolog-landesabgabe
     - name: Build and push image
       uses: docker/build-push-action@v5
       with:

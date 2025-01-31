@@ -22,6 +22,11 @@ jobs:
         registry: containers.github.scch.at
         username: ${{ github.actor }}
         password: ${{ github.token }}
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+      with:
+        images: land-ooe/prolog-landesabgabe
     - name: Build and push image
       uses: docker/build-push-action@v5
       with:
@@ -31,8 +36,8 @@ jobs:
         platforms: linux/amd64
         cache-from: type=gha
         cache-to: type=gha,mode=max
-        labels: land-ooe/prolog-landesabgabe:latest
-        tags: land-ooe/prolog-landesabgabe:latest
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
     #- name: Build and push image
     #  uses: docker/build-push-action@v5
     #  with:

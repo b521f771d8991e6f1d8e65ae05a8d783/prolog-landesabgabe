@@ -23,13 +23,13 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ github.token }}
     - name: Extract metadata (tags, labels) for Docker
-      id: meta
+      id: frontend-meta
       uses: docker/metadata-action@v4
       with:
         images:  containers.github.scch.at/Land-OOE/prolog-landesabgabe-frontend
         tags: |
-            type=ref,event=branch,prefix={{ date -s }}
-            type=ref,event=tag,pattern={{ date -s }}
+            type=ref,event=branch,suffix={{ date -s }}
+            type=ref,event=tag,suffix={{ date -s }}
     - name: Build and push image
       uses: docker/build-push-action@v5
       with:
@@ -39,15 +39,24 @@ jobs:
         platforms: linux/amd64
         cache-from: type=gha
         cache-to: type=gha,mode=max
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
-    #- name: Build and push image
-    #  uses: docker/build-push-action@v5
-    #  with:
-    #    push: true
-    #    file: ./Infrastructure/Worker.dockerfile
-    #    context: .
-    #    platforms: linux/amd64
-    #    cache-from: type=gha
-    #    cache-to: type=gha,mode=max
-    #    tags: lxui-frontend:latest
+        tags: ${{ steps.frontend-meta.outputs.tags }}
+        labels: ${{ steps.frontend-meta.outputs.labels }}
+    - name: Extract metadata (tags, labels) for Docker
+      id: backend-meta
+      uses: docker/metadata-action@v4
+      with:
+        images:  containers.github.scch.at/Land-OOE/prolog-landesabgabe-backend
+        tags: |
+            type=ref,event=branch,suffix={{ date -s }}
+            type=ref,event=tag,suffix={{ date -s }}
+    - name: Build and push image
+      uses: docker/build-push-action@v5
+      with:
+        push: true
+        file: ./Infrastructure/Worker.dockerfile
+        context: .
+        platforms: linux/amd64
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        tags: ${{ steps.backend-meta.outputs.tags }}
+        labels: ${{ steps.backend-meta.outputs.labels }}

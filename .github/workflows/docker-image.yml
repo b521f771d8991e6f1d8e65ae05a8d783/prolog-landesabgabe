@@ -2,9 +2,10 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "main", "stable", "dev" ]
+    branches: [ "main", "stable" ]
   pull_request:
-    branches: [ "main", "stable", "dev" ]
+    branches: [ "main", "stable" ]
+# you can build manually on dev, but we do not want to spam the worker
 
 jobs:
   build:

@@ -1,4 +1,5 @@
 FROM swift:noble AS dev
+
 # TOOD replace this with nixos/nix once nix has swift 6 support
 # FROM nixos/nix
 # https://github.com/NixOS/nixpkgs/issues/343210#issuecomment-2424134735
@@ -9,8 +10,6 @@ RUN swift sdk install https://download.swift.org/swift-6.0.2-release/static-sdk/
 RUN apt update -y && apt upgrade -y && apt install -y curl git gpg cmake \
     ninja-build gdb clangd clang-format clang-tidy zip python3 swi-prolog \
     cargo rustc rust-src rustfmt
-# clang is already included in the base image
-
 # we do not need to install clang since it is included in the swift:noble image
 
 WORKDIR /
@@ -41,9 +40,14 @@ RUN strip .build/debug/LX
 # TODO switch to alpine:latest once we can build it statically
 FROM swift:noble AS run
 
+RUN apt update && apt upgrade -y && apt install -y curl
+RUN curl -sfS https://dotenvx.sh | sh
+
 RUN mkdir /app
 COPY --from=build /workspace/.build/debug/LX /app
+COPY --from=build /workspace/.env /app
 
-CMD [ "/app/LX" ]
+WORKDIR /app
+CMD [ "/usr/local/bin/dotenvx", "run", "--", "/app/LX" ]
 EXPOSE 1337
 HEALTHCHECK CMD curl --fail http://localhost:1337/version || exit 1

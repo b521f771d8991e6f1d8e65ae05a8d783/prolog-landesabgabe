@@ -37,8 +37,8 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         push: true
-        file: ./Sources/lxui/Dockerfile
-        context: ./Sources/lxui/
+        file: ./Infrastructure/WebFrontend.dockerfile
+        context: .
         platforms: linux/amd64
         cache-from: type=gha
         cache-to: type=gha,mode=max

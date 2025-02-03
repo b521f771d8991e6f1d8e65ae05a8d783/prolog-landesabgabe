@@ -12,9 +12,9 @@ services:
       - ../..:/workspace
   frontend:
     build:
-      dockerfile: Dockerfile
+      dockerfile: Infrastructure/WebFrontend.dockerfile
       target: ${FRONTEND_TARGET_STAGE}
-      context: ../../Sources/lxui
+      context: ../..
     tty: true
     ports:
       - "8080:8080"

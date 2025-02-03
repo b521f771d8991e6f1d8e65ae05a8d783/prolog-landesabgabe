@@ -6,24 +6,22 @@ RUN apk upgrade
 RUN apk add git
 RUN apk add curl
 
-RUN curl -sfS https://dotenvx.sh | sh
-
 FROM dev AS build
 
 RUN mkdir /build
-RUN mkdir /source
+RUN mkdir /workspace
 
-COPY . /source
+COPY . /workspace
 
-WORKDIR /source
+WORKDIR /workspace/Sources/lxui
 RUN npm install
 RUN npm run build
 
 FROM nginx:stable-alpine AS run
 
-COPY nginx/lxui.conf /etc/nginx/conf.d/
+COPY Sources/lxui/nginx/lxui.conf /etc/nginx/conf.d/
 RUN rm /etc/nginx/nginx.conf
-COPY nginx/nginx.conf /etc/nginx/nginx.conf
+COPY Sources/lxui/nginx/nginx.conf /etc/nginx/nginx.conf
 
 RUN mkdir /usr/share/nginx/html/lxui
 COPY --from=build /build /usr/share/nginx/html/lxui

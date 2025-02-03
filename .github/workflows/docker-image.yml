@@ -45,8 +45,8 @@ jobs:
       with:
         images: containers.github.scch.at/land-ooe/prolog-landesabgabe-frontend
         tags: |
-            type=ref,event=branch,prefix={{ date -s }}-
-            type=ref,event=tag,prefix={{ date -s }}-
+            type=ref,event=branch,suffix=-{{ date -s }}
+            type=ref,event=tag,suffix=-{{ date -s }}
     - name: Build and push image
       uses: docker/build-push-action@v5
       with:
@@ -64,8 +64,8 @@ jobs:
       with:
         images: containers.github.scch.at/Land-OOE/prolog-landesabgabe-backend
         tags: |
-            type=ref,event=branch,prefix={{ date -s }}-
-            type=ref,event=tag,prefix={{ date -s }}-
+            type=ref,event=branch,suffix=-{{ date -s }}
+            type=ref,event=tag,suffix=-{{ date -s }}
     - name: Build and push image
       uses: docker/build-push-action@v5
       with:

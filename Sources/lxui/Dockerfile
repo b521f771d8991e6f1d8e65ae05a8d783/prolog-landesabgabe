@@ -4,6 +4,9 @@ RUN apk update
 RUN apk upgrade
 
 RUN apk add git
+RUN apk add curl
+
+RUN curl -sfS https://dotenvx.sh | sh
 
 FROM dev AS build
 

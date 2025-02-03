@@ -1,13 +1,14 @@
 class ServerConfig {
     getServerProtocol() {
-        return "http";
+        return `${import.meta.env.VITE_SERVER_PROTOCOL}`;
     }
 
     getServerName() {
-        return "localhost";
+        return `${import.meta.env.VITE_SERVER_HOST}`;
     }
 
     getServerPort() {
+        const serverPortString = import.meta.env.VITE_SERVER_PORT;
         return 1337;
     }
 }

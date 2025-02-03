@@ -50,7 +50,7 @@ jobs:
     - name: Build and push frontend image
       uses: docker/build-push-action@v5
       with:
-        push: false
+        push: ${{ github.event_name != 'pull_request' }}
         file: ./Infrastructure/WebFrontend.dockerfile
         context: .
         platforms: linux/amd64

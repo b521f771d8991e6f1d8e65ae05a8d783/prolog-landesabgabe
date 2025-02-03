@@ -1,0 +1,8 @@
+/home/freiseisen/git/scch/land-ooe/prolog-landesabgabe/Sources/WebServer/src/main/java/at/scch/landooe/prolog_web_server/WebServerApplication.java
+/home/freiseisen/git/scch/land-ooe/prolog-landesabgabe/Sources/WebServer/src/main/java/at/scch/landooe/prolog_web_server/conf/ComponentConfig.java
+/home/freiseisen/git/scch/land-ooe/prolog-landesabgabe/Sources/WebServer/src/main/java/at/scch/landooe/prolog_web_server/conf/RabbitConfig.java
+/home/freiseisen/git/scch/land-ooe/prolog-landesabgabe/Sources/WebServer/src/main/java/at/scch/landooe/prolog_web_server/conf/RestConfig.java
+/home/freiseisen/git/scch/land-ooe/prolog-landesabgabe/Sources/WebServer/src/main/java/at/scch/landooe/prolog_web_server/conf/WebSecurityConfig.java
+/home/freiseisen/git/scch/land-ooe/prolog-landesabgabe/Sources/WebServer/src/main/java/at/scch/landooe/prolog_web_server/constants/RestConstants.java
+/home/freiseisen/git/scch/land-ooe/prolog-landesabgabe/Sources/WebServer/src/main/java/at/scch/landooe/prolog_web_server/rest/v0/controller/PrologController.java
+/home/freiseisen/git/scch/land-ooe/prolog-landesabgabe/Sources/WebServer/src/main/java/at/scch/landooe/prolog_web_server/service/PrologService.java

@@ -1,0 +1,13 @@
+spring:
+  rabbitmq:
+    host: rabbitmq-server
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://keycloak-server:8080/auth/realms/LAND_OOE_SPRACHGURU/protocol/openid-connect/certs
+        policy-enforcer-config: #/policy-enforcer.json
+          auth-server-url: http://keycloak-server:8080/auth
+          credentials:
+            secret: ENC(6uvIn0umaTWD0872iIKqBqaj81sAUZOc8QThd3i8G/rZsyxLRZ7XSwpqcsFKg40pZcLVpmD4mYCmfyHyeRe0+oKg1/OHqgbF/xBQy4TwFww=)
+        cors-config: https://innovation-studio.landooe.fivesquare.dev

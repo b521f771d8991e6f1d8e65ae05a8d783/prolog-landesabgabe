@@ -11,3 +11,4 @@ build
 /*.swiftdeps
 /*.swiftdeps~
 *.env.keys
+**/.idea

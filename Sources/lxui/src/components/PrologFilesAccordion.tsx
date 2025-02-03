@@ -130,7 +130,7 @@ function ModalView({ addLawFromLibraryView, cancelButtonClicked, searchFieldValu
         }
 
         loadServerListAsync();
-    });
+    }, []);
 
     return <Modal
         opened={addLawFromLibraryView}

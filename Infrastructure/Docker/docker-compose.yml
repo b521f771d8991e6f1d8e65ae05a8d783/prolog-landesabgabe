@@ -12,19 +12,17 @@ services:
       - ../..:/workspace
   frontend:
     build:
-      dockerfile: Dockerfile
+      dockerfile: Infrastructure/WebFrontend.dockerfile
       target: ${FRONTEND_TARGET_STAGE}
-      context: ../../Sources/lxui
+      context: ../..
     tty: true
     ports:
       - "8080:8080"
     volumes:
       - ../../:/workspace
-  prolog-ide:
-    image: swipl/swish:latest
-    ports:
-      - "3050:3050"
-
+    environment:
+      - BACKEND_HOST=worker.local
+      - BACKEND_PORT=1337
 networks:
   default:
     name: "lx"

@@ -10,3 +10,4 @@ build
 /*.d
 /*.swiftdeps
 /*.swiftdeps~
+*.env.keys

@@ -6,6 +6,21 @@ import Vapor
 
 let version = String(BuildInformation.getCurrentVersionAsString())
 
+guard let workerPortString = ProcessInfo.processInfo.environment["WORKER_LISTEN_PORT"] else {
+    print("could not get WORKER_LISTEN_PORT")
+    exit(1)
+}
+
+guard let workerPort = Int(workerPortString) else {
+    print("WORKER_LISTEN_PORT is not an Int")
+    exit(1)
+}
+
+guard let workerHostname = ProcessInfo.processInfo.environment["WORKER_LISTEN_ON"] else {
+    print("could not get WORKER_LISTEN_ON")
+    exit(1)
+}
+
 print("Running digital law server in version: \(version) ✨🚀")
 
 public func configure(withApp app: Application, andLogicVM lvm: LogicVM) throws {
@@ -104,8 +119,8 @@ func configure(app a: Application) {
     // cors-Middleware sollte vor der Standard-Fehler-Middleware mit `at: .beginning` stehen
     app.middleware.use(cors, at: .beginning)
 
-    app.http.server.configuration.hostname = "0.0.0.0"
-    app.http.server.configuration.port = 1337
+    app.http.server.configuration.hostname = workerHostname
+    app.http.server.configuration.port = workerPort
     app.http.server.configuration.serverName = "LX"
 }
 

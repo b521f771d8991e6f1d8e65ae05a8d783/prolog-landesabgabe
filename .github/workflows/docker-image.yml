@@ -58,7 +58,7 @@ jobs:
         cache-to: type=gha,mode=max
         tags: |
           ${{ steps.frontend-meta.outputs.tags }}
-          containers.github.scch.at/land-ooe/prolog-landesabgabe-frontend:main-latest
+          containers.github.scch.at/land-ooe/prolog-landesabgabe-frontend:${GITHUB_REF##*/}-latest
         labels: |
           ${{ steps.frontend-meta.outputs.labels }}
           containers.github.scch.at/Land-OOE/prolog-landesabgabe-frontend:${GITHUB_REF##*/}-latest
@@ -81,7 +81,9 @@ jobs:
         platforms: linux/amd64
         cache-from: type=gha
         cache-to: type=gha,mode=max
-        tags: ${{ steps.backend-meta.outputs.tags }}
+        tags: |
+          ${{ steps.backend-meta.outputs.tags }}
+          containers.github.scch.at/land-ooe/prolog-landesabgabe-backend:${GITHUB_REF##*/}-latest
         labels: |
           ${{ steps.backend-meta.outputs.labels }}
           containers.github.scch.at/Land-OOE/prolog-landesabgabe-backend:${GITHUB_REF##*/}-latest

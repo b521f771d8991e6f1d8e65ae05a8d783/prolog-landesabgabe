@@ -14,17 +14,10 @@ jobs:
     runs-on: [ KRAKAU ]
     steps:
     # @see https://stackoverflow.com/a/72959712/8179249
-    - name: Get current branch
+    - name: Extract branch name
+      shell: bash
+      run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
       id: fetch_branch
-      # 1. Get the list of branches ref where this tag exists
-      # 2. Remove 'origin/' from that result
-      # 3. Put that string in output
-      # => We can now use function 'contains(list, item)''
-      run: |
-        raw=$(git branch -r --contains ${{ github.ref }})
-        branch="$(echo ${raw//origin\//} | tr -d '\n')"
-        echo "{name}=branch" >> $GITHUB_OUTPUT
-        echo "Branches where this tag exists : $branch."
     - name: Checkout
       uses: actions/checkout@v4
       with:

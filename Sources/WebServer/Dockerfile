@@ -1,13 +1,14 @@
-FROM eclipse-temurin:21-jdk-jammy AS development
+FROM maven:3.9.9-eclipse-temurin-21 AS development
 
+# make sure to have a local file to settings.xml
+COPY settings.xml /usr/share/maven/ref/
 WORKDIR /app
 
-FROM eclipse-temurin:21-jdk-jammy AS build
+FROM development AS build
 
 WORKDIR /app
-
 COPY . .
-RUN mvn clean install -U
+RUN mvn clean install -U --settings settings.xml
 
 FROM eclipse-temurin:21-jdk-jammy AS production
 

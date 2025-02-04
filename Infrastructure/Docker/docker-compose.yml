@@ -29,7 +29,8 @@ services:
       dockerfile: Dockerfile
       target: ${WEB_SERVER_TARGET_STAGE}
     tty: true
-    ports: "4433:4433"
+    ports: 
+      - "4433:4433"
 networks:
   default:
     name: "lx"

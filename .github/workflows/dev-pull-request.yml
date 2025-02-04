@@ -10,3 +10,4 @@ jobs:
     uses: Land-OOE/general-workflows/.github/workflows/maven-clean-validate-compile.yml@main
     with:
       runner: "fast"
+      context: ./Sources/WebServer

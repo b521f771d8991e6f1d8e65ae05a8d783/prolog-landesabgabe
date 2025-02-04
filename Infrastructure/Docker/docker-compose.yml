@@ -17,7 +17,7 @@ services:
       context: ../..
     tty: true
     ports:
-      - "8080:8080"
+      - "4434:8080"
     volumes:
       - ../../:/workspace
     environment:

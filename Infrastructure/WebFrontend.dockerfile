@@ -26,4 +26,4 @@ COPY Sources/lxui/nginx/nginx.conf /etc/nginx/nginx.conf
 RUN mkdir /usr/share/nginx/html/lxui
 COPY --from=build /build /usr/share/nginx/html/lxui
 
-EXPOSE 8080
+#EXPOSE 8080

@@ -1,8 +1,0 @@
-at/scch/landooe/prolog_web_server/conf/WebSecurityConfig.class
-at/scch/landooe/prolog_web_server/conf/RestConfig.class
-at/scch/landooe/prolog_web_server/service/PrologService.class
-at/scch/landooe/prolog_web_server/conf/RabbitConfig.class
-at/scch/landooe/prolog_web_server/rest/v0/controller/PrologController.class
-at/scch/landooe/prolog_web_server/constants/RestConstants.class
-at/scch/landooe/prolog_web_server/conf/ComponentConfig.class
-at/scch/landooe/prolog_web_server/WebServerApplication.class

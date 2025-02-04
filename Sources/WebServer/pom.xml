@@ -16,9 +16,7 @@
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <version.data-layer>4.0.2-SNAPSHOT</version.data-layer>
-        <version.commons>4.0.2-SNAPSHOT</version.commons>
-        <version.celery-utils>4.0.2-SNAPSHOT</version.celery-utils>
+        <version.landooe-deps>4.0.2-SNAPSHOT</version.landooe-deps>
         <version.jackson-databind>2.15.3</version.jackson-databind>
         <version.hateoas>2.2.0</version.hateoas>
         <version.jaffree>2022.06.03</version.jaffree>
@@ -28,22 +26,22 @@
         <dependency>
             <groupId>at.scch.land-ooe</groupId>
             <artifactId>data-layer</artifactId>
-            <version>${version.data-layer}</version>
+            <version>${version.landooe-deps}</version>
         </dependency>
         <dependency>
             <groupId>at.scch.land-ooe</groupId>
             <artifactId>commons</artifactId>
-            <version>${version.commons}</version>
+            <version>${version.landooe-deps}</version>
         </dependency>
         <dependency>
             <groupId>at.scch.land-ooe</groupId>
             <artifactId>celery-utils</artifactId>
-            <version>${version.celery-utils}</version>
+            <version>${version.landooe-deps}</version>
         </dependency>
         <dependency>
             <groupId>at.scch.land-ooe</groupId>
             <artifactId>web-server</artifactId>
-            <version>${version.celery-utils}</version>
+            <version>${version.landooe-deps}</version>
         </dependency>
         <dependency>
             <groupId>com.github.kokorin.jaffree</groupId>

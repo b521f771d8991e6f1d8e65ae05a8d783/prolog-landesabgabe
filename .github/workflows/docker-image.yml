@@ -60,6 +60,8 @@ jobs:
         labels: |
           ${{ steps.frontend-meta.outputs.labels }}
           containers.github.scch.at/Land-OOE/prolog-landesabgabe-frontend:${GITHUB_REF##*/}-latest
+      env:
+          SOURCE_DATE_EPOCH: 0
     - name: Extract metadata (tags, labels) for backend
       id: backend-meta
       uses: docker/metadata-action@v4
@@ -81,3 +83,5 @@ jobs:
         labels: |
           ${{ steps.backend-meta.outputs.labels }}
           containers.github.scch.at/Land-OOE/prolog-landesabgabe-backend:${GITHUB_REF##*/}-latest
+      env:
+          SOURCE_DATE_EPOCH: 0

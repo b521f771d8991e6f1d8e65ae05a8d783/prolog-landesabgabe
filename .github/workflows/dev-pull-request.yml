@@ -9,5 +9,5 @@ jobs:
   maven-clean-validate-compile:
     uses: Land-OOE/general-workflows/.github/workflows/maven-clean-validate-compile.yml@main
     with:
-      runner: "fast"
+      runner: KRAKAU
       context: ./Sources/WebServer

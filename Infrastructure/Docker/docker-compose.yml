@@ -2,9 +2,9 @@ name: lx
 services:
   worker:
     build:
+      context: ../..
       dockerfile: Infrastructure/Worker.dockerfile
       target: ${WORKER_TARGET_STAGE}
-      context: ../..
     tty: true
     ports:
       - "1337:1337"
@@ -12,9 +12,9 @@ services:
       - ../..:/workspace
   frontend:
     build:
+      context: ../..
       dockerfile: Infrastructure/WebFrontend.dockerfile
       target: ${FRONTEND_TARGET_STAGE}
-      context: ../..
     tty: true
     ports:
       - "4434:8080"
@@ -23,6 +23,13 @@ services:
     environment:
       - BACKEND_HOST=worker.local
       - BACKEND_PORT=1337
+  web-server:
+    build:
+      context: ../../Sources/WebServer
+      dockerfile: Dockerfile
+      target: ${WEB_SERVER_TARGET_STAGE}
+    tty: true
+    ports: "4433:4433"
 networks:
   default:
     name: "lx"

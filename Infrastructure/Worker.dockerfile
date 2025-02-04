@@ -1,4 +1,4 @@
-FROM swift:noble AS dev
+FROM swift:noble AS development
 
 # TOOD replace this with nixos/nix once nix has swift 6 support
 # FROM nixos/nix
@@ -24,7 +24,7 @@ ENV OBJCXX=/usr/bin/clang++
 RUN git config --global --add safe.directory /workspace
 EXPOSE 5173
 
-FROM dev AS build
+FROM development AS build
 
 # TODO: build it to a static binary
 
@@ -38,7 +38,7 @@ RUN ninja -C out/build/debug-x86-64-unknown-linux-gnu SwiftPackage
 RUN strip .build/debug/LX
 
 # TODO switch to alpine:latest once we can build it statically
-FROM swift:noble AS run
+FROM swift:noble AS production
 
 RUN apt update && apt upgrade -y && apt install -y curl
 RUN curl -sfS https://dotenvx.sh | sh

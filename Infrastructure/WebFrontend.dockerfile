@@ -1,4 +1,4 @@
-FROM node:lts-alpine AS dev
+FROM node:lts-alpine AS development
 
 RUN apk update
 RUN apk upgrade
@@ -6,7 +6,7 @@ RUN apk upgrade
 RUN apk add git
 RUN apk add curl
 
-FROM dev AS build
+FROM development AS build
 
 RUN mkdir /build
 RUN mkdir /workspace
@@ -17,7 +17,7 @@ WORKDIR /workspace/Sources/lxui
 RUN npm install
 RUN npm run build
 
-FROM nginx:stable-alpine AS run
+FROM nginx:stable-alpine AS production
 
 COPY Sources/lxui/nginx/lxui.conf /etc/nginx/conf.d/
 RUN rm /etc/nginx/nginx.conf

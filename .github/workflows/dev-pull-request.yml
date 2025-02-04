@@ -1,0 +1,12 @@
+name: dev-pull-request
+run-name: Pull request to dev branch by @${{ github.actor}}
+on:
+  workflow_dispatch:
+  workflow_call:
+  pull_request:
+    types: [ opened, reopened, synchronize]
+jobs:
+  maven-clean-validate-compile:
+    uses: Land-OOE/general-workflows/.github/workflows/maven-clean-validate-compile.yml@main
+    with:
+      runner: "fast"

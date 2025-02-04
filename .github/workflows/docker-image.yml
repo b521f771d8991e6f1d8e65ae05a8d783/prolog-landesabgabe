@@ -15,7 +15,7 @@ jobs:
     steps:
     # @see https://stackoverflow.com/a/72959712/8179249
     - name: Get current branch
-      id: check_step
+      id: fetch_branch
       # 1. Get the list of branches ref where this tag exists
       # 2. Remove 'origin/' from that result
       # 3. Put that string in output
@@ -70,7 +70,7 @@ jobs:
         cache-to: type=gha,mode=max
         tags: |
           ${{ steps.frontend-meta.outputs.tags }}
-          containers.github.scch.at/land-ooe/prolog-landesabgabe-frontend:${{ needs.check.outputs.branch }}-latest
+          containers.github.scch.at/land-ooe/prolog-landesabgabe-frontend:${{ steps.fetch_branch.outputs.branch }}-latest
         labels: |
           ${{ steps.frontend-meta.outputs.labels }}
           containers.github.scch.at/Land-OOE/prolog-landesabgabe-frontend:${GITHUB_REF##*/}-latest
@@ -95,7 +95,7 @@ jobs:
         cache-to: type=gha,mode=max
         tags: |
           ${{ steps.backend-meta.outputs.tags }}
-          containers.github.scch.at/land-ooe/prolog-landesabgabe-backend:${{ needs.check.outputs.branch }}-latest
+          containers.github.scch.at/land-ooe/prolog-landesabgabe-backend:${{ steps.fetch_branch.outputs.branch }}-latest
         labels: |
           ${{ steps.backend-meta.outputs.labels }}
           containers.github.scch.at/Land-OOE/prolog-landesabgabe-backend:${GITHUB_REF##*/}-latest

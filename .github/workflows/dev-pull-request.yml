@@ -6,14 +6,14 @@ on:
   pull_request:
     types: [ opened, reopened, synchronize]
 jobs:
-  dev-pull-request-actions:
+  maven-clean-validate-compile:
+    uses: Land-OOE/general-workflows/.github/workflows/maven-clean-validate-compile.yml@main
+    with:
+      runner: KRAKAU
+      context: ./Sources/WebServer
+  docker-build-container:
     runs-on: [ KRAKAU ]
     steps:
-    - name: maven-clean-validate-compile
-      uses: Land-OOE/general-workflows/.github/workflows/maven-clean-validate-compile.yml@main
-      with:
-        runner: KRAKAU
-        context: ./Sources/WebServer
     - name: Extract metadata (tags, labels) for backend
       id: backend-meta
       uses: docker/metadata-action@v4

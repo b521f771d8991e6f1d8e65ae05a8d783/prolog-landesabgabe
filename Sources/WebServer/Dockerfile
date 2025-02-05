@@ -1,14 +1,16 @@
 FROM maven:3.9.9-eclipse-temurin-21 AS development
 
-# make sure to have a local file to settings.xml
-COPY settings.xml /usr/share/maven/ref/
+RUN apt update && apt upgrade -y && apt install -y curl && curl -sfS https://dotenvx.sh | sh
+
+COPY Sources/WebServer/settings.xml /usr/share/maven/ref/
 WORKDIR /app
 
 FROM development AS build
 
 WORKDIR /app
-COPY . .
-RUN mvn clean install -U --settings settings.xml
+COPY Sources/WebServer .
+COPY .env* .
+RUN dotenvx run -- mvn clean install -U --settings settings.xml
 
 FROM eclipse-temurin:21-jdk-jammy AS production
 

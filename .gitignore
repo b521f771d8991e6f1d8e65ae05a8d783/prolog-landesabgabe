@@ -12,4 +12,3 @@ build
 /*.swiftdeps~
 *.env.keys
 **/.idea
-**/settings.xml

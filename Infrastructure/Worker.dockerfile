@@ -1,4 +1,4 @@
-FROM containers.github.scch.at/land-ooe/dockerimages/that-one-native-image:main-latest AS dev
+FROM containers.github.scch.at/land-ooe/docker-images/swift-cpp-rust-toolchain:main-latest AS dev
 
 WORKDIR /
 

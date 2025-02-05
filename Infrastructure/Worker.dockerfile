@@ -1,16 +1,4 @@
-FROM swift:noble AS development
-
-# TOOD replace this with nixos/nix once nix has swift 6 support
-# FROM nixos/nix
-# https://github.com/NixOS/nixpkgs/issues/343210#issuecomment-2424134735
-
-# install swift static SDK
-RUN swift sdk install https://download.swift.org/swift-6.0.2-release/static-sdk/swift-6.0.2-RELEASE/swift-6.0.2-RELEASE_static-linux-0.0.1.artifactbundle.tar.gz --checksum aa5515476a403797223fc2aad4ca0c3bf83995d5427fb297cab1d93c68cee075
-
-RUN apt update -y && apt upgrade -y && apt install -y curl git gpg cmake \
-    ninja-build gdb clangd clang-format clang-tidy zip python3 swi-prolog \
-    cargo rustc rust-src rustfmt
-# we do not need to install clang since it is included in the swift:noble image
+FROM containers.github.scch.at/land-ooe/docker-images/swift-cpp-rust-toolchain:main-latest AS development
 
 WORKDIR /
 

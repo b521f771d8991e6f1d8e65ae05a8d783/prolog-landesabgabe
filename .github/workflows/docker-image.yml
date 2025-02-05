@@ -13,6 +13,14 @@ jobs:
   build:
     runs-on: [ KRAKAU ]
     steps:
+    # @see https://stackoverflow.com/a/72959712/8179249
+    - name: Extract branch name
+      shell: bash
+      run: |
+        branch="${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
+        branch="${branch//\//_}"
+        echo "branch=$branch" >> $GITHUB_OUTPUT
+      id: fetch_branch
     - name: Checkout
       uses: actions/checkout@v4
       with:
@@ -21,14 +29,14 @@ jobs:
       uses: docker/setup-buildx-action@v2
     - name: Delete previous frontend builds
       uses: actions/delete-package-versions@v4
-      continue-on-error: false
+      continue-on-error: true
       with:
         package-name: 'prolog-landesabgabe-frontend'
         package-type: 'container'
         min-versions-to-keep: 10
     - name: Delete previous backend builds
       uses: actions/delete-package-versions@v4
-      continue-on-error: false
+      continue-on-error: true
       with:
         package-name: 'prolog-landesabgabe-backend'
         package-type: 'container'
@@ -56,8 +64,14 @@ jobs:
         platforms: linux/amd64
         cache-from: type=gha
         cache-to: type=gha,mode=max
-        tags: ${{ steps.frontend-meta.outputs.tags }}
-        labels: ${{ steps.frontend-meta.outputs.labels }}
+        tags: |
+          ${{ steps.frontend-meta.outputs.tags }}
+          containers.github.scch.at/land-ooe/prolog-landesabgabe-frontend:${{ steps.fetch_branch.outputs.branch }}-latest
+        labels: |
+          ${{ steps.frontend-meta.outputs.labels }}
+          containers.github.scch.at/Land-OOE/prolog-landesabgabe-frontend:${GITHUB_REF##*/}-latest
+      env:
+          SOURCE_DATE_EPOCH: 0
     - name: Extract metadata (tags, labels) for backend
       id: backend-meta
       uses: docker/metadata-action@v4
@@ -75,5 +89,11 @@ jobs:
         platforms: linux/amd64
         cache-from: type=gha
         cache-to: type=gha,mode=max
-        tags: ${{ steps.backend-meta.outputs.tags }}
-        labels: ${{ steps.backend-meta.outputs.labels }}
+        tags: |
+          ${{ steps.backend-meta.outputs.tags }}
+          containers.github.scch.at/land-ooe/prolog-landesabgabe-backend:${{ steps.fetch_branch.outputs.branch }}-latest
+        labels: |
+          ${{ steps.backend-meta.outputs.labels }}
+          containers.github.scch.at/Land-OOE/prolog-landesabgabe-backend:${GITHUB_REF##*/}-latest
+      env:
+          SOURCE_DATE_EPOCH: 0

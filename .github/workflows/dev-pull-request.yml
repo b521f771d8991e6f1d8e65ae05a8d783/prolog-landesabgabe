@@ -9,30 +9,30 @@ jobs:
   dev-pull-request-actions:
     runs-on: KRAKAU
     steps:
-      - name: maven-clean-validate-compile
-        uses: Land-OOE/general-workflows/.github/workflows/maven-clean-validate-compile.yml@main
-        with:
-          runner: KRAKAU
-          context: ./Sources/WebServer
-      - name: Extract metadata (tags, labels) for backend
-        id: backend-meta
-        uses: docker/metadata-action@v4
-        with:
-          images: containers.github.scch.at/Land-OOE/prolog-web-server
-          tags: |
-            type=ref,event=branch,suffix=-{{ date -s }}
-            type=ref,event=tag,suffix=-{{ date -s }}
-      - name: Build and push backend image
-        uses: docker/build-push-action@v5
-        with:
-          push: ${{ github.event_name != 'pull_request' }}
-          file: ./Infrastructure/Worker.dockerfile
-          context: .
-          platforms: linux/amd64
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          tags: ${{ steps.backend-meta.outputs.tags }}
-          labels: ${{ steps.backend-meta.outputs.labels }}
-          secrets-envs: |
-            MAVEN_SERVER_USERNAME=${secrets.MAVEN_SERVER_USERNAME}
-            MAVEN_SERVER_PASSWORD=${secrets.MAVEN_SERVER_PASSWORD}
+    - name: maven-clean-validate-compile
+      uses: Land-OOE/general-workflows/.github/workflows/maven-clean-validate-compile.yml@main
+      with:
+        runner: KRAKAU
+        context: ./Sources/WebServer
+    - name: Extract metadata (tags, labels) for backend
+      id: backend-meta
+      uses: docker/metadata-action@v4
+      with:
+        images: containers.github.scch.at/Land-OOE/prolog-web-server
+        tags: |
+          type=ref,event=branch,suffix=-{{ date -s }}
+          type=ref,event=tag,suffix=-{{ date -s }}
+    - name: Build and push backend image
+      uses: docker/build-push-action@v5
+      with:
+        push: ${{ github.event_name != 'pull_request' }}
+        file: ./Infrastructure/Worker.dockerfile
+        context: .
+        platforms: linux/amd64
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        tags: ${{ steps.backend-meta.outputs.tags }}
+        labels: ${{ steps.backend-meta.outputs.labels }}
+        secrets-envs: |
+          MAVEN_SERVER_USERNAME=${secrets.MAVEN_SERVER_USERNAME}
+          MAVEN_SERVER_PASSWORD=${secrets.MAVEN_SERVER_PASSWORD}

@@ -16,7 +16,10 @@ jobs:
     # @see https://stackoverflow.com/a/72959712/8179249
     - name: Extract branch name
       shell: bash
-      run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+      run: |
+        branch="${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
+        branch="${branch//\//_}"
+        echo "branch=$branch" >> $GITHUB_OUTPUT
       id: fetch_branch
     - name: Checkout
       uses: actions/checkout@v4

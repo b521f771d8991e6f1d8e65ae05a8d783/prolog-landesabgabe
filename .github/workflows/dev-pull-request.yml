@@ -7,7 +7,7 @@ on:
     types: [ opened, reopened, synchronize]
 jobs:
   dev-pull-request-actions:
-    runs-on: KRAKAU
+    runs-on: [ KRAKAU ]
     steps:
     - name: maven-clean-validate-compile
       uses: Land-OOE/general-workflows/.github/workflows/maven-clean-validate-compile.yml@main

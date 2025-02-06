@@ -3,7 +3,7 @@ result
 .build
 vcpkg_installed
 /out
-/target
+**/target
 build
 /generated
 /*.o
@@ -11,3 +11,4 @@ build
 /*.swiftdeps
 /*.swiftdeps~
 *.env.keys
+**/.idea

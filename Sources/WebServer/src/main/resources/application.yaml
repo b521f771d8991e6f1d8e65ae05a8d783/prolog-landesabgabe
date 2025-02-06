@@ -1,0 +1,28 @@
+server:
+  port: 4433
+  servlet:
+    context-path: /prolog-web-server/
+spring:
+  rabbitmq:
+    port: 5672
+    host: localhost
+  servlet:
+    multipart:
+      max-file-size: 1000MB
+      max-request-size: 1000MB
+      enabled: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8080/auth/realms/LAND_OOE_SPRACHGURU/protocol/openid-connect/certs
+        policy-enforcer-config: #/policy-enforcer.json
+          realm: LAND_OOE_SPRACHGURU
+          auth-server-url: http://localhost:8080/auth
+          resource: prolog-web-server
+          credentials:
+            secret: Jdt4HvFxxMZecAAOkasNDyRdBTmtzRxH
+        cors-config: http://localhost:4200
+lx:
+  backend:
+    base-url: http://localhost:1337

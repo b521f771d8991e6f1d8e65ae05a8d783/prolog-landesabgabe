@@ -48,13 +48,14 @@ ReactDOM.createRoot(launcher).render(
 
 const keycloakService = new KeycloakService();
 
-if(keycloakService.isAuthenticated()) {
-PrologVM.initFromAppState().then((pvm) => {
-    launcher.hidden = true;
-    ReactDOM.createRoot(document.getElementById('root')!).render(<App prologVM={pvm} />);
-}).catch((x) => {
-    console.log(x);
-    document.getElementById("root")!.innerHTML = "There was an error while loading the application"
-});
-
+if(await keycloakService.isAuthenticated()) {
+    PrologVM.initFromAppState().then((pvm) => {
+        launcher.hidden = true;
+        ReactDOM.createRoot(document.getElementById('root')!).render(<App prologVM={pvm} />);
+    }).catch((x) => {
+        console.log(x);
+        document.getElementById("root")!.innerHTML = "There was an error while loading the application"
+    });
+} else {
+    console.log("Not authenticated");
 }

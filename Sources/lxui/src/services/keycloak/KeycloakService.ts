@@ -3,29 +3,33 @@ import Keycloak from "keycloak-js";
 
 export class KeycloakService {
     keycloak: Promise<Keycloak>;
-    authenticated: boolean;
 
     constructor(keycloak: Keycloak = defaultKeycloak) {
-        const that = this;
-        this.authenticated = true;
-        this.keycloak = new Promise(async function() {
+        this.keycloak = new Promise((resolve, reject) => {
             try {
-                const authenticated = await keycloak.init();
-
-                if (!authenticated) {
-                    keycloak.login();
-                } else {
-                    that.authenticated = true;
-                    return keycloak;
-                }
+                keycloak.init()
+                    .then((authenticated) => {
+                        if (!authenticated) {
+                            console.log("Not authenticated, please authenticate");
+                            keycloak.login();
+                            resolve(keycloak);
+                        } else {
+                            console.log("Already authenticated");
+                            resolve(keycloak);
+                        }
+                    }).catch((err) => {
+                        reject(err);
+                    });
             } catch (error) {
                 console.error('Failed to initialize adapter:', error);
+                reject(error);
             }
         });
     }
 
-    isAuthenticated() {
-        return this.authenticated;
+    async isAuthenticated(): Promise<boolean> {
+        const keycloak = await this.getKeycloak();
+        return keycloak.authenticated ?? false;
     }
 
     async getKeycloak(): Promise<Keycloak> {

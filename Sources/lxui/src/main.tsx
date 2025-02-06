@@ -1,10 +1,9 @@
 import ReactDOM from 'react-dom/client';
 import App from './App';
 
-// https://mantinehub.com/
-
 import "./index.css";
 import { PrologVM } from './model/PrologVM';
+import { KeycloakService } from './services/keycloak/KeycloakService';
 
 const launcher = document.getElementById("launcher")!;
 
@@ -48,9 +47,12 @@ ReactDOM.createRoot(launcher).render(
 );
 
 PrologVM.initFromAppState().then((pvm) => {
-    launcher.hidden = true;
-    ReactDOM.createRoot(document.getElementById('root')!)
-    .render(<App prologVM={pvm} />);
+    const keycloakService = new KeycloakService();
+
+    if(keycloakService.isAuthenticated()) {
+        launcher.hidden = true;
+        ReactDOM.createRoot(document.getElementById('root')!).render(<App prologVM={pvm} />);
+    }
 }).catch((x) => {
     console.log(x);
     document.getElementById("root")!.innerHTML = "There was an error while loading the application"

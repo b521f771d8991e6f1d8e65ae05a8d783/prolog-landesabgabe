@@ -17,7 +17,7 @@ services:
       context: ../..
     tty: true
     ports:
-      - "8080:8080"
+      - "8081:8080"
     volumes:
       - ../../:/workspace
     environment:
@@ -25,4 +25,4 @@ services:
       - BACKEND_PORT=1337
 networks:
   default:
-    name: "lx"
+    name: "traefik_proxy_sprachguru_prod_local"

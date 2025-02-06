@@ -1,0 +1,22 @@
+[package]
+name = "LX-rs"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+swift-bridge-build = "0.1"
+
+[dependencies]
+rust-embed = { version = "8", features = ["include-exclude", "debug-embed", "compression"] }
+swift-bridge = "0.1"
+
+[lib]
+crate-type = ["staticlib", "lib"]
+name = "corpus"
+path = "Sources/Corpus/lib.rs"
+
+[[bin]]
+name = "extract-from-corpus"
+path = "Sources/Corpus/main.rs"

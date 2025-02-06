@@ -1,8 +1,8 @@
-/out
 /.vscode
-/Containers
 /Docs
 /Scripts
-README.md
+/Infrastructure
+/README.md
 /.devcontainer
-/Sources/lxui
+/.github
+/Playground

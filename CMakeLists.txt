@@ -2,20 +2,18 @@ cmake_minimum_required(VERSION 3.28)
 project(LX LANGUAGES Swift CXX C)
 
 include(CTest)
-include(Build/BuildInformation.cmake)
+include(Build/BuildInformation/BuildInformation.cmake)
 include(Dependencies/Dependencies.cmake)
 
 # configuration for our targets
 
 add_subdirectory(Sources/ActKit)
 add_subdirectory(Sources/LogicKit)
-add_subdirectory(Sources/Corpus)
 
 # configuration for all targets
 set(TARGETS
   ActKit
   LogicKit
-
 )
 
 set(TEST_TARGETS
@@ -113,6 +111,23 @@ endforeach()
 
 string(TOLOWER "${CMAKE_BUILD_TYPE}" SWIFT_BUILD_TYPE)
 
+find_program(CARGO_EXE NAMES "cargo" REQUIRED)
+
+if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
+  set(CARGO_FLAGS --release)
+  set(SWIFT_BUILD_TYPE release)
+else()
+  set(CARGO_FLAGS)
+  set(SWIFT_BUILD_TYPE debug)
+endif()
+
+add_custom_target(CargoPackage
+  COMMAND
+    ${CARGO_EXE} "build" ${CARGO_FLAGS}
+  WORKING_DIRECTORY
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
 add_custom_target(SwiftPackage
   COMMAND
     "CC=${CMAKE_C_COMPILER}"
@@ -120,7 +135,6 @@ add_custom_target(SwiftPackage
     ${SWIFT_EXE} "build"
     -v
     --configuration ${SWIFT_BUILD_TYPE}
-    --build-path ${CMAKE_CURRENT_BINARY_DIR}/.build
     --package-path ${CMAKE_CURRENT_SOURCE_DIR}
     -Xswiftc -I${CMAKE_CURRENT_BINARY_DIR}/Sources/ActKit
     -Xswiftc -I${CMAKE_CURRENT_BINARY_DIR}/Sources/LogicKit
@@ -135,4 +149,4 @@ add_custom_target(SwiftPackage
     -Xswiftc -L${CMAKE_CURRENT_SOURCE_DIR}/Sources/LogicKit/include
     ${SWIFTC_DEPENDENCY_LIBRARIES}
 )
-add_dependencies(SwiftPackage ${TARGETS})
+add_dependencies(SwiftPackage ${TARGETS} CargoPackage)

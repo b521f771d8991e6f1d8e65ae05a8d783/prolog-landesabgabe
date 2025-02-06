@@ -20,7 +20,8 @@
                 "sswg.swift-lang",
                 "james-yu.latex-workshop",
                 "vscodevim.vim",
-                "arthurwang.vsc-prolog"
+                "arthurwang.vsc-prolog",
+                "rust-lang.rust-analyzer"
             ]
         }
     },

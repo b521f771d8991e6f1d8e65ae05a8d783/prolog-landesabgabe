@@ -34,8 +34,8 @@ export function PersonDetailForm({ person, handlungen, addToJoinTable }: PersonD
 
 function PersonDetail({ person }: { person: LandesabgabePerson }) {
     return <>
-        <Text>Name: {person.vorname}</Text>
-        <Text>Vorname: {person.nachname}</Text>
+        <Text>Name: {person.nachname}</Text>
+        <Text>Vorname: {person.vorname}</Text>
         <Text>Alter: {person.alter}</Text>
     </>
 }

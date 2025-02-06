@@ -1,16 +1,14 @@
-build*
 *.cache
 result
-.build*
+.build
 vcpkg_installed
-
-# Added by cargo
-
-/target
-
-
-# Added by cargo
-#
-# already existing elements were commented out
-
-#/target
+/out
+**/target
+build
+/generated
+/*.o
+/*.d
+/*.swiftdeps
+/*.swiftdeps~
+*.env.keys
+**/.idea

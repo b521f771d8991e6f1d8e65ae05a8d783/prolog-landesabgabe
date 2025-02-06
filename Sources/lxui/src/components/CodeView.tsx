@@ -1,14 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import hljs from 'highlight.js';
 import { Box, Button, Center, Code, Flex, LoadingOverlay } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import {
-  persister,
-  queryClient,
-  usePostNormTransformationTaskStartRequest,
-} from '@/util/RestService';
 import { TaskResultFetchingErrorView } from './TaskResultFetchingErrorView';
 import { TaskResultView } from './TaskResultView';
 import { TaskStartRequest } from './TaskStartRequest';
@@ -142,15 +135,13 @@ export function CodeView({
             {showButtons.download && <DownloadButton text={code} fileName={fileName} />}
             {showButtons.magnify && <MagnifyButton text={code} />}
             <Button
-              disabled={!enableNormButton()}
+              disabled={false && !enableNormButton()}
               onClick={onTransformToNormClicked}
               leftSection={'🪄'}
             >
               In Norm verwandeln
             </Button>
           </Flex>
-
-          <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
             <Box pos="relative">
               <LoadingOverlay
                 visible={visible}
@@ -163,8 +154,6 @@ export function CodeView({
               )}
               {isTaskError && <TaskResultFetchingErrorView />}
             </Box>
-            <ReactQueryDevtools initialIsOpen />
-          </PersistQueryClientProvider>
         </Center>
       )}
     </>

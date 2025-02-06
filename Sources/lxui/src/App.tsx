@@ -8,13 +8,19 @@ import { PrologVM } from './model/PrologVM';
 
 import "./style.css";
 import { shadcnCssVariableResolver } from './cssVariableResolver';
+import { persister, queryClient } from './util/RestService';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 export default function App({ prologVM }: { prologVM: PrologVM }) {
   return (
     <MantineProvider
       theme={shadcnTheme}
       cssVariablesResolver={shadcnCssVariableResolver}>
-      <Router prologVM={prologVM} />
+      <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
+        <Router prologVM={prologVM} />
+        <ReactQueryDevtools initialIsOpen />
+      </PersistQueryClientProvider>
     </MantineProvider>
   );
 }

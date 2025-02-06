@@ -12,7 +12,7 @@ jobs:
       runner: KRAKAU
       context: ./Sources/WebServer
   docker-build-container:
-    depends-on: [ maven-clean-validate-compile ]
+    needs: [ maven-clean-validate-compile ]
     runs-on: [ KRAKAU ]
     steps:
     - name: Extract branch name

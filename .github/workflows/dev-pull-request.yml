@@ -46,7 +46,7 @@ jobs:
     - name: generate .env.keys
       id: gen-env-keys
       env:
-        DOTENV_PRIVATE_KEY: ${secrets.DOTENV_PRIVATE_KEY}
+        DOTENV_PRIVATE_KEY: ${{ secrets.DOTENV_PRIVATE_KEY }}
       run: Scripts/generate-env-keys.sh .
     - name: Build and push backend image
       uses: docker/build-push-action@v5

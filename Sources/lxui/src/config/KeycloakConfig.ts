@@ -1,9 +1,8 @@
 import Keycloak from "keycloak-js";
-import { defaultConfig } from "@/config/ServerConfig";
 
 const defaultKeycloak = new Keycloak({
- url: defaultConfig.getKeycloakURL(),
- realm: "LAND_OOE_SPRACHGURU",
+ url: `${import.meta.env.VITE_KEYCLOAK_PROTOCOL}://${import.meta.env.VITE_KEYCLOAK_HOST}:${import.meta.env.VITE_KEYCLOAK_PORT}/auth`,
+ realm: import.meta.env.VITE_KEYCLOAK_REALM,
  clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID,
 });
 

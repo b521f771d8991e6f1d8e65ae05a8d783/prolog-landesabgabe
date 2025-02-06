@@ -6,12 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static at.scch.landooe.prolog_web_server.constants.RestConstants.V0;
-
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(V0 + "/")
+@RequestMapping("v0/")
 @CrossOrigin(origins = "${spring.security.oauth2.resourceserver.cors-config}")
 public class PrologController {
     private final PrologService prologService;

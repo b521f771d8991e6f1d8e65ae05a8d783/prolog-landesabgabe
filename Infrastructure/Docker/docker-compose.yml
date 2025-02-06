@@ -33,4 +33,4 @@ services:
       - "4433:4433"
 networks:
   default:
-    name: "lx"
+    name: "traefik_proxy_sprachguru_prod_local"

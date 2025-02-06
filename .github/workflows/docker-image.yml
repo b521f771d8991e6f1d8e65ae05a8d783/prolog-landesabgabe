@@ -1,5 +1,5 @@
 name: Version-Release
-
+run-name: version-release on branch ${{ github.ref_name }} triggered by @${{ github.actor}}
 on:
   push:
     branches: [ "main", "stable" ]

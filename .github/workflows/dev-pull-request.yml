@@ -43,10 +43,12 @@ jobs:
         tags: |
           type=ref,event=branch,suffix=${{ needs.call-parse-version-from-pom.outputs.version }}-{{ date -s }}
           type=ref,event=tag,suffix=${{ needs.call-parse-version-from-pom.outputs.version }}-{{ date -s }}
-    - name: Build and push backend image
+    - name: generate .env.keys
+      id: gen-env-keys
       env:
-        MAVEN_SERVER_USERNAME: ${secrets.MAVEN_SERVER_USERNAME}
-        MAVEN_SERVER_PASSWORD: ${secrets.MAVEN_SERVER_PASSWORD}
+        DOTENV_PRIVATE_KEY: ${secrets.DOTENV_PRIVATE_KEY}
+      run: Scripts/generate-env-keys.sh .
+    - name: Build and push backend image
       uses: docker/build-push-action@v5
       with:
         push: ${{ github.event_name != 'pull_request' }}

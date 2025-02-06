@@ -12,6 +12,7 @@ jobs:
       runner: KRAKAU
       context: ./Sources/WebServer
   docker-build-container:
+    depends-on: [ maven-clean-validate-compile ]
     runs-on: [ KRAKAU ]
     steps:
     - name: Extract branch name
@@ -29,6 +30,9 @@ jobs:
           type=ref,event=branch,suffix=-{{ date -s }}
           type=ref,event=tag,suffix=-{{ date -s }}
     - name: Build and push backend image
+      env:
+        MAVEN_SERVER_USERNAME: ${secrets.MAVEN_SERVER_USERNAME}
+        MAVEN_SERVER_PASSWORD: ${secrets.MAVEN_SERVER_PASSWORD}
       uses: docker/build-push-action@v5
       with:
         push: ${{ github.event_name != 'pull_request' }}
@@ -43,6 +47,3 @@ jobs:
         labels: |
           ${{ steps.frontend-meta.outputs.labels }}
           containers.github.scch.at/Land-OOE/prolog-web-server:${GITHUB_REF##*/}-latest
-        secrets-envs: |
-          MAVEN_SERVER_USERNAME=${secrets.MAVEN_SERVER_USERNAME}
-          MAVEN_SERVER_PASSWORD=${secrets.MAVEN_SERVER_PASSWORD}

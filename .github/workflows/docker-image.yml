@@ -51,7 +51,7 @@ jobs:
       id: frontend-meta
       uses: docker/metadata-action@v4
       with:
-        images: containers.github.scch.at/land-ooe/prolog-landesabgabe-frontend
+        images: containers.github.scch.at/land-ooe/frontend
         tags: |
             type=ref,event=branch,suffix=-{{ date -s }}
             type=ref,event=tag,suffix=-{{ date -s }}
@@ -66,10 +66,10 @@ jobs:
         cache-to: type=gha,mode=max
         tags: |
           ${{ steps.frontend-meta.outputs.tags }}
-          containers.github.scch.at/land-ooe/prolog-landesabgabe-frontend:${{ steps.fetch_branch.outputs.branch }}-latest
+          containers.github.scch.at/land-ooe/frontend:${{ steps.fetch_branch.outputs.branch }}-latest
         labels: |
           ${{ steps.frontend-meta.outputs.labels }}
-          containers.github.scch.at/Land-OOE/prolog-landesabgabe-frontend:${GITHUB_REF##*/}-latest
+          containers.github.scch.at/Land-OOE/frontend:${GITHUB_REF##*/}-latest
         build-args: |
           - BUILD_MODE=production
       env:

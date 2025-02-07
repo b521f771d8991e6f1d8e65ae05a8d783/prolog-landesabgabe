@@ -41,7 +41,7 @@ jobs:
       id: backend-meta
       uses: docker/metadata-action@v4
       with:
-        images: containers.github.scch.at/Land-OOE/prolog-web-server
+        images: containers.github.scch.at/Land-OOE/web-server
         tags: |
           type=ref,event=branch,suffix=${{ needs.call-parse-version-from-pom.outputs.version }}-{{ date -s }}
           type=ref,event=tag,suffix=${{ needs.call-parse-version-from-pom.outputs.version }}-{{ date -s }}
@@ -61,7 +61,7 @@ jobs:
         cache-to: type=gha,mode=max
         tags: |
           ${{ steps.frontend-meta.outputs.tags }}
-          containers.github.scch.at/land-ooe/prolog-web-server:${{ steps.fetch_branch.outputs.branch }}-latest
+          containers.github.scch.at/land-ooe/web-server:${{ steps.fetch_branch.outputs.branch }}-latest
         labels: |
           ${{ steps.frontend-meta.outputs.labels }}
-          containers.github.scch.at/Land-OOE/prolog-web-server:${GITHUB_REF##*/}-latest
+          containers.github.scch.at/Land-OOE/web-server:${GITHUB_REF##*/}-latest

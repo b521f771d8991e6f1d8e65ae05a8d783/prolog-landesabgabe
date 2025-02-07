@@ -52,14 +52,17 @@ const keycloakService = new KeycloakService();
  * => change to KeyCloakProvider wrapping PrologVMProvider wrapping App
  * https://www.geeksforgeeks.org/how-to-implement-keycloak-authentication-in-react/#adding-your-react-app-to-keycloak
  */
-if(await keycloakService.isAuthenticated()) {
-    PrologVM.initFromAppState().then((pvm) => {
-        launcher.hidden = true;
-        ReactDOM.createRoot(document.getElementById('root')!).render(<App prologVM={pvm} />);
-    }).catch((x) => {
-        console.log(x);
-        document.getElementById("root")!.innerHTML = "There was an error while loading the application"
-    });
-} else {
-    console.log("Not authenticated");
-}
+keycloakService.isAuthenticated().then((isAuthenticated) => {
+    if (isAuthenticated) {
+        PrologVM.initFromAppState().then((pvm) => {
+            launcher.hidden = true;
+            ReactDOM.createRoot(document.getElementById('root')!).render(<App prologVM={pvm} />);
+        }).catch((x) => {
+            console.log(x);
+            document.getElementById("root")!.innerHTML = "There was an error while loading the application"
+        });
+    } else {
+        console.log("Not authenticated");
+    }
+
+}).catch((err) => console.log(err));

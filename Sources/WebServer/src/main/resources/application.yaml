@@ -21,7 +21,7 @@ spring:
           auth-server-url: http://localhost:8080/auth
           resource: prolog-web-server
           credentials:
-            secret: Jdt4HvFxxMZecAAOkasNDyRdBTmtzRxH
+            secret: ehJbW0cIZHtuh8rfzFru3sQHCdV8gWdx
         cors-config: http://localhost:4200
 lx:
   backend:

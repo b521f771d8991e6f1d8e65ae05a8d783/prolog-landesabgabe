@@ -47,7 +47,11 @@ ReactDOM.createRoot(launcher).render(
 );
 
 const keycloakService = new KeycloakService();
-
+/*
+ * TODO current design decision goes against reactive thinking. 
+ * => change to KeyCloakProvider wrapping PrologVMProvider wrapping App
+ * https://www.geeksforgeeks.org/how-to-implement-keycloak-authentication-in-react/#adding-your-react-app-to-keycloak
+ */
 if(await keycloakService.isAuthenticated()) {
     PrologVM.initFromAppState().then((pvm) => {
         launcher.hidden = true;

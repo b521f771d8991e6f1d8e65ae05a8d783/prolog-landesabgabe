@@ -1,9 +1,10 @@
 import { PrologFile, PrologFileType } from "@/model/PrologFileSystem";
-import { Input, Center, Button, Paper, Title, Flex, Text, Modal, List } from "@mantine/core";
+import { Input, Center, Button, Paper, Title, Flex, Text, Modal, List, Box, LoadingOverlay } from "@mantine/core";
 import { CodeView } from "./CodeView";
 import React, { useEffect, useState } from "react";
 import { defaultConfig } from "@/config/ServerConfig";
 import { v7 } from "uuid";
+import { useGetWebServer } from "@/util/BackendQueryProvider";
 
 interface PrologFilesAccordionProps {
     factBase: PrologFile[],
@@ -111,72 +112,71 @@ interface ModalViewProps {
     searchError: string | undefined;
     searchInLibraryButtonClicked: () => Promise<void>;
 }
-
 function ModalView({ addLawFromLibraryView, cancelButtonClicked, searchFieldValue, setSearchFieldValue, searchError, searchInLibraryButtonClicked }: ModalViewProps) {
     const [loadError, setLoadError] = useState<string | undefined>(undefined);
     const [lawLibrary, setLawLibrary] = useState<string[]>([]);
 
-    useEffect(() => {
-        async function loadServerListAsync() {
-            // TODO move all HTTP requests to their own class, Lukas has already done that
-            const request = await fetch(`${defaultConfig.getServerProtocol()}://${defaultConfig.getServerName()}:${defaultConfig.getServerPort()}/fetch-law`);
+      const { status, data, error, isLoading, isError, isSuccess } = useGetWebServer("fetch-law");
 
-            if (!request.ok) {
-                setLoadError(request.statusText);
-            }
-
-            const lawLibrary = JSON.parse(await request.text()) as string[];
-            setLawLibrary(lawLibrary);
+      useEffect(() => {
+        if (isSuccess) {
+            setLawLibrary(JSON.parse(data!) as string[])
         }
 
-        loadServerListAsync();
-    }, []);
+        if (isError) {
+            setLoadError(error!.message);
+        }
+        
+    }, [isSuccess, isError]);
 
     return <Modal
         opened={addLawFromLibraryView}
         onClose={cancelButtonClicked}
         title="Gesetz aus Bibliothek hinzufügen">
-        <Flex
-            gap="xs"
-            justify="center"
-            align="center"
-            direction="column"
-            wrap="wrap">
-            <Input
-                radius="lg"
-                value={searchFieldValue}
-                onChange={(event) => setSearchFieldValue(event.currentTarget.value)}
-                rightSection={searchFieldValue !== ""
-                    ? <Input.ClearButton
-                        onClick={() => setSearchFieldValue("")} />
-                    : undefined}
-                rightSectionPointerEvents="auto"
-                placeholder="Kurztitel"
-                error={searchError} />
-
-            <Button
-                leftSection={"🔍"}
-                onClick={searchInLibraryButtonClicked}>
-                Suchen & Hinzufügen
-            </Button>
-
             <Flex
                 gap="xs"
-                justify="left"
-                align="left"
+                justify="center"
+                align="center"
                 direction="column"
                 wrap="wrap">
-                {loadError && <Text c="red">Error: {loadError}</Text>}
-                {lawLibrary.length == 0
-                    ? <Text>Keine Gesetze am Server gefunden</Text>
-                    : <>
-                        <Text td="underline">Am Server sind folgende Gesetze verfügbar:</Text>
-                        <List>
-                            {lawLibrary.map((x) => <List.Item key={v7()}>{x}</List.Item>)}
-                        </List>
-                    </>}
+                <Input
+                    radius="lg"
+                    value={searchFieldValue}
+                    onChange={(event) => setSearchFieldValue(event.currentTarget.value)}
+                    rightSection={searchFieldValue !== ""
+                        ? <Input.ClearButton
+                            onClick={() => setSearchFieldValue("")} />
+                        : undefined}
+                    rightSectionPointerEvents="auto"
+                    placeholder="Kurztitel"
+                    error={searchError} />
+
+                <Button
+                    leftSection={"🔍"}
+                    onClick={searchInLibraryButtonClicked}>
+                    Suchen & Hinzufügen
+                </Button>
+
+                <Box pos="relative">
+                    <LoadingOverlay visible={isLoading} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} />
+                    <Flex
+                        gap="xs"
+                        justify="left"
+                        align="left"
+                        direction="column"
+                        wrap="wrap">
+                        {loadError && <Text c="red">Error: {loadError}</Text>}
+                        {lawLibrary.length == 0
+                            ? <Text>Keine Gesetze am Server gefunden</Text>
+                            : <>
+                                <Text td="underline">Am Server sind folgende Gesetze verfügbar:</Text>
+                                <List>
+                                    {lawLibrary.map((x) => <List.Item key={v7()}>{x}</List.Item>)}
+                                </List>
+                            </>}
+                    </Flex>
+                </Box>
             </Flex>
-        </Flex>
     </Modal>;
 }
 

@@ -7,7 +7,7 @@ import { PrologVM } from './model/PrologVM';
 
 import "./style.css";
 import { shadcnCssVariableResolver } from './cssVariableResolver';
-import { persister, queryClient } from './util/RestService';
+import { persister, queryClient } from './util/BackendQueryProvider';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 

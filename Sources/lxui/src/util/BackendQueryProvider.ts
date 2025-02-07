@@ -1,6 +1,7 @@
 import { QueryClient, useQuery, useQueryClient, UseQueryResult } from '@tanstack/react-query';
 import { TaskResult } from './Task';
 import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
+import { defaultConfig } from '@/config/ServerConfig';
 
 interface PrototypeRequestBody {
   taskConfiguration: {
@@ -46,8 +47,8 @@ const buildHeaders = (): any => {
   const credentials = btoa(`use:pw}`);
   return {
     'Content-Type': 'application/json',
-    Accept: '*/*',
-    Authorization: `Basic ${credentials}`, // FIXME change to Keycloak OAuth2
+    //Accept: '*/*', FIXME check
+    //Authorization: `Basic ${credentials}`, // FIXME check
   };
 };
 
@@ -75,6 +76,13 @@ async function post<T>(url: URL, body: any): Promise<T> {
   const response = await fetch(url, options);
   return await response.json();
 }
+
+async function get<T>(url: URL): Promise<T> {
+  const headers = buildHeaders();
+  const options: RequestInit = buildRequestInit('cors', 'GET', headers);
+  const response = await fetch(url, options);
+  return await response.json();
+}
  
 export const persister = createSyncStoragePersister({
   storage: window.localStorage,
@@ -87,6 +95,22 @@ export const queryClient = new QueryClient({
     },
   },
 });
+
+//FIXME ADAPT SO IT CAN BE USED IN useGetWebServer
+const baseUrl = `${defaultConfig.getServerProtocol()}://${defaultConfig.getServerName()}:${defaultConfig.getServerPort()}/v0/`;
+
+export const useGetWebServer = (
+  urlSuffix: string
+): UseQueryResult<string, Error> => {
+  return useQuery({
+    queryKey: ['getWebServer'],
+    queryFn: () =>
+      get<string>(
+        new URL('https://localhost:4433/prolog-web-server/v0/' + urlSuffix),
+      ),
+    enabled: false,
+  });
+}
 
 export const usePostNormTransformationTaskStartRequest = (
   selection: string

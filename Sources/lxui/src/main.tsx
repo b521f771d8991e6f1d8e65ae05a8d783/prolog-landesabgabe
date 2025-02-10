@@ -4,7 +4,8 @@ import App from './App';
 import './index.css';
 
 import { KeycloakService } from './services/keycloak/KeycloakService';
-
+import { ReactKeycloakProvider } from '@react-keycloak/web';
+import defaultKeycloak from './config/KeycloakConfig';
 
 const keycloakService = new KeycloakService();
 /*
@@ -16,7 +17,14 @@ keycloakService
   .isAuthenticated()
   .then((isAuthenticated) => {
     if (isAuthenticated) {
-      ReactDOM.createRoot(document.getElementById('root')!).render(<App />);
+      ReactDOM.createRoot(document.getElementById('root')!).render(
+        <ReactKeycloakProvider
+          authClient={defaultKeycloak}
+          initOptions={{ onLoad: 'login-required' }}
+        >
+          <App />
+        </ReactKeycloakProvider>
+      );
     } else {
       console.log('Not authenticated');
     }

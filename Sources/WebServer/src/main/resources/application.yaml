@@ -22,7 +22,7 @@ spring:
           resource: prolog-web-server
           credentials:
             secret: ehJbW0cIZHtuh8rfzFru3sQHCdV8gWdx
-        cors-config: http://localhost:4200
+        cors-config: http://localhost:4200, http://localhost:8080, http://localhost:8081, http://frontend:8080
 lx:
   backend:
     base-url: http://localhost:1337

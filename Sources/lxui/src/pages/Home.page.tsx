@@ -1,19 +1,18 @@
-import { Divider, Paper, Title } from '@mantine/core';
-import { useEffect, useMemo, useState } from "react";
-import { Flex, Button, Text } from "@mantine/core";
-import { PrologVM } from "../model/PrologVM";
-import { downloadLaw, PrologFile, PrologFileType } from "@/model/PrologFileSystem";
+import { useEffect, useMemo, useState } from 'react';
+import { Box, Button, Divider, Flex, LoadingOverlay, Paper, Text, Title } from '@mantine/core';
+import { downloadLaw, PrologFile, PrologFileType } from '@/model/PrologFileSystem';
+import { PrologVM } from '../model/PrologVM';
 
-import "highlight.js/styles/github.css";
+import 'highlight.js/styles/github.css';
 
-import logo from "../static/logo.svg";
-import { SachverhaltEditorForm } from '@/components/SachverhaltEditorForm';
 import { PrologFilesAccordion } from '@/components/PrologFilesAccordion';
 import { ResultView } from '@/components/ResultView';
+import { SachverhaltEditorForm } from '@/components/SachverhaltEditorForm';
 import { StatisticsView } from '@/components/StatisticsView';
 import { VersionString } from '@/components/VersionString';
+import logo from '../static/logo.svg';
 
-const DOWNLOAD_FILE_DEFAULT_NAME = "Sachverhalt.sv";
+const DOWNLOAD_FILE_DEFAULT_NAME = 'Sachverhalt.sv';
 export const WIDTH = 550;
 
 /**
@@ -26,16 +25,18 @@ export const WIDTH = 550;
  * @param {string} svgDataURL - The data URL of the SVG to be used as the favicon.
  */
 function setFavicon(svgDataURL: string) {
-  const link = document.createElement("link");
-  link.rel = "shortcut icon";
-  link.type = "image/svg+xml";
+  const link = document.createElement('link');
+  link.rel = 'shortcut icon';
+  link.type = 'image/svg+xml';
   link.href = svgDataURL;
   document.head.appendChild(link);
-};
+}
 
 function setTitle(title: string) {
   document.title = title;
 }
+
+type pvmStatus = 'UNINITIALIZED' | 'INITIALIZED';
 
 /**
  * Represents the home page component of the application.
@@ -55,9 +56,15 @@ function setTitle(title: string) {
  * This component sets the page title and favicon on mount, and provides a button
  * to reset the application state and reload the page.
  */
-export function HomePage({ prologVM }: { prologVM: PrologVM }) {
+export function HomePage() {
+  const [pvm, setPVM] = useState<PrologVM | null>(null);
   const [statisticViewOpened, setStatisticViewOpened] = useState<boolean>(false);
 
+  useEffect(() => {
+    if (pvm === null) {
+      PrologVM.initFromAppState().then((pvm) => setPVM(() => pvm));
+    }
+  }, [pvm]);
   function onDeleteButtonClicked() {
     window.location.reload();
   }
@@ -85,116 +92,117 @@ export function HomePage({ prologVM }: { prologVM: PrologVM }) {
   }
 
   useEffect(() => {
-    setTitle("LXUI");
+    setTitle('LXUI');
     setFavicon(logo);
   }, []);
 
-  return <Flex
-    mih={50}
-    gap="xs"
-    justify="center"
-    align="center"
-    direction="column"
-    wrap="wrap">
+  return (
+    <Box pos="relative">
+      <LoadingOverlay
+        visible={pvm === null}
+        zIndex={1000}
+        overlayProps={{ radius: 'sm', blur: 2 }}
+      />
+      <Flex mih={50} gap="xs" justify="center" align="center" direction="column" wrap="wrap">
+        <Title td="underline">Sachverhalts-Editor</Title>
+        <Paper shadow="sm" p="sm" m="sm">
+          <Flex
+            className={'select-none'}
+            mih={50}
+            gap="xs"
+            justify="center"
+            align="center"
+            direction="row"
+            wrap="wrap"
+          >
+            <Button leftSection={'📅'} disabled>
+              Historie
+            </Button>
+            <Button onClick={onDeleteButtonClicked} leftSection={'🗑'}>
+              Alles löschen
+            </Button>
+            <Button onClick={onSaveClicked} leftSection={'💾'} disabled>
+              Speichern
+            </Button>
+            <Button leftSection={'⚡'} disabled>
+              Laden
+            </Button>
+            <Button leftSection={'🔐'} disabled>
+              Login
+            </Button>
+            {statisticViewOpened ? (
+              <Button onClick={showStatisticsButtonClicked} leftSection={'❌'}>
+                Statistiken ausblenden
+              </Button>
+            ) : (
+              <Button onClick={showStatisticsButtonClicked} leftSection={'📊'} disabled>
+                Statistiken einblenden
+              </Button>
+            )}
+          </Flex>
+        </Paper>
+        <Divider />
 
-    <Title td="underline">Sachverhalts-Editor</Title>
-    <Paper shadow="sm"
-      p="sm"
-      m="sm">
-      <Flex className={"select-none"}
-        mih={50}
-        gap="xs"
-        justify="center"
-        align="center"
-        direction="row"
-        wrap="wrap">
-        <Button leftSection={"📅"} disabled>Historie</Button>
-        <Button onClick={onDeleteButtonClicked} leftSection={"🗑"}>Alles löschen</Button>
-        <Button onClick={onSaveClicked} leftSection={"💾"} disabled>Speichern</Button>
-        <Button leftSection={"⚡"} disabled>Laden</Button>
-        <Button leftSection={"🔐"} disabled>Login</Button>
-        {
-          statisticViewOpened
-            ? <Button onClick={showStatisticsButtonClicked} leftSection={"❌"}>Statistiken ausblenden</Button>
-            : <Button onClick={showStatisticsButtonClicked} leftSection={"📊"} disabled>Statistiken einblenden</Button>
-        }
+        {statisticViewOpened && (
+          <>
+            <Paper shadow="sm" p="sm" m="sm">
+              <StatisticsView />
+            </Paper>
+            <Divider />
+          </>
+        )}
+
+        {pvm && <AppView prologVM={pvm!} /> }
+
+        <Text c="dimmed">Ein Projekt der Stabsstelle für Digitalisierung Oberösterreich 🤖📈</Text>
+        <Text c="dimmed">
+          Version: <VersionString />
+        </Text>
       </Flex>
-    </Paper>
-    <Divider />
-
-    {statisticViewOpened && <>
-      <Paper shadow="sm"
-        p="sm"
-        m="sm">
-        <StatisticsView />
-      </Paper>
-      <Divider />
-    </>}
-
-    <AppView prologVM={prologVM} />
-
-    <Text c="dimmed">
-      Ein Projekt der Stabsstelle für Digitalisierung Oberösterreich 🤖📈
-    </Text>
-    <Text c="dimmed">Version: <VersionString /></Text>
-  </Flex>;
+    </Box>
+  );
 }
 
 /*
-* The AppView is responsible for:
-*  - displaying prolog files, resulting code, and the form view
-*  - creating the Prolog from the output
-*  - re-creating the page from the prolog VM on page reload
-*/
-function AppView({ prologVM }: {
-  prologVM: PrologVM
-}) {
+ * The AppView is responsible for:
+ *  - displaying prolog files, resulting code, and the form view
+ *  - creating the Prolog from the output
+ *  - re-creating the page from the prolog VM on page reload
+ */
+function AppView({ prologVM }: { prologVM: PrologVM }) {
   const [factBase, setFactFiles] = useState<PrologFile[]>(prologVM.getFactBase());
   const code = useMemo<string>(() => mergeFactFiles(factBase), [factBase]);
-  
+
   function mergeFactFiles(pf: PrologFile[]) {
-    return pf.reduce((p, c) => `${p}\n% Filename: ${c.name}\n${c.evaluatedProlog}`, "");
+    return pf.reduce((p, c) => `${p}\n% Filename: ${c.name}\n${c.evaluatedProlog}`, '');
   }
 
   async function addToFactBase(newLawShortTitle: string): Promise<boolean> {
     try {
-      if(factBase.some((x) => x.name === newLawShortTitle)) {
-        throw new Error("This law has already been added");
+      if (factBase.some((x) => x.name === newLawShortTitle)) {
+        throw new Error('This law has already been added');
       }
 
       const newPrologFile = await downloadLaw(newLawShortTitle);
       setFactFiles([...factBase, newPrologFile]);
       return true;
-    } catch(err) {
+    } catch (err) {
       return false;
-    } 
+    }
   }
 
   const addedFactFiles = factBase.filter((x) => x.prologFileType === PrologFileType.FACT);
   prologVM.addFactBases(addedFactFiles);
 
-  console.log("Loaded fact base: ", factBase);
+  console.log('Loaded fact base: ', factBase);
 
-  return <Flex
-    mih={50}
-    gap="xs"
-    justify="flex-start"
-    align="top"
-    direction="row"
-    wrap="wrap">
-    <PrologFilesAccordion
-      factBase={factBase}
-      width={WIDTH}
-      addToFactBase={addToFactBase} />
+  return (
+    <Flex mih={50} gap="xs" justify="flex-start" align="top" direction="row" wrap="wrap">
+      <PrologFilesAccordion factBase={factBase} width={WIDTH} addToFactBase={addToFactBase} />
 
-    <SachverhaltEditorForm
-      factFiles={factBase}
-      setFactFiles={setFactFiles}
-      width={WIDTH} />
+      <SachverhaltEditorForm factFiles={factBase} setFactFiles={setFactFiles} width={WIDTH} />
 
-    <ResultView
-      code={code}
-      width={WIDTH}
-      prologVM={prologVM}/>
-  </Flex >;
+      <ResultView code={code} width={WIDTH} prologVM={prologVM} />
+    </Flex>
+  );
 }

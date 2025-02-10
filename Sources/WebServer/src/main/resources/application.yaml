@@ -26,3 +26,6 @@ spring:
 lx:
   backend:
     base-url: http://localhost:1337
+logging:
+  level:
+    root: DEBUG

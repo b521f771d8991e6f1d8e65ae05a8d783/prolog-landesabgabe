@@ -106,7 +106,7 @@ export const useGetWebServer = (
     queryKey: ['getWebServer'],
     queryFn: () =>
       get<string>(
-        new URL('https://localhost:4433/prolog-web-server/v0/' + urlSuffix),
+        new URL('http://localhost:4433/prolog-web-server/v0/' + urlSuffix),
       ),
     enabled: false,
   });

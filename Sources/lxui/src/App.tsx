@@ -11,11 +11,11 @@ import { persister, queryClient } from './util/BackendQueryProvider';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
-export default function App({ prologVM }: { prologVM: PrologVM }) {
+export default function App() {
   return (
   <MantineProvider theme={shadcnTheme} cssVariablesResolver={shadcnCssVariableResolver}>
     <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
-      <Router prologVM={prologVM} />
+      <Router />
       <ReactQueryDevtools initialIsOpen />
     </PersistQueryClientProvider>
   </MantineProvider>

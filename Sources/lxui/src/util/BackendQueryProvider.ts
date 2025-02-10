@@ -2,6 +2,7 @@ import { QueryClient, useQuery, useQueryClient, UseQueryResult } from '@tanstack
 import { TaskResult } from './Task';
 import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
 import { defaultConfig } from '@/config/ServerConfig';
+import defaultKeycloak from '@/config/KeycloakConfig';
 
 interface PrototypeRequestBody {
   taskConfiguration: {
@@ -44,11 +45,15 @@ const buildPrototypeRequestBody = (args: any[], task: string): PrototypeRequestB
 };
 
 const buildHeaders = (): any => {
-  const credentials = btoa(`use:pw}`);
+  //const credentials = btoa(`use:pw}`);
+  if (defaultKeycloak.isTokenExpired()) {
+    defaultKeycloak.updateToken();
+  }
   return {
     'Content-Type': 'application/json',
     //Accept: '*/*', FIXME check
     //Authorization: `Basic ${credentials}`, // FIXME check
+    'Authorization':`Bearer ${defaultKeycloak.token!}`
   };
 };
 

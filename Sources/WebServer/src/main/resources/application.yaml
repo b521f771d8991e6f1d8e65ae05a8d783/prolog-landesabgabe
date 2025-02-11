@@ -15,7 +15,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://localhost:8080/auth/realms/LAND_OOE_SPRACHGURU/protocol/openid-connect/certs
+          jwk-set-uri: http://keycloak-server:8080/auth/realms/LAND_OOE_SPRACHGURU/protocol/openid-connect/certs
         policy-enforcer-config: #/policy-enforcer.json
           realm: LAND_OOE_SPRACHGURU
           auth-server-url: http://localhost:8080/auth
@@ -25,7 +25,7 @@ spring:
         cors-config: http://localhost:4200, http://localhost:8080, http://localhost:8081, http://frontend:8080
 lx:
   backend:
-    base-url: http://localhost:1337
+    base-url: http://lx-worker-1:1337
 logging:
   level:
-    root: DEBUG
+    root: INFO

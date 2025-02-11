@@ -120,7 +120,7 @@ function ModalView({ addLawFromLibraryView, cancelButtonClicked, searchFieldValu
 
       useEffect(() => {
         if (isSuccess) {
-            setLawLibrary(JSON.parse(data!) as string[])
+            setLawLibrary(JSON.parse(JSON.stringify(data!)) as string[]);
         }
 
         if (isError) {

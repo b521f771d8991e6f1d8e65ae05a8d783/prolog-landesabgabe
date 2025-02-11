@@ -45,14 +45,11 @@ const buildPrototypeRequestBody = (args: any[], task: string): PrototypeRequestB
 };
 
 const buildHeaders = (): any => {
-  //const credentials = btoa(`use:pw}`);
   if (defaultKeycloak.isTokenExpired()) {
     defaultKeycloak.updateToken();
   }
   return {
     'Content-Type': 'application/json',
-    //Accept: '*/*', FIXME check
-    //Authorization: `Basic ${credentials}`, // FIXME check
     'Authorization':`Bearer ${defaultKeycloak.token!}`
   };
 };

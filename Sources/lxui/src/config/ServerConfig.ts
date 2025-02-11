@@ -13,7 +13,7 @@ class ServerConfig {
     }
 
     getKeycloakURL(): string {
-        return `${import.meta.env.VITE_KEYCLOAK_PROTOCOL}://${import.meta.env.VITE_KEYCLOAK_HOST}:${import.meta.env.VITE_KEYCLOAK_PORT}/auth`;
+        return `${import.meta.env.VITE_KEYCLOAK_HOST}`;
     }
 }
 

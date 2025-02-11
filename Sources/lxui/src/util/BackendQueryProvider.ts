@@ -109,9 +109,6 @@ export const queryClient = new QueryClient({
   },
 });
 
-//FIXME ADAPT SO IT CAN BE USED IN useGetWebServer
-const baseUrl = `${defaultConfig.getServerProtocol()}://${defaultConfig.getServerName()}:${defaultConfig.getServerPort()}/v0/`;
-
 export function useGetWebServerJSON<T>(
   urlSuffix: string
 ): UseQueryResult<T, Error> {
@@ -119,7 +116,7 @@ export function useGetWebServerJSON<T>(
     queryKey: [urlSuffix],
     queryFn: ():Promise<T> =>
       get<T>(
-        new URL('http://localhost:4433/prolog-web-server/v0/' + urlSuffix),
+        new URL('http://localhost:4433/prolog-web-server/v0/' + urlSuffix), // FIXME
       ),
     enabled: true,
   });

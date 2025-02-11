@@ -79,11 +79,22 @@ async function post<T>(url: URL, body: any): Promise<T> {
   return await response.json();
 }
 
-async function get<T>(url: URL): Promise<T> {
+const createOptions = () => {
   const headers = buildHeaders();
   const options: RequestInit = buildRequestInit('cors', 'GET', headers);
+  return options;
+}
+
+async function get<T>(url: URL): Promise<T> {
+  const options = createOptions();
   const response = await fetch(url, options);
   return await response.json();
+}
+
+async function getString(url: URL): Promise<string> {
+  const options = createOptions();
+  const response = await fetch(url, options);
+  return await response.text();
 }
  
 export const persister = createSyncStoragePersister({
@@ -101,16 +112,30 @@ export const queryClient = new QueryClient({
 //FIXME ADAPT SO IT CAN BE USED IN useGetWebServer
 const baseUrl = `${defaultConfig.getServerProtocol()}://${defaultConfig.getServerName()}:${defaultConfig.getServerPort()}/v0/`;
 
-export const useGetWebServer = (
+export function useGetWebServerJSON<T>(
+  urlSuffix: string
+): UseQueryResult<T, Error> {
+  return useQuery({
+    queryKey: [urlSuffix],
+    queryFn: ():Promise<T> =>
+      get<T>(
+        new URL('http://localhost:4433/prolog-web-server/v0/' + urlSuffix),
+      ),
+    enabled: true,
+  });
+}
+
+
+export const useGetWebServerString = (
   urlSuffix: string
 ): UseQueryResult<string, Error> => {
   return useQuery({
-    queryKey: ['getWebServer'],
-    queryFn: () =>
-      get<string>(
+    queryKey: [urlSuffix],
+    queryFn: ():Promise<string> =>
+      getString(
         new URL('http://localhost:4433/prolog-web-server/v0/' + urlSuffix),
       ),
-    enabled: false,
+    enabled: true,
   });
 }
 

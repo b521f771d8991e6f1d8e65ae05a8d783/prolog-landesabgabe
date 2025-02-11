@@ -10,6 +10,7 @@ import { ResultView } from '@/components/ResultView';
 import { SachverhaltEditorForm } from '@/components/SachverhaltEditorForm';
 import { StatisticsView } from '@/components/StatisticsView';
 import { VersionString } from '@/components/VersionString';
+import { useGetWebServerString } from '@/util/BackendQueryProvider';
 import logo from '../static/logo.svg';
 
 const DOWNLOAD_FILE_DEFAULT_NAME = 'Sachverhalt.sv';
@@ -36,8 +37,6 @@ function setTitle(title: string) {
   document.title = title;
 }
 
-type pvmStatus = 'UNINITIALIZED' | 'INITIALIZED';
-
 /**
  * Represents the home page component of the application.
  *
@@ -59,12 +58,23 @@ type pvmStatus = 'UNINITIALIZED' | 'INITIALIZED';
 export function HomePage() {
   const [pvm, setPVM] = useState<PrologVM | null>(null);
   const [statisticViewOpened, setStatisticViewOpened] = useState<boolean>(false);
+  const kurztitel = 'labgg'; // TODO @Alexander change to array loaded from .env and don't forget to change kurztitel from string to array
+  const { data, error, isLoading, isError, isSuccess } =
+    useGetWebServerString('fetch-law?kurztitel=' + kurztitel); 
+  //    useGetWebServerJSON<PrologFile[]>('fetch-law?kurztitel=' + JSON.stringify(kurztitel)) // kurztitel must be an Array!
 
   useEffect(() => {
-    if (pvm === null) {
-      PrologVM.initFromAppState().then((pvm) => setPVM(() => pvm));
+    if (isSuccess) {
+      if (pvm === null) {
+        PrologVM.initFromAppState(data!).then((pvm) => setPVM(() => pvm));
+      }
     }
-  }, [pvm]);
+
+    if (isError) {
+      // FIXME setLoadError(error!.message);
+    }
+  }, [isSuccess, isError]);
+
   function onDeleteButtonClicked() {
     window.location.reload();
   }
@@ -152,12 +162,10 @@ export function HomePage() {
           </>
         )}
 
-        {pvm && <AppView prologVM={pvm!} /> }
+        {pvm && <AppView prologVM={pvm!} />}
 
         <Text c="dimmed">Ein Projekt der Stabsstelle für Digitalisierung Oberösterreich 🤖📈</Text>
-        <Text c="dimmed">
-          Version: <VersionString />
-        </Text>
+        <VersionString />
       </Flex>
     </Box>
   );

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Box, Button, Divider, Flex, LoadingOverlay, Paper, Text, Title } from '@mantine/core';
-import { downloadLaw, PrologFile, PrologFileType } from '@/model/PrologFileSystem';
+import { PrologFile, PrologFileType } from '@/model/PrologFileSystem';
 import { PrologVM } from '../model/PrologVM';
 
 import 'highlight.js/styles/github.css';

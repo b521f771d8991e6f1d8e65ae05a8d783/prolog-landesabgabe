@@ -1,7 +1,6 @@
-import { QueryClient, useQuery, useQueryClient, UseQueryResult } from '@tanstack/react-query';
+import { QueryClient, useQuery, UseQueryResult } from '@tanstack/react-query';
 import { TaskResult } from './Task';
-import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
-import { defaultConfig } from '@/config/ServerConfig';
+import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister';
 import defaultKeycloak from '@/config/KeycloakConfig';
 
 interface PrototypeRequestBody {
@@ -44,13 +43,14 @@ const buildPrototypeRequestBody = (args: any[], task: string): PrototypeRequestB
   };
 };
 
-const buildHeaders = (): any => {
+const buildHeaders = (contentType: string): any => {
   if (defaultKeycloak.isTokenExpired()) {
     defaultKeycloak.updateToken();
   }
+
   return {
-    'Content-Type': 'application/json',
-    'Authorization':`Bearer ${defaultKeycloak.token!}`
+    'Content-Type': contentType,
+    'Authorization': `Bearer ${defaultKeycloak.token!}`
   };
 };
 
@@ -60,27 +60,23 @@ const buildRequestInit = (
   headers: any,
   body?: any
 ): RequestInit => {
-  let requestInit = {
+  return {
     mode: mode,
     method: method,
     headers: headers,
-    body: null,
+    body: body ?? null,
   };
-  if (body) {
-    requestInit.body = body;
-  }
-  return requestInit;
 };
 
 async function post<T>(url: URL, body: any): Promise<T> {
-  const headers = buildHeaders();
+  const headers = buildHeaders("application/json");
   const options: RequestInit = buildRequestInit('cors', 'POST', headers, JSON.stringify(body));
   const response = await fetch(url, options);
   return await response.json();
 }
 
-const createOptions = () => {
-  const headers = buildHeaders();
+const createOptions = (contentType: string = "text/x-prolog") => {
+  const headers = buildHeaders(contentType); 
   const options: RequestInit = buildRequestInit('cors', 'GET', headers);
   return options;
 }

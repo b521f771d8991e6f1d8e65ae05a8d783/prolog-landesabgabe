@@ -79,7 +79,7 @@ function LawView({ title, laws, addToFactBase }: LawViewProps) {
     setSearchFieldValue('');
   }
 
-  function cancelButtonClicked() {
+  function closeModalView() {
     resetLawView();
   }
 
@@ -113,7 +113,7 @@ function LawView({ title, laws, addToFactBase }: LawViewProps) {
           </Button>
           <ModalView
             addLawFromLibraryView={addLawFromLibraryView}
-            cancelButtonClicked={cancelButtonClicked}
+            closeModalView={closeModalView}
             addPrologFileToLibrary={addToFactBase}
           />
           <Button leftSection={'✏️'} disabled>
@@ -127,12 +127,13 @@ function LawView({ title, laws, addToFactBase }: LawViewProps) {
 
 interface ModalViewProps {
   addLawFromLibraryView: boolean;
-  cancelButtonClicked: () => void;
+  closeModalView: () => void;
   addPrologFileToLibrary: (result: PrologFile) => void;
 }
+
 function ModalView({
   addLawFromLibraryView,
-  cancelButtonClicked,
+  closeModalView: closeModalView,
   addPrologFileToLibrary,
 }: ModalViewProps) {
   const [loadError, setLoadError] = useState<string | undefined>(undefined);
@@ -153,12 +154,13 @@ function ModalView({
     }
   }, [isSuccess, isError]);
 
-  const searchCallback = (result: string) => {
+  const searchConcludedCallback = (result: string) => {
     setIsSearchInProgress(() => false);
     const kurztitel = searchText;
     setSearchText(() => '');
     setSearchError(() => '');
     addPrologFileToLibrary(new PrologFile(kurztitel, result, undefined, PrologFileType.LAW));
+    closeModalView();
   };
 
   const searchErrorCallback = (errorMessage: string) => {
@@ -174,7 +176,7 @@ function ModalView({
   return (
     <Modal
       opened={addLawFromLibraryView}
-      onClose={cancelButtonClicked}
+      onClose={closeModalView}
       title="Gesetz aus Bibliothek hinzufügen"
     >
       <Flex gap="xs" justify="center" align="center" direction="column" wrap="wrap">
@@ -198,7 +200,7 @@ function ModalView({
         {isSearchInProgress && searchText !== '' && (
           <GenericWebServerRequest
             urlSuffix={'fetch-law?kurztitel=' + searchText}
-            callback={searchCallback}
+            callback={searchConcludedCallback}
             errorCallback={searchErrorCallback}
           />
         )}

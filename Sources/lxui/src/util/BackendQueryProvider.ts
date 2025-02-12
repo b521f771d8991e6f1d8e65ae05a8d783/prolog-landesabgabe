@@ -110,10 +110,8 @@ export function useGetWebServerJSON<T>(
 ): UseQueryResult<T, Error> {
   return useQuery({
     queryKey: [urlSuffix],
-    queryFn: ():Promise<T> =>
-      get<T>(
-        new URL('http://localhost:4433/prolog-web-server/v0/' + urlSuffix), // FIXME
-      ),
+    queryFn: (): Promise<T> =>
+      get<T>(new URL(import.meta.env.VITE_SERVER_URL + urlSuffix)),
     enabled: true,
   });
 }
@@ -124,10 +122,8 @@ export const useGetWebServerString = (
 ): UseQueryResult<string, Error> => {
   return useQuery({
     queryKey: [urlSuffix],
-    queryFn: ():Promise<string> =>
-      getString(
-        new URL('http://localhost:4433/prolog-web-server/v0/' + urlSuffix),
-      ),
+    queryFn: (): Promise<string> =>
+      getString(new URL(import.meta.env.VITE_SERVER_URL + urlSuffix)),
     enabled: true,
   });
 }
@@ -139,7 +135,7 @@ export const usePostNormTransformationTaskStartRequest = (
     queryKey: ['postNormTransformationTaskStartRequest'],
     queryFn: () =>
       post<TaskResult>(
-        new URL('https://localhost:4020/prototype-pipeline/v0/prototype/8/task/celery/start/'),
+        new URL(`${import.meta.env.VITE_PROTOTYPE_PIPELINE_URL}task/celery/start/`),
         buildPrototypeRequestBody([selection], 'transformIntoNorm')
       ),
     enabled: false,
@@ -151,9 +147,7 @@ export const usePostTaskStatusRequest = (id: string): UseQueryResult<TaskResult,
     queryKey: ['postCeleryTaskStatusRequest'],
     queryFn: () =>
       post<TaskResult>(
-        new URL(
-          'https://localhost:4020/prototype-pipeline/v0/prototype/8/task/celery/status/' + id
-        ),
+        new URL(`${import.meta.env.VITE_PROTOTYPE_PIPELINE_URL}task/celery/status/` + id),
         { task_id: id }
       ),
     enabled: false,

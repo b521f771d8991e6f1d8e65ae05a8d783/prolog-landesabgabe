@@ -13,15 +13,15 @@ import {
   Text,
   Title,
 } from '@mantine/core';
-import { defaultConfig } from '@/config/ServerConfig';
 import { PrologFile, PrologFileType } from '@/model/PrologFileSystem';
 import { useGetWebServerJSON } from '@/util/BackendQueryProvider';
 import { CodeView } from './CodeView';
+import GenericWebServerRequest from './GenericWebServerRequest';
 
 interface PrologFilesAccordionProps {
   factBase: PrologFile[];
   width: number;
-  addToFactBase: (newFile: string) => Promise<boolean>;
+  addToFactBase: (newFile: PrologFile) => void;
 }
 
 export function PrologFilesAccordion({
@@ -60,7 +60,7 @@ export function PrologFilesAccordion({
 interface LawViewProps {
   title: string;
   laws: PrologFile[];
-  addToFactBase: (newFile: string) => Promise<boolean>;
+  addToFactBase: (newFile: PrologFile) => void;
 }
 
 function LawView({ title, laws, addToFactBase }: LawViewProps) {
@@ -77,15 +77,6 @@ function LawView({ title, laws, addToFactBase }: LawViewProps) {
   function addLawFromLibraryClicked() {
     setAddLawFromLibraryView(true);
     setSearchFieldValue('');
-  }
-
-  async function searchInLibraryButtonClicked() {
-    if (!(await addToFactBase(searchFieldValue))) {
-      setSearchFieldValue('');
-      setSearchError('Nichts gefunden 😞');
-    } else {
-      resetLawView();
-    }
   }
 
   function cancelButtonClicked() {
@@ -123,10 +114,7 @@ function LawView({ title, laws, addToFactBase }: LawViewProps) {
           <ModalView
             addLawFromLibraryView={addLawFromLibraryView}
             cancelButtonClicked={cancelButtonClicked}
-            searchFieldValue={searchFieldValue}
-            setSearchFieldValue={setSearchFieldValue}
-            searchError={searchError}
-            searchInLibraryButtonClicked={searchInLibraryButtonClicked}
+            addPrologFileToLibrary={addToFactBase}
           />
           <Button leftSection={'✏️'} disabled>
             Gesetze manuell hinzufügen
@@ -140,21 +128,18 @@ function LawView({ title, laws, addToFactBase }: LawViewProps) {
 interface ModalViewProps {
   addLawFromLibraryView: boolean;
   cancelButtonClicked: () => void;
-  searchFieldValue: string;
-  setSearchFieldValue: React.Dispatch<React.SetStateAction<string>>;
-  searchError: string | undefined;
-  searchInLibraryButtonClicked: () => Promise<void>;
+  addPrologFileToLibrary: (result: PrologFile) => void;
 }
 function ModalView({
   addLawFromLibraryView,
   cancelButtonClicked,
-  searchFieldValue,
-  setSearchFieldValue,
-  searchError,
-  searchInLibraryButtonClicked,
+  addPrologFileToLibrary,
 }: ModalViewProps) {
   const [loadError, setLoadError] = useState<string | undefined>(undefined);
   const [lawLibrary, setLawLibrary] = useState<string[]>([]);
+  const [searchText, setSearchText] = useState<string>('');
+  const [searchError, setSearchError] = useState<string>('');
+  const [isSearchInProgress, setIsSearchInProgress] = useState<boolean>(false);
 
   const { data, error, isLoading, isError, isSuccess } = useGetWebServerJSON<string[]>('fetch-law');
 
@@ -168,6 +153,24 @@ function ModalView({
     }
   }, [isSuccess, isError]);
 
+  const searchCallback = (result: string) => {
+    setIsSearchInProgress(() => false);
+    const kurztitel = searchText;
+    setSearchText(() => '');
+    setSearchError(() => '');
+    addPrologFileToLibrary(new PrologFile(kurztitel, result, undefined, PrologFileType.LAW));
+  };
+
+  const searchErrorCallback = (errorMessage: string) => {
+    setIsSearchInProgress(() => false);
+    setSearchError(() => 'Nichts gefunden 😞');
+    console.error(errorMessage);
+  };
+
+  const searchButtonClicked = () => {
+    setIsSearchInProgress(() => true);
+  };
+
   return (
     <Modal
       opened={addLawFromLibraryView}
@@ -177,11 +180,11 @@ function ModalView({
       <Flex gap="xs" justify="center" align="center" direction="column" wrap="wrap">
         <Input
           radius="lg"
-          value={searchFieldValue}
-          onChange={(event) => setSearchFieldValue(event.currentTarget.value)}
+          value={searchText!}
+          onChange={(event) => setSearchText(event.currentTarget.value)}
           rightSection={
-            searchFieldValue !== '' ? (
-              <Input.ClearButton onClick={() => setSearchFieldValue('')} />
+            searchText !== '' ? (
+              <Input.ClearButton onClick={() => setSearchText(() => '')} />
             ) : undefined
           }
           rightSectionPointerEvents="auto"
@@ -189,9 +192,16 @@ function ModalView({
           error={searchError}
         />
 
-        <Button leftSection={'🔍'} onClick={searchInLibraryButtonClicked}>
+        <Button leftSection={'🔍'} onClick={searchButtonClicked}>
           Suchen & Hinzufügen
         </Button>
+        {isSearchInProgress && searchText !== '' && (
+          <GenericWebServerRequest
+            urlSuffix={'fetch-law?kurztitel=' + searchText}
+            callback={searchCallback}
+            errorCallback={searchErrorCallback}
+          />
+        )}
 
         <Box pos="relative">
           <LoadingOverlay

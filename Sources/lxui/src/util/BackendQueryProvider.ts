@@ -1,7 +1,7 @@
-import { QueryClient, useQuery, UseQueryResult } from '@tanstack/react-query';
-import { TaskResult } from './Task';
 import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister';
+import { QueryClient, useQuery, UseQueryResult } from '@tanstack/react-query';
 import defaultKeycloak from '@/config/KeycloakConfig';
+import { TaskResult } from './Task';
 
 interface PrototypeRequestBody {
   taskConfiguration: {
@@ -50,7 +50,7 @@ const buildHeaders = (contentType: string): any => {
 
   return {
     'Content-Type': contentType,
-    'Authorization': `Bearer ${defaultKeycloak.token!}`
+    'Authorization': `Bearer ${defaultKeycloak.token!}`,
   };
 };
 
@@ -69,17 +69,17 @@ const buildRequestInit = (
 };
 
 async function post<T>(url: URL, body: any): Promise<T> {
-  const headers = buildHeaders("application/json");
+  const headers = buildHeaders('application/json');
   const options: RequestInit = buildRequestInit('cors', 'POST', headers, JSON.stringify(body));
   const response = await fetch(url, options);
   return await response.json();
 }
 
-const createOptions = (contentType: string = "text/x-prolog") => {
-  const headers = buildHeaders(contentType); 
+const createOptions = (contentType: string = 'text/x-prolog') => {
+  const headers = buildHeaders(contentType);
   const options: RequestInit = buildRequestInit('cors', 'GET', headers);
   return options;
-}
+};
 
 async function get<T>(url: URL): Promise<T> {
   const options = createOptions();
@@ -92,10 +92,10 @@ async function getString(url: URL): Promise<string> {
   const response = await fetch(url, options);
   return await response.text();
 }
- 
+
 export const persister = createSyncStoragePersister({
   storage: window.localStorage,
-})
+});
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -105,28 +105,21 @@ export const queryClient = new QueryClient({
   },
 });
 
-export function useGetWebServerJSON<T>(
-  urlSuffix: string
-): UseQueryResult<T, Error> {
+export function useGetWebServerJSON<T>(urlSuffix: string): UseQueryResult<T, Error> {
   return useQuery({
     queryKey: [urlSuffix],
-    queryFn: (): Promise<T> =>
-      get<T>(new URL(import.meta.env.VITE_SERVER_URL + urlSuffix)),
+    queryFn: (): Promise<T> => get<T>(new URL(import.meta.env.VITE_SERVER_URL + urlSuffix)),
     enabled: true,
   });
 }
 
-
-export const useGetWebServerString = (
-  urlSuffix: string
-): UseQueryResult<string, Error> => {
+export const useGetWebServerString = (urlSuffix: string): UseQueryResult<string, Error> => {
   return useQuery({
     queryKey: [urlSuffix],
-    queryFn: (): Promise<string> =>
-      getString(new URL(import.meta.env.VITE_SERVER_URL + urlSuffix)),
+    queryFn: (): Promise<string> => getString(new URL(import.meta.env.VITE_SERVER_URL + urlSuffix)),
     enabled: true,
   });
-}
+};
 
 export const usePostNormTransformationTaskStartRequest = (
   selection: string
@@ -140,7 +133,7 @@ export const usePostNormTransformationTaskStartRequest = (
       ),
     enabled: false,
   });
-}
+};
 
 export const usePostTaskStatusRequest = (id: string): UseQueryResult<TaskResult, Error> => {
   return useQuery({
@@ -152,4 +145,4 @@ export const usePostTaskStatusRequest = (id: string): UseQueryResult<TaskResult,
       ),
     enabled: false,
   });
-}
+};

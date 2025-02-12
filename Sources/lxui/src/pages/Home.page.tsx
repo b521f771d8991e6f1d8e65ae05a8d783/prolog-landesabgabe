@@ -185,18 +185,8 @@ function AppView({ prologVM }: { prologVM: PrologVM }) {
     return pf.reduce((p, c) => `${p}\n% Filename: ${c.name}\n${c.evaluatedProlog}`, '');
   }
 
-  async function addToFactBase(newLawShortTitle: string): Promise<boolean> {
-    try {
-      if (factBase.some((x) => x.name === newLawShortTitle)) {
-        throw new Error('This law has already been added');
-      }
-
-      const newPrologFile = await downloadLaw(newLawShortTitle);
-      setFactFiles([...factBase, newPrologFile]);
-      return true;
-    } catch (err) {
-      return false;
-    }
+  const addToFactBase = (newFile: PrologFile) => {
+      setFactFiles([...factBase, newFile]);
   }
 
   const addedFactFiles = factBase.filter((x) => x.prologFileType === PrologFileType.FACT);

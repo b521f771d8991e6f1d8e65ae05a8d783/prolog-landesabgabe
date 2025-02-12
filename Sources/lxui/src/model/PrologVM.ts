@@ -1,5 +1,5 @@
 import SWIPL from "swipl-wasm";
-import { getRechtsbestand, PrologFile, PrologFileType } from "./PrologFileSystem";
+import { PrologFile, PrologFileType } from "./PrologFileSystem";
 import { v4 as uuid } from 'uuid';
 import { LandesabgabePerson, LandesabgabeSachverhalt } from "./PrologTemplates";
 
@@ -17,27 +17,16 @@ export class PrologVM {
         return new PrologVM(await PrologVM.initializePrologModule());
     }
 
-    private static async awaitPrologFiles(rechtsbestand: (PrologFile | Promise<PrologFile>)[]): Promise<PrologFile[]> {
-        const rechtsbestandPromises: Promise<PrologFile>[] = rechtsbestand.filter((x) => x instanceof Promise);
-        const rechtsbestandFiles: PrologFile[] = rechtsbestand.filter((x) => x instanceof PrologFile);
-        const rechtsbestandPromisesResolved = await Promise.all(rechtsbestandPromises);
-
-        return [...rechtsbestandPromisesResolved, ...rechtsbestandFiles];
-    }
-
-    // language designers should consider using paradigms such as ObjC init more, they would make stuff like this MUCH easier
-    // https://developer.apple.com/documentation/objectivec/nsobject/1418639-initialize?language=objc
-    static async initFromArray(rechtsbestand: (Promise<PrologFile> | PrologFile)[] = getRechtsbestand()): Promise<PrologVM> {
-        const pfs: PrologFile[] = await PrologVM.awaitPrologFiles(rechtsbestand);
+    static async initFromArray(rechtsbestand: PrologFile[]): Promise<PrologVM> {
+        const pfs: PrologFile[] = rechtsbestand.filter((x) => x instanceof PrologFile);
         const swipl = await PrologVM.initPrologVM();
-        await swipl.addFactBases(pfs);
+        swipl.addFactBases(pfs);
         return swipl;
     }
 
-    static async initFromAppState(rechtsbestand: (Promise<PrologFile> | PrologFile)[] = getRechtsbestand()): Promise<PrologVM> {
-        // TODO
-        // init the PrologVM from Redux
-        return await this.initFromArray(rechtsbestand);
+    static async initFromAppState(rechtsbestand: string): Promise<PrologVM> {
+        const pf = new PrologFile('labgg', rechtsbestand, undefined, PrologFileType.LAW);
+        return await this.initFromArray([pf]);
     }
 
     private static async initializePrologModule(): Promise<SWIPL.SWIPLModule> {

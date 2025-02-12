@@ -1,5 +1,5 @@
 import { Box, Button, LoadingOverlay, Paper, Text } from '@mantine/core';
-import { usePostTaskStatusRequest } from '@/util/RestService';
+import { usePostTaskStatusRequest } from '@/util/BackendQueryProvider';
 import { isTaskErronous, isTaskProcessing, isTaskSuccessful } from '@/util/Task';
 import { useQueryClient } from '@tanstack/react-query';
 

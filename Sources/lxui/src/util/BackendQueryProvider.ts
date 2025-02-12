@@ -1,6 +1,7 @@
-import { QueryClient, useQuery, useQueryClient, UseQueryResult } from '@tanstack/react-query';
+import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister';
+import { QueryClient, useQuery, UseQueryResult } from '@tanstack/react-query';
+import defaultKeycloak from '@/config/KeycloakConfig';
 import { TaskResult } from './Task';
-import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
 
 interface PrototypeRequestBody {
   taskConfiguration: {
@@ -42,12 +43,14 @@ const buildPrototypeRequestBody = (args: any[], task: string): PrototypeRequestB
   };
 };
 
-const buildHeaders = (): any => {
-  const credentials = btoa(`use:pw}`);
+const buildHeaders = (contentType: string): any => {
+  if (defaultKeycloak.isTokenExpired()) {
+    defaultKeycloak.updateToken();
+  }
+
   return {
-    'Content-Type': 'application/json',
-    Accept: '*/*',
-    Authorization: `Basic ${credentials}`, // FIXME change to Keycloak OAuth2
+    'Content-Type': contentType,
+    'Authorization': `Bearer ${defaultKeycloak.token!}`,
   };
 };
 
@@ -57,28 +60,42 @@ const buildRequestInit = (
   headers: any,
   body?: any
 ): RequestInit => {
-  let requestInit = {
+  return {
     mode: mode,
     method: method,
     headers: headers,
-    body: null,
+    body: body ?? null,
   };
-  if (body) {
-    requestInit.body = body;
-  }
-  return requestInit;
 };
 
 async function post<T>(url: URL, body: any): Promise<T> {
-  const headers = buildHeaders();
+  const headers = buildHeaders('application/json');
   const options: RequestInit = buildRequestInit('cors', 'POST', headers, JSON.stringify(body));
   const response = await fetch(url, options);
   return await response.json();
 }
- 
+
+const createOptions = (contentType: string = 'text/x-prolog') => {
+  const headers = buildHeaders(contentType);
+  const options: RequestInit = buildRequestInit('cors', 'GET', headers);
+  return options;
+};
+
+async function get<T>(url: URL): Promise<T> {
+  const options = createOptions();
+  const response = await fetch(url, options);
+  return await response.json();
+}
+
+async function getString(url: URL): Promise<string> {
+  const options = createOptions();
+  const response = await fetch(url, options);
+  return await response.text();
+}
+
 export const persister = createSyncStoragePersister({
   storage: window.localStorage,
-})
+});
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -88,6 +105,22 @@ export const queryClient = new QueryClient({
   },
 });
 
+export function useGetWebServerJSON<T>(urlSuffix: string): UseQueryResult<T, Error> {
+  return useQuery({
+    queryKey: [urlSuffix],
+    queryFn: (): Promise<T> => get<T>(new URL(import.meta.env.VITE_SERVER_URL + urlSuffix)),
+    enabled: true,
+  });
+}
+
+export const useGetWebServerString = (urlSuffix: string): UseQueryResult<string, Error> => {
+  return useQuery({
+    queryKey: [urlSuffix],
+    queryFn: (): Promise<string> => getString(new URL(import.meta.env.VITE_SERVER_URL + urlSuffix)),
+    enabled: true,
+  });
+};
+
 export const usePostNormTransformationTaskStartRequest = (
   selection: string
 ): UseQueryResult<TaskResult, Error> => {
@@ -95,23 +128,21 @@ export const usePostNormTransformationTaskStartRequest = (
     queryKey: ['postNormTransformationTaskStartRequest'],
     queryFn: () =>
       post<TaskResult>(
-        new URL('https://localhost:4020/prototype-pipeline/v0/prototype/8/task/celery/start/'),
+        new URL(`${import.meta.env.VITE_PROTOTYPE_PIPELINE_URL}task/celery/start/`),
         buildPrototypeRequestBody([selection], 'transformIntoNorm')
       ),
     enabled: false,
   });
-}
+};
 
 export const usePostTaskStatusRequest = (id: string): UseQueryResult<TaskResult, Error> => {
   return useQuery({
     queryKey: ['postCeleryTaskStatusRequest'],
     queryFn: () =>
       post<TaskResult>(
-        new URL(
-          'https://localhost:4020/prototype-pipeline/v0/prototype/8/task/celery/status/' + id
-        ),
+        new URL(`${import.meta.env.VITE_PROTOTYPE_PIPELINE_URL}task/celery/status/` + id),
         { task_id: id }
       ),
     enabled: false,
   });
-}
+};

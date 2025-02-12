@@ -1,4 +1,3 @@
-import { defaultConfig } from "@/config/ServerConfig";
 import { LandesabgabeSachverhalt } from "./PrologTemplates";
 
 export enum PrologFileType {
@@ -44,28 +43,4 @@ export class PrologFile {
     public get sachverhalt(): LandesabgabeSachverhalt | undefined {
         return this._sachverhalt;
     }
-}
-
-function generateDownloadURL(lawName: string) {
-    return `${defaultConfig.getServerProtocol()}://${defaultConfig.getServerName()}:${defaultConfig.getServerPort()}/fetch-law?kurztitel=${lawName}`;
-}
-
-export const defaultLawSet: [string] = [
-    "labgg"
-];
-
-export async function downloadLaw(fileName: string) {
-    console.log(`Trying to download "${fileName}"`)
-    const request = await fetch(generateDownloadURL(fileName));
-
-    if(!request.ok) {
-        throw request.status;
-    }
-
-    const text = await (request).text();
-    return new PrologFile(fileName, text, undefined, PrologFileType.LAW);
-}
-
-export function getRechtsbestand(fileSet: string[] = defaultLawSet): Promise<PrologFile>[] {
-    return fileSet.map(downloadLaw);
 }

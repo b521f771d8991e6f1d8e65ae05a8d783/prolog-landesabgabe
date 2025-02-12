@@ -14,12 +14,15 @@ COPY Sources/WebServer .
 COPY .env* .
 RUN dotenvx run -f .env.${BUILD_MODE} -- mvn clean install -U --settings settings.xml
 
-FROM eclipse-temurin:21-jdk-jammy AS production
+FROM development AS production
 ARG BUILD_MODE
 
 WORKDIR /app
 
 COPY --from=build /app/target/*jar app.jar
+COPY Sources/WebServer/scripts/launch.sh .
+COPY .env* .
 RUN chmod +x app.jar
+RUN chmod +x launch.sh
 
-ENTRYPOINT ["java", "-Djasypt.encryptor.password=eXsoZKnOFb6PVnLEpYz0", "-Dspring.profiles.active=prod", "-jar", "/app.jar"]
+ENTRYPOINT ["dotenvx", "run", "--", "./launch.sh"]

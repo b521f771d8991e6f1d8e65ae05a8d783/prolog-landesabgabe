@@ -21,7 +21,7 @@ services:
         - BUILD_MODE=debug-local
     tty: true
     ports:
-      - "4434:8080"
+      - "4434:4434"
     volumes:
       - ../../:/workspace
   web-server:

@@ -26,5 +26,5 @@ COPY Sources/lxui/nginx/lxui.conf /etc/nginx/conf.d/
 RUN rm /etc/nginx/nginx.conf
 COPY Sources/lxui/nginx/nginx.conf /etc/nginx/nginx.conf
 
-RUN mkdir /usr/share/nginx/html/lxui
-COPY --from=build /build /usr/share/nginx/html/lxui
+RUN mkdir /usr/share/nginx/html/lx-frontend
+COPY --from=build /build /usr/share/nginx/html/lx-frontend

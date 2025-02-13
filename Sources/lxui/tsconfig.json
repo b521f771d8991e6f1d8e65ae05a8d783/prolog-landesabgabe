@@ -1,25 +1,39 @@
 {
   "compilerOptions": {
-    "types": ["@testing-library/jest-dom", "vitest/globals"],
-    "target": "ESNext",
+    "types": [
+      "@testing-library/jest-dom",
+      "vitest/globals"
+    ],
+    "target": "ES2020",
     "useDefineForClassFields": true,
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
     "allowJs": false,
     "skipLibCheck": true,
     "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "ESNext",
-    "moduleResolution": "Node",
+    "module": "ES2020",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
     "paths": {
-      "@/*": ["./src/*"],
-      "@test-utils": ["./test-utils"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@test-utils": [
+        "./test-utils"
+      ]
     }
   },
-  "include": ["src", "test-utils"]
+  "include": [
+    "src",
+    "test-utils"
+  ]
 }

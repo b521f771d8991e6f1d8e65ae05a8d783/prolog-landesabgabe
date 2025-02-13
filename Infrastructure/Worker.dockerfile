@@ -1,30 +1,14 @@
-FROM swift:noble AS dev
-
-# TOOD replace this with nixos/nix once nix has swift 6 support
-# FROM nixos/nix
-# https://github.com/NixOS/nixpkgs/issues/343210#issuecomment-2424134735
-
-# install swift static SDK
-RUN swift sdk install https://download.swift.org/swift-6.0.2-release/static-sdk/swift-6.0.2-RELEASE/swift-6.0.2-RELEASE_static-linux-0.0.1.artifactbundle.tar.gz --checksum aa5515476a403797223fc2aad4ca0c3bf83995d5427fb297cab1d93c68cee075
-
-RUN apt update -y && apt upgrade -y && apt install -y curl git gpg cmake \
-    ninja-build gdb clangd clang-format clang-tidy zip python3 swi-prolog \
-    cargo rustc rust-src rustfmt
-# we do not need to install clang since it is included in the swift:noble image
+ARG BUILD_MODE=debug-local
+FROM containers.github.scch.at/land-ooe/docker-images/swift-cpp-rust-toolchain:main-latest AS development
+ARG BUILD_MODE
 
 WORKDIR /
-
-# configure this
-
-ENV CC=/usr/bin/clang
-ENV CXX=/usr/bin/clang++
-ENV OBJCC=/usr/bin/clang
-ENV OBJCXX=/usr/bin/clang++
 
 RUN git config --global --add safe.directory /workspace
 EXPOSE 5173
 
-FROM dev AS build
+FROM development AS build
+ARG BUILD_MODE
 
 # TODO: build it to a static binary
 
@@ -33,21 +17,30 @@ RUN mkdir /workspace
 COPY . /workspace
 WORKDIR /workspace
 
-RUN cmake --preset debug-x86-64-unknown-linux-gnu -S. -Bout/build/debug-x86-64-unknown-linux-gnu -GNinja
-RUN ninja -C out/build/debug-x86-64-unknown-linux-gnu SwiftPackage
+RUN dotenvx run -f .env.${BUILD_MODE} -- cmake \
+    --preset debug-x86-64-unknown-linux-gnu \
+    -S . \
+    -B out/build/debug-x86-64-unknown-linux-gnu \
+    -G Ninja
+
+RUN dotenvx run -f .env.${BUILD_MODE} -- ninja \
+    -C out/build/debug-x86-64-unknown-linux-gnu \
+    SwiftPackage
+
 RUN strip .build/debug/LX
 
 # TODO switch to alpine:latest once we can build it statically
-FROM swift:noble AS run
+FROM swift:noble AS production
+ARG BUILD_MODE
+ENV BUILD_MODE ${BUILD_MODE}
 
-RUN apt update && apt upgrade -y && apt install -y curl
-RUN curl -sfS https://dotenvx.sh | sh
+RUN apt update && apt upgrade -y && apt install -y curl && curl -sfS https://dotenvx.sh | sh
 
 RUN mkdir /app
 COPY --from=build /workspace/.build/debug/LX /app
-COPY --from=build /workspace/.env /app
+COPY --from=build /workspace/.env* /app
 
 WORKDIR /app
-CMD [ "/usr/local/bin/dotenvx", "run", "--", "/app/LX" ]
+CMD /usr/bin/env dotenvx run -f .env.${BUILD_MODE} -- /app/LX
 EXPOSE 1337
 HEALTHCHECK CMD curl --fail http://localhost:1337/version || exit 1

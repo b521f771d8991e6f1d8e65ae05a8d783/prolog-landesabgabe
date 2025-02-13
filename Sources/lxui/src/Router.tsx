@@ -1,19 +1,24 @@
 import { createBrowserRouter, RouterProvider } from 'react-router';
-import { HomePage } from './pages/Home.page';
-import { PrologVM } from './model/PrologVM';
 import { VersionString } from './components/VersionString';
+import { HomePage } from './pages/Home.page';
 
-export function Router({ prologVM }: { prologVM: PrologVM }) {
-  return <RouterProvider router={createBrowserRouter([
-    {
-      path: '/',
-      element: <HomePage prologVM={prologVM} />,
-    },
-    {
-      path: '/version',
-      element: <>
-        <VersionString />
-      </>
-    }
-  ])} />;
+export function Router() {
+  return (
+    <RouterProvider
+      router={createBrowserRouter([
+        {
+          path: '/',
+          element: <HomePage />,
+        },
+        {
+          path: '/version',
+          element: (
+            <>
+              <VersionString />
+            </>
+          ),
+        },
+      ])}
+    />
+  );
 }

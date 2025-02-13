@@ -19,7 +19,7 @@ let package = Package(
             targets: ["LX"])
     ],
     dependencies: [
-        .package(url: "https://github.com/vapor/vapor", from: "4.106.4")
+        .package(url: "https://github.com/vapor/vapor", from: "4.112.0")
     ],
     targets: [
         .executableTarget(

@@ -1,26 +1,26 @@
-import { defaultConfig } from "@/config/ServerConfig";
-import { useState, useEffect } from "react";
-import { Text } from "@mantine/core";
+import { useEffect, useState } from 'react';
+import { Text } from '@mantine/core';
+import { useGetWebServerString } from '@/util/BackendQueryProvider';
 
 export function VersionString() {
-  const [version, setVersion] = useState<JSX.Element>(<></>);
+  const [version, setVersion] = useState<string | null>(null);
+  const { data, error, isError, isSuccess } = useGetWebServerString('version');
 
   useEffect(() => {
-    async function d() {
-      const versionRequest = await fetch(`${defaultConfig.getServerProtocol()}://${defaultConfig.getServerName()}:${defaultConfig.getServerPort()}/version`, {
-        mode: "cors"
-      });
-
-      if (!versionRequest.ok) {
-        console.error(versionRequest);
-        setVersion(<Text c="red">Could not connect to server</Text>);
-      }
-
-      setVersion(<>{await versionRequest.text()}</>);
+    if (isSuccess) {
+      setVersion(() => data!);
     }
 
-    d();
-  }, []);
+    if (isError) {
+      console.error(error);
+      setVersion(() => null);
+    }
+  }, [isSuccess, isError, data]);
 
-  return version;
+  return (
+    <>
+      {isSuccess && <Text c="dimmed">Version: {version}</Text>}
+      {isError && <Text c="red">Could not connect to server</Text>}
+    </>
+  );
 }

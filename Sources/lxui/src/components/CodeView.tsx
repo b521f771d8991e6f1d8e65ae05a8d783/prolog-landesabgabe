@@ -135,25 +135,26 @@ export function CodeView({
             {showButtons.download && <DownloadButton text={code} fileName={fileName} />}
             {showButtons.magnify && <MagnifyButton text={code} />}
             <Button
-              disabled={false && !enableNormButton()}
+              //disabled={false && !enableNormButton()}
               onClick={onTransformToNormClicked}
               leftSection={'🪄'}
+              disabled
             >
               In Norm verwandeln
             </Button>
           </Flex>
-            <Box pos="relative">
-              <LoadingOverlay
-                visible={visible}
-                zIndex={1000}
-                overlayProps={{ radius: 'sm', blur: 2 }}
-              />
-              {taskId !== null && <TaskResultView taskId={taskId} addNorm={addNorm} />}
-              {isTaskRequestInProgress && (
-                <TaskStartRequest selection={selection} setTaskId={updateTaskId} />
-              )}
-              {isTaskError && <TaskResultFetchingErrorView />}
-            </Box>
+          <Box pos="relative">
+            <LoadingOverlay
+              visible={visible}
+              zIndex={1000}
+              overlayProps={{ radius: 'sm', blur: 2 }}
+            />
+            {taskId !== null && <TaskResultView taskId={taskId} addNorm={addNorm} />}
+            {isTaskRequestInProgress && (
+              <TaskStartRequest selection={selection} setTaskId={updateTaskId} />
+            )}
+            {isTaskError && <TaskResultFetchingErrorView />}
+          </Box>
         </Center>
       )}
     </>

@@ -69,8 +69,7 @@ jobs:
           containers.github.scch.at/land-ooe/lx-frontend:${{ steps.fetch_branch.outputs.branch }}-latest
         labels: |
           ${{ steps.frontend-meta.outputs.labels }}
-        build-args: |
-          - BUILD_MODE=production-server
+        build-args: BUILD_MODE=production-server
       env:
           SOURCE_DATE_EPOCH: 0
     - name: Extract metadata (tags, labels) for backend
@@ -95,7 +94,6 @@ jobs:
           containers.github.scch.at/land-ooe/lx-worker:${{ steps.fetch_branch.outputs.branch }}-latest
         labels: |
           ${{ steps.backend-meta.outputs.labels }}
-        build-args: |
-          - BUILD_MODE=production-server
+        build-args: BUILD_MODE=production-server
       env:
           SOURCE_DATE_EPOCH: 0

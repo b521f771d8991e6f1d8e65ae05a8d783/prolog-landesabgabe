@@ -1,10 +1,6 @@
-name: Version-Release
+name: Build Backend + Frontend
 run-name: version-release on branch ${{ github.ref_name }} triggered by @${{ github.actor}}
 on:
-  push:
-    branches: [ "main", "stable" ]
-  pull_request:
-    branches: [ "main", "stable" ]
   workflow_dispatch:
 # you can build manually on dev, but we do not want to spam the worker
 # see here: https://github.scch.at/Land-OOE/prolog-landesabgabe/actions/workflows/docker-image.yml

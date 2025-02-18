@@ -1,12 +1,7 @@
-name: dev-pull-request
+name: Build Web-Server Image
 run-name: ${{ github.event_name }} to ${{ github.ref_name }} branch by @${{ github.actor}}
 on:
   workflow_dispatch:
-  workflow_call:
-  pull_request:
-    types: [ opened, reopened, synchronize]
-  push:
-    branches: [ "dev","main", "stable" ]
 jobs:
   maven-clean-validate-compile:
     uses: Land-OOE/general-workflows/.github/workflows/maven-clean-validate-compile.yml@main

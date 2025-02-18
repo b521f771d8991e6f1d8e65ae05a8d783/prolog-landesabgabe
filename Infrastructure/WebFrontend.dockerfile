@@ -1,5 +1,5 @@
 FROM node:lts-alpine AS development
-ARG BUILD_MODE=debug-local
+ARG BUILD_MODE
 
 RUN apk update
 RUN apk upgrade

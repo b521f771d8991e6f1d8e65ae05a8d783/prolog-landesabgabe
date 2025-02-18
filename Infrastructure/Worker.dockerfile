@@ -1,4 +1,3 @@
-ARG BUILD_MODE=debug-local
 FROM containers.github.scch.at/land-ooe/docker-images/swift-cpp-rust-toolchain:main-latest AS development
 ARG BUILD_MODE
 

@@ -1,5 +1,5 @@
 FROM maven:3.9.9-eclipse-temurin-21 AS development
-ARG BUILD_MODE=debug-local
+ARG BUILD_MODE
 
 RUN apt update && apt upgrade -y && apt install -y curl && curl -sfS https://dotenvx.sh | sh
 

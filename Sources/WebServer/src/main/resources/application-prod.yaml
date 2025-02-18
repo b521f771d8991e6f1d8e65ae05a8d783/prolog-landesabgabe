@@ -10,4 +10,4 @@ spring:
           auth-server-url: http://keycloak-server:8080/auth
           credentials:
             secret: ENC(Yqs+VMpphc6AWlygrjoKCPpr6g8SS8ThrXZUpnmzEHyOL8A/pCDlBNM0AljK7vmZfB3lMAUBWlG995ymydwOFD7DUZF+Fih16tTLNa1D0ng=)
-        cors-config: https://innovation-studio.landooe.fivesquare.dev, https://lx.landooe.fivesquare.dev
+        cors-config: https://lx.landooe.fivesquare.dev, http://localhost:4434

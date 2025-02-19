@@ -24,16 +24,6 @@ services:
       - "4434:4434"
     volumes:
       - ../../:/workspace
-  web-server:
-    build:
-      context: ../..
-      dockerfile: Sources/WebServer/Dockerfile
-      target: ${WEB_SERVER_TARGET_STAGE}
-      args:
-        - BUILD_MODE=${ENV_NAME}
-    tty: true
-    ports:
-      - "4433:4433"
 networks:
   default:
     name: "traefik_proxy_sprachguru_prod_local"

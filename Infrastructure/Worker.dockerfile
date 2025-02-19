@@ -16,16 +16,7 @@ RUN mkdir /workspace
 COPY . /workspace
 WORKDIR /workspace
 
-RUN dotenvx run -f .env.${BUILD_MODE} -- cmake \
-    --preset debug-x86-64-unknown-linux-gnu \
-    -S . \
-    -B out/build/debug-x86-64-unknown-linux-gnu \
-    -G Ninja
-
-RUN dotenvx run -f .env.${BUILD_MODE} -- ninja \
-    -C out/build/debug-x86-64-unknown-linux-gnu \
-    SwiftPackage
-
+RUN dotenvx run -f .env.${BUILD_MODE} -- swift build
 RUN strip .build/debug/LX
 
 # TODO switch to alpine:latest once we can build it statically

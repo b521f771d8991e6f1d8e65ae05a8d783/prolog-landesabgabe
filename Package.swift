@@ -1,6 +1,30 @@
 // swift-tools-version: 6.0
 
+import Foundation
 import PackageDescription
+
+func executeCommand(command: String, args: [String]) {
+    let task = Process()
+    task.launchPath = "/usr/bin/env"
+    task.arguments = [command]
+    task.arguments?.append(contentsOf: args)
+    task.launch()
+}
+
+let rootPath = "/workspace/"
+let rustBridgingHeader = "\(rootPath)Build/FFI/rust-bridging-header.h"
+let cmakeOutputDir = "\(rootPath)/out/build/debug-x86-64-unknown-linux-gnu"
+
+executeCommand(command: "cargo", args: ["build"])
+executeCommand(
+    command: "cmake",
+    args: [
+        "-S.", "-Bout/build/debug-x86-64-unknown-linux-gnu", "-GNinja",
+        "--preset=debug-x86-64-unknown-linux-gnu",
+    ])
+executeCommand(
+    command: "cmake",
+    args: ["--build", "\(cmakeOutputDir)", "--target", "ActKit", "LogicKit"])
 
 #if DEBUG
     let buildType = "debug"
@@ -8,8 +32,6 @@ import PackageDescription
     // TODO rename this
     let buildType = "debug"
 #endif
-
-let rustBridgingHeader = "Build/FFI/rust-bridging-header.h"
 
 let package = Package(
     name: "LX",
@@ -30,16 +52,38 @@ let package = Package(
             swiftSettings: [
                 .interoperabilityMode(.Cxx),
                 .unsafeFlags([
-                    "generated/SwiftBridgeCore.swift", "generated/LX-rs/LX-rs.swift",
+                    "\(rootPath)generated/SwiftBridgeCore.swift",
+                    "\(rootPath)generated/LX-rs/LX-rs.swift",
                     "-import-objc-header", rustBridgingHeader,
+                    "-I\(cmakeOutputDir)/Sources/ActKit",
+                    "-I\(cmakeOutputDir)/Sources/LogicKit",
+                    "-I\(cmakeOutputDir)/BuildInformation",
+                    "-I\(cmakeOutputDir)",
+                    "-L\(cmakeOutputDir)/Sources/ActKit",
+                    "-L\(cmakeOutputDir)/Sources/LogicKit",
+                    "-L\(cmakeOutputDir)/BuildInformation",
+                    "-L\(cmakeOutputDir)",
+                    "-F\(rootPath)/Sources/LogicKit/include",
+                    "-I\(rootPath)/Sources/LogicKit/include",
+                    "-L\(rootPath)/Sources/LogicKit/include",
                 ]),
             ],
             linkerSettings: [
                 .unsafeFlags([
-                    "generated/SwiftBridgeCore.swift",
-                    "generated/LX-rs/LX-rs.swift",
+                    "\(rootPath)generated/SwiftBridgeCore.swift",
+                    "\(rootPath)generated/LX-rs/LX-rs.swift",
                     "-import-objc-header", rustBridgingHeader,
-                    "-Ltarget/\(buildType)", "-lcorpus",
+                    "-L\(rootPath)target/\(buildType)", "-lcorpus",
+                    "-L\(cmakeOutputDir)/Sources/ActKit",
+                    "-L\(cmakeOutputDir)/Sources/LogicKit",
+                    "-L\(cmakeOutputDir)/swi-prolog-prefix/src/swi-prolog-build/src",
+                    "-L\(cmakeOutputDir)/vcpkg_installed/x64-linux/lib",
+                    "-lActKit",
+                    "-lLogicKit",
+                    "-lswipl_static",
+                    "-larchive",
+                    "-lncurses",
+                    "-lboost_filesystem",
                 ])
             ])
     ],

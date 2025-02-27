@@ -1,10 +1,11 @@
 use rust_embed::Embed;
 #[derive(Embed)]
-#[folder = "Sources/Corpus"]
+#[folder = "../Corpus"]
 #[include = "*.pl"]
 #[exclude = "*.rs"]
 #[exclude = "Testing/*"]
 #[exclude = "stdlib/*"]
+#[exclude = "src/*"]
 struct Asset;
 
 pub fn fetch_from_corpus(file_path: &str) -> Option<String> {

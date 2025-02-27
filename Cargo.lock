@@ -3,15 +3,6 @@
 version = 3
 
 [[package]]
-name = "LX-rs"
-version = "0.1.0"
-dependencies = [
- "rust-embed",
- "swift-bridge",
- "swift-bridge-build",
-]
-
-[[package]]
 name = "adler32"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -82,6 +73,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b49ba7ef1ad6107f8824dbe97de947cbaac53c44e7f9756a1fba0d37c1eec505"
 dependencies = [
  "memchr",
+]
+
+[[package]]
+name = "corpus"
+version = "0.1.0"
+dependencies = [
+ "rust-embed",
+ "swift-bridge",
+ "swift-bridge-build",
 ]
 
 [[package]]

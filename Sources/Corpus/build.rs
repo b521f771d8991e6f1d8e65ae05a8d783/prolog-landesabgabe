@@ -5,7 +5,7 @@ use std::path::PathBuf;
 fn main() {
     let out_dir = PathBuf::from("./generated");
 
-    let bridges: Vec<&str> = vec!["Sources/Corpus/lib.rs"];
+    let bridges: Vec<&str> = vec!["src/lib.rs"];
     for path in &bridges {
         println!("cargo:rerun-if-changed={}", path);
     }

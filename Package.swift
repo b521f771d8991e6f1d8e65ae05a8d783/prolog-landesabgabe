@@ -12,7 +12,8 @@ func executeCommand(command: String, args: [String]) {
 }
 
 let rootPath = "/workspace/"
-let rustBridgingHeader = "\(rootPath)Build/FFI/rust-bridging-header.h"
+let generatedPath = "\(rootPath)/Sources/Corpus/generated/"
+let rustBridgingHeader = "\(rootPath)Sources/Corpus/include/rust-bridging-header.h"
 let cmakeOutputDir = "\(rootPath)/out/build/debug-x86-64-unknown-linux-gnu"
 
 executeCommand(command: "cargo", args: ["build"])
@@ -52,8 +53,8 @@ let package = Package(
             swiftSettings: [
                 .interoperabilityMode(.Cxx),
                 .unsafeFlags([
-                    "\(rootPath)generated/SwiftBridgeCore.swift",
-                    "\(rootPath)generated/LX-rs/LX-rs.swift",
+                    "\(generatedPath)SwiftBridgeCore.swift",
+                    "\(generatedPath)corpus/corpus.swift",
                     "-import-objc-header", rustBridgingHeader,
                     "-I\(cmakeOutputDir)/Sources/ActKit",
                     "-I\(cmakeOutputDir)/Sources/LogicKit",
@@ -70,8 +71,8 @@ let package = Package(
             ],
             linkerSettings: [
                 .unsafeFlags([
-                    "\(rootPath)generated/SwiftBridgeCore.swift",
-                    "\(rootPath)generated/LX-rs/LX-rs.swift",
+                    "\(generatedPath)SwiftBridgeCore.swift",
+                    "\(generatedPath)corpus/corpus.swift",
                     "-import-objc-header", rustBridgingHeader,
                     "-L\(rootPath)target/\(buildType)", "-lcorpus",
                     "-L\(cmakeOutputDir)/Sources/ActKit",

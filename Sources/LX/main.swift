@@ -108,7 +108,10 @@ func routes(withApp app: Application, andLogicVM lvm: LogicVM) throws {
 
 func configure(app a: Application) {
     let corsConfiguration = CORSMiddleware.Configuration(
-        allowedOrigin: .all,
+        allowedOrigin: .any([
+            "https://innovation-studio.landooe.fivesquare.dev", "https://lx.landooe.fivesquare.dev",
+            "http://localhost:4434",
+        ]),
         allowedMethods: [.GET, .POST, .PUT, .OPTIONS, .DELETE, .PATCH],
         allowedHeaders: [
             .accept, .authorization, .contentType, .origin, .xRequestedWith, .userAgent,

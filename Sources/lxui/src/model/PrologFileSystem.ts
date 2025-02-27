@@ -1,4 +1,5 @@
 import { LandesabgabeSachverhalt } from "./PrologTemplates";
+import SWIPL from "swipl-wasm";
 
 export enum PrologFileType {
     LAW, FACT
@@ -42,5 +43,43 @@ export class PrologFile {
 
     public get sachverhalt(): LandesabgabeSachverhalt | undefined {
         return this._sachverhalt;
+    }
+
+    public async queryThisFile(queryString: string, input?: Record<string, unknown>) {
+        // Step 1: Initialise a new PrologVM
+        // we do not do this inside the PrologVM, because that would mess up the global environment, instead, we want to create our own temporary files
+        const temporaryFileName = `/tmp/${this.name}`;
+
+        const swipl = await SWIPL({
+            arguments: ["-q"]
+        });
+        swipl.FS.writeFile(temporaryFileName, this.evaluatedProlog);
+
+        const queryLoad: SWIPL.Query = swipl.prolog.query("load_files(File)", {
+            "File": temporaryFileName
+        });
+        console.log(queryLoad.once());
+
+        // Step 2: Execute the Query
+
+        let ret: any[] = [];
+        let query = swipl.prolog.query(queryString, input);
+        let current: any;
+
+        do {
+            current = query.next()
+            ret.push(current.value);
+        } while('done' in current && !current.done);
+
+        // Step 3: Clean up & Return
+
+        const queryUnload: SWIPL.Query = swipl.prolog.query("unload_file(File)", {
+            "File": temporaryFileName
+        });
+        console.log(queryUnload.once())
+
+        swipl.FS.unlink(temporaryFileName);
+
+        return ret;
     }
 }

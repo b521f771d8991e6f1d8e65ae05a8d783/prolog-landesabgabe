@@ -6,7 +6,7 @@ services:
       dockerfile: Infrastructure/Worker.dockerfile
       target: ${WORKER_TARGET_STAGE}
       args:
-        - BUILD_MODE=debug-local
+        - BUILD_MODE=${ENV_NAME}
     tty: true
     ports:
       - "1337:1337"
@@ -18,10 +18,10 @@ services:
       dockerfile: Infrastructure/WebFrontend.dockerfile
       target: ${FRONTEND_TARGET_STAGE}
       args:
-        - BUILD_MODE=debug-local
+        - BUILD_MODE=${ENV_NAME}
     tty: true
     ports:
-      - "4434:8080"
+      - "4434:4434"
     volumes:
       - ../../:/workspace
   web-server:
@@ -30,7 +30,7 @@ services:
       dockerfile: Sources/WebServer/Dockerfile
       target: ${WEB_SERVER_TARGET_STAGE}
       args:
-        - BUILD_MODE=debug-local
+        - BUILD_MODE=${ENV_NAME}
     tty: true
     ports:
       - "4433:4433"

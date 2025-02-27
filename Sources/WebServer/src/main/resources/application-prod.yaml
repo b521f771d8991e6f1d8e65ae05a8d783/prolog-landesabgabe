@@ -9,5 +9,5 @@ spring:
         policy-enforcer-config: #/policy-enforcer.json
           auth-server-url: http://keycloak-server:8080/auth
           credentials:
-            secret: ehJbW0cIZHtuh8rfzFru3sQHCdV8gWdx
-        cors-config: https://innovation-studio.landooe.fivesquare.dev
+            secret: ENC(Yqs+VMpphc6AWlygrjoKCPpr6g8SS8ThrXZUpnmzEHyOL8A/pCDlBNM0AljK7vmZfB3lMAUBWlG995ymydwOFD7DUZF+Fih16tTLNa1D0ng=)
+        cors-config: https://innovation-studio.landooe.fivesquare.dev, https://lx.landooe.fivesquare.dev, http://localhost:4434

@@ -7,6 +7,7 @@ langtitel(labgg,
     "Landesgesetz über eine Landesabgabe für das obertägige Gewinnen mineralischer Rohstoffe (Oö. Landschaftsabgabegesetz)").
 titel(labgg, "Oö. Landschaftsabgabegesetz").
 kurztitel(labgg, "LAbgG").
+link(labgg, "https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=LrOO&Gesetzesnummer=20000943").
 
 % §1 Gegenstand der Abgabe:
 

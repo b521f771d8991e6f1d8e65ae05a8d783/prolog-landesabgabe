@@ -25,7 +25,6 @@ export function CodeView({
   };
 }) {
   const codeId = useId();
-  const codeElement = document.getElementById(codeId);
   const [selection, setSelection] = useState<string>('');
   const [norms, setNorms] = useState<string[]>([]);
   const [taskId, setTaskId] = useState<string | null>(null);
@@ -34,13 +33,18 @@ export function CodeView({
   const [visible, { toggle }] = useDisclosure(false);
 
   useEffect(() => {
+    const codeElement = document.getElementById(codeId);
     if (codeElement) {
       if (codeElement.hasAttribute('data-highlighted')) {
         codeElement.removeAttribute('data-highlighted');
       }
+      console.log(codeElement);
 
       hljs.highlightElement(codeElement);
     }
+  }, [code, codeId]);
+
+  useEffect(() => {
     const handleMouseUp = () => {
       const selection = window.getSelection();
       if (selection) {
@@ -120,6 +124,7 @@ export function CodeView({
           {code}
         </code>
       </Code>
+  
       {showFooter && (
         <Center>
           <Flex

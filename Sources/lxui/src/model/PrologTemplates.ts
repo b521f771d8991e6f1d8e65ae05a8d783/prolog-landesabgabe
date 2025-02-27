@@ -139,8 +139,7 @@ export class LandesabgabePerson {
     }
 
     serialize2Prolog(sachverhaltsID: string): string {
-        return `
-        % Person
+        return `% Person
         subjekt(${sachverhaltsID}, ${this.personId}).
         vorname(${this.personId}, "${this._vorname}").
         nachname(${this.personId}, "${this._nachname}").
@@ -180,8 +179,7 @@ export class LandesabgabeHandlung {
     }
 
     serialize2Prolog(sachverhaltId: string, personId: string): string {
-        return `
-        % Handlung
+        return `% Handlung
         verbum(${sachverhaltId}, ${personId}, bergbau(gewinnen, obertags, mineralische_rohstoffe)).
         objekt(${sachverhaltId}, ${personId}, bergbau(gewinnen, obertags, mineralische_rohstoffe), ${this.uuidWithPrefix}).
         ${this.gefördert ? `gefoerdert(${this.uuidWithPrefix}, ${this.gefördert!}, ${this.einheit}).` : ""}

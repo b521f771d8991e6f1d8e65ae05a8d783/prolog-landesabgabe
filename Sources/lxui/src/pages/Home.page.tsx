@@ -182,7 +182,7 @@ function AppView({ prologVM }: { prologVM: PrologVM }) {
   const code = useMemo<string>(() => mergeFactFiles(factBase), [factBase]);
 
   function mergeFactFiles(pf: PrologFile[]) {
-    return pf.reduce((p, c) => `${p}\n% Filename: ${c.name}\n${c.evaluatedProlog}`, '');
+    return pf.reduce((p, c) => `${p}\n% Filename: ${c.name}\n${c.evaluatedProlog}`, '').substring(1); // substring is used to prevent the first newline from being shown
   }
 
   const addToFactBase = (newFile: PrologFile) => {

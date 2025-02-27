@@ -1,5 +1,11 @@
 %%% TODO
 
+langtitel(krog,
+    "Gesetz vom 3. April 1919 über die Aufhebung des Adels, der weltlichen Ritter- und Damenorden und gewisser Titel und Würden.").
+titel(krog, "Adelsaufhebungsgesetz").
+kurztitel(krog, "AdaufG").
+link(krog, "https://ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10000036&FassungVom=2023-05-23").
+
 %% § 1.
 %% Der Adel, seine äußeren Ehrenvorzüge sowie bloß zur Auszeichnung verliehene, mit einer amtlichen Stellung, dem Beruf oder einer wissenschaftlichen oder künstlerischen Befähigung nicht im Zusammenhange stehenden Titel und Würden und die damit verbundenen Ehrenvorzügeösterreichischer Staatsbürger werden aufgehoben.
 %% 

@@ -37,10 +37,27 @@ pub fn list_corpus() -> Vec<String> {
         .collect();
 }
 
+#[derive(Embed)]
+#[folder = "../lxui/dist"]
+struct WebAppData;
+
+fn fetch_from_web_app_data(file_path: &str) -> Option<String> {
+    if let Some(embedded_file) = WebAppData::get(file_path) {
+        Some(
+            std::str::from_utf8(embedded_file.data.as_ref())
+                .unwrap_or("error while extracting")
+                .to_string(),
+        )
+    } else {
+        None
+    }
+}
+
 #[swift_bridge::bridge]
 mod ffi {
     extern "Rust" {
         pub fn fetch_from_corpus(file_path: &str) -> Option<String>;
         pub fn list_corpus() -> Vec<String>;
+        //pub fn fetch_from_web_app_data(file_path: &str) -> Option<String>;
     }
 }

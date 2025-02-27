@@ -1,4 +1,5 @@
 FROM containers.github.scch.at/land-ooe/docker-images/swift-cpp-rust-toolchain:main-latest AS development
+RUN apt update && apt upgrade -y && apt install -y npm
 ARG BUILD_MODE
 
 WORKDIR /

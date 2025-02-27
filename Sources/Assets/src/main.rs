@@ -1,4 +1,4 @@
-use corpus::{fetch_from_corpus, list_corpus};
+use assets::{fetch_from_corpus, list_corpus};
 use std::env;
 
 fn main() {

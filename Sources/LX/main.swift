@@ -27,10 +27,12 @@ public func configure(withApp app: Application, andLogicVM lvm: LogicVM) throws 
     try routes(withApp: app, andLogicVM: lvm)
 }
 
+@Sendable
 func isAlpha(_ str: String) -> Bool {
     return str.range(of: "^[a-zA-Z]+$", options: .regularExpression) != nil
 }
 
+@Sendable
 func fetchLaw(withName name: String) -> String? {
     let resourceName = "\(name).pl"
 
@@ -42,6 +44,7 @@ func fetchLaw(withName name: String) -> String? {
     return resource
 }
 
+@Sendable
 func fetchCorpus() -> [String] {
     return list_corpus().map { $0.as_str().toString() }
 }
@@ -93,7 +96,7 @@ func routes(withApp app: Application, andLogicVM lvm: LogicVM) throws {
         throw Abort(.imATeapot)
     }
 
-    app.get { req async throws -> String in
+    app.get("query") { req async throws -> String in
         guard let query: String = req.query[String.self, at: "query"] else {
             throw Abort(.badRequest)
         }
@@ -103,6 +106,18 @@ func routes(withApp app: Application, andLogicVM lvm: LogicVM) throws {
         }
 
         return result
+    }
+
+    app.get("index.html") { req async throws -> String in
+        return ""
+    }
+
+    app.get("app") { req async throws -> String in
+        return ""
+    }
+
+    app.get("assets") { req async throws -> String in
+        return ""
     }
 }
 

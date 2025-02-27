@@ -10,7 +10,6 @@ export default defineConfig({
     setupFiles: './vitest.setup.mjs',
   },
   build: {
-    outDir: "/build",
     minify: true
   },
   "envDir": "../.."

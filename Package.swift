@@ -12,15 +12,21 @@ func executeCommand(command: String, args: [String]) {
 }
 
 let rootPath = "/workspace/"
-let generatedPath = "\(rootPath)/Sources/Corpus/generated/"
-let rustBridgingHeader = "\(rootPath)Sources/Corpus/include/rust-bridging-header.h"
+
+let rustFFIFlags = [
+    // corpus
+    "\(rootPath)/Sources/Assets/generated/SwiftBridgeCore.swift",
+    "\(rootPath)/Sources/Assets/generated/assets/assets.swift",
+    "-import-objc-header", "\(rootPath)/Sources/Assets/include/rust-bridging-header.h",
+]
+
 let cmakeOutputDir = "\(rootPath)/out/build/debug-x86-64-unknown-linux-gnu"
 
 executeCommand(command: "cargo", args: ["build"])
 executeCommand(
     command: "cmake",
     args: [
-        "-S.", "-Bout/build/debug-x86-64-unknown-linux-gnu", "-GNinja",
+        "-S.", "-B\(cmakeOutputDir)", "-GNinja",
         "--preset=debug-x86-64-unknown-linux-gnu",
     ])
 executeCommand(
@@ -52,40 +58,38 @@ let package = Package(
             ],
             swiftSettings: [
                 .interoperabilityMode(.Cxx),
-                .unsafeFlags([
-                    "\(generatedPath)SwiftBridgeCore.swift",
-                    "\(generatedPath)corpus/corpus.swift",
-                    "-import-objc-header", rustBridgingHeader,
-                    "-I\(cmakeOutputDir)/Sources/ActKit",
-                    "-I\(cmakeOutputDir)/Sources/LogicKit",
-                    "-I\(cmakeOutputDir)/BuildInformation",
-                    "-I\(cmakeOutputDir)",
-                    "-L\(cmakeOutputDir)/Sources/ActKit",
-                    "-L\(cmakeOutputDir)/Sources/LogicKit",
-                    "-L\(cmakeOutputDir)/BuildInformation",
-                    "-L\(cmakeOutputDir)",
-                    "-F\(rootPath)/Sources/LogicKit/include",
-                    "-I\(rootPath)/Sources/LogicKit/include",
-                    "-L\(rootPath)/Sources/LogicKit/include",
-                ]),
+                .unsafeFlags(
+                    rustFFIFlags + [
+                        // cmake dependencies
+                        "-I\(cmakeOutputDir)/Sources/ActKit",
+                        "-I\(cmakeOutputDir)/Sources/LogicKit",
+                        "-I\(cmakeOutputDir)/BuildInformation",
+                        "-I\(cmakeOutputDir)",
+                        "-L\(cmakeOutputDir)/Sources/ActKit",
+                        "-L\(cmakeOutputDir)/Sources/LogicKit",
+                        "-L\(cmakeOutputDir)/BuildInformation",
+                        "-L\(cmakeOutputDir)",
+                        "-F\(rootPath)/Sources/LogicKit/include",
+                        "-I\(rootPath)/Sources/LogicKit/include",
+                        "-L\(rootPath)/Sources/LogicKit/include",
+                    ]),
             ],
             linkerSettings: [
-                .unsafeFlags([
-                    "\(generatedPath)SwiftBridgeCore.swift",
-                    "\(generatedPath)corpus/corpus.swift",
-                    "-import-objc-header", rustBridgingHeader,
-                    "-L\(rootPath)target/\(buildType)", "-lcorpus",
-                    "-L\(cmakeOutputDir)/Sources/ActKit",
-                    "-L\(cmakeOutputDir)/Sources/LogicKit",
-                    "-L\(cmakeOutputDir)/swi-prolog-prefix/src/swi-prolog-build/src",
-                    "-L\(cmakeOutputDir)/vcpkg_installed/x64-linux/lib",
-                    "-lActKit",
-                    "-lLogicKit",
-                    "-lswipl_static",
-                    "-larchive",
-                    "-lncurses",
-                    "-lboost_filesystem",
-                ])
+                .unsafeFlags(
+                    rustFFIFlags + [
+                        // cmake dependencies
+                        "-L\(rootPath)target/\(buildType)", "-lassets",
+                        "-L\(cmakeOutputDir)/Sources/ActKit",
+                        "-L\(cmakeOutputDir)/Sources/LogicKit",
+                        "-L\(cmakeOutputDir)/swi-prolog-prefix/src/swi-prolog-build/src",
+                        "-L\(cmakeOutputDir)/vcpkg_installed/x64-linux/lib",
+                        "-lActKit",
+                        "-lLogicKit",
+                        "-lswipl_static",
+                        "-larchive",
+                        "-lncurses",
+                        "-lboost_filesystem",
+                    ])
             ])
     ],
     cxxLanguageStandard: .cxx20

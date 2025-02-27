@@ -1,5 +1,5 @@
 [package]
-name = "corpus"
+name = "assets"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,16 +7,10 @@ edition = "2021"
 
 [dependencies]
 rust-embed = { version = "8", features = ["include-exclude", "debug-embed", "compression"] }
-swift-bridge = "0.1"
+swift-bridge = "0.1.57"
 
 [build-dependencies]
-swift-bridge-build = "0.1"
+swift-bridge-build = "0.1.57"
 
 [lib]
 crate-type = ["staticlib", "lib"]
-name = "corpus"
-path = "src/lib.rs"
-
-[[bin]]
-name = "extract-from-corpus"
-path = "src/main.rs"

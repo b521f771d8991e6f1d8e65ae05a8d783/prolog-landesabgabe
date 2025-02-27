@@ -22,8 +22,6 @@
         "--compile-commands-dir=/workspace/out/build/debug-x86-64-unknown-linux-gnu"
     ],
     "C_Cpp.intelliSenseEngine": "disabled",
-    "swift.autoGenerateLaunchConfigurations": false,
-    "swift.sourcekit-lsp.backgroundIndexing": "off",
     "prettier.configPath": "/workspace/Sources/lxui/.prettierrc.mjs",
     "eslint.workingDirectories": [
         "/workspace/Sources/lxui/"

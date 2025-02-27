@@ -28,11 +28,6 @@
           # for building the documentation
           texliveFull
           
-          
-          # for the web part
-          nodejs_22
-
-
           # for the web part
           nodejs_22
 

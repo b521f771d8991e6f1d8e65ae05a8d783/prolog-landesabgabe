@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { v7 } from 'uuid';
 import {
+  Anchor,
   Box,
   Button,
   Center,
@@ -12,6 +13,7 @@ import {
   Paper,
   Text,
   Title,
+  Loader
 } from '@mantine/core';
 import { PrologFile, PrologFileType } from '@/model/PrologFileSystem';
 import { useGetWebServerJSON } from '@/util/BackendQueryProvider';
@@ -233,17 +235,44 @@ function ModalView({
 }
 
 function PrologFileView({ pf }: { pf: PrologFile }) {
-  return (
-    <>
-      <details>
-        <summary>{pf.name}</summary>
+  const [loadingIndicator, setLoadingIndicator] = useState<boolean>(true);
+  const [langtitel, setLangtitel] = useState<string>("");
+  const [kurztitel, setKurztitel] = useState<string>("");
+  const [link, setLink] = useState<string>();
+  const [titel, setTitel] = useState<string>("");
+
+  useEffect(() => {
+    async function effect() {
+      let internalLawName = pf.name;
+      const l = await pf.queryThisFile(`langtitel(${internalLawName}, X).`);
+      const k = await pf.queryThisFile(`kurztitel(${internalLawName}, X).`);
+      const u = await pf.queryThisFile(`link(${internalLawName}, X).`);
+      const t = await pf.queryThisFile(`titel(${internalLawName}, X).`);
+
+      setLangtitel(l[0].X.v);
+      setKurztitel(k[0].X.v);
+      setLink(u[0].X.v);
+      setTitel(t[0].X.v);
+      setLoadingIndicator(false);
+    }
+
+    effect();
+  }, [pf]);
+
+  return <>
+      {loadingIndicator && <Center my={10}>
+        <Loader color="rgba(0, 0, 0, 1)" />
+      </Center>}
+      {!loadingIndicator && <details>
+        <summary>{titel}</summary>
+        <Text size="xs"><u>Kurztitel:</u> {kurztitel} <Anchor href={link}>(Volltext-Link)</Anchor></Text>
+        <Text size="xs"><u>Langtitel</u>: {langtitel}</Text>
         <CodeView
           code={pf.evaluatedProlog}
           language="code"
           h={300}
           fileName={pf.name.replaceAll('/', '-')}
         />
-      </details>
-    </>
-  );
+      </details>}
+    </>;
 }

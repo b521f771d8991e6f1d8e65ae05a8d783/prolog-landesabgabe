@@ -11,10 +11,10 @@ export function Router() {
           element: <HomePage />,
         },
         {
-          path: '/version',
+          path: '/app/version',
           element: (
             <>
-              <VersionString />
+              <VersionString successFormat="" prefix="" />
             </>
           ),
         },

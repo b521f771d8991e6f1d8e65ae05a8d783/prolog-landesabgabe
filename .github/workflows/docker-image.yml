@@ -1,4 +1,4 @@
-name: Build Backend
+name: Build Backend Image
 run-name: version-release on branch ${{ github.ref_name }} triggered by @${{ github.actor}}
 on:
   workflow_dispatch:

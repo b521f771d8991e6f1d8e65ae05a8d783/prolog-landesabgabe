@@ -236,23 +236,29 @@ function ModalView({
 
 function PrologFileView({ pf }: { pf: PrologFile }) {
   const [loadingIndicator, setLoadingIndicator] = useState<boolean>(true);
-  const [langtitel, setLangtitel] = useState<string>("");
-  const [kurztitel, setKurztitel] = useState<string>("");
+  const [langtitel, setLangtitel] = useState<string>();
+  const [kurztitel, setKurztitel] = useState<string>();
   const [link, setLink] = useState<string>();
-  const [titel, setTitel] = useState<string>("");
+  const [titel, setTitel] = useState<string>();
 
   useEffect(() => {
     async function effect() {
-      let internalLawName = pf.name;
-      const l = await pf.queryThisFile(`langtitel(${internalLawName}, X).`);
-      const k = await pf.queryThisFile(`kurztitel(${internalLawName}, X).`);
-      const u = await pf.queryThisFile(`link(${internalLawName}, X).`);
-      const t = await pf.queryThisFile(`titel(${internalLawName}, X).`);
-
-      setLangtitel(l[0].X.v);
-      setKurztitel(k[0].X.v);
-      setLink(u[0].X.v);
-      setTitel(t[0].X.v);
+      function extract(x: any): string | undefined {
+        if (x && x[0] && x[0].X !== undefined) {
+            return String(x[0].X);
+        } else {
+            return undefined; 
+        }
+    }
+      const l: string | undefined = extract(await pf.queryThisFile(`langtitel(${pf.name}, X).`));
+      const k: string | undefined = extract(await pf.queryThisFile(`kurztitel(${pf.name}, X).`));
+      const u: string | undefined = extract(await pf.queryThisFile(`link(${pf.name}, X).`));
+      const t: string | undefined = extract(await pf.queryThisFile(`titel(${pf.name}, X).`));
+    
+      setLangtitel(l);
+      setKurztitel(k);
+      setLink(u);
+      setTitel(t);
       setLoadingIndicator(false);
     }
 
@@ -264,9 +270,9 @@ function PrologFileView({ pf }: { pf: PrologFile }) {
         <Loader color="rgba(0, 0, 0, 1)" />
       </Center>}
       {!loadingIndicator && <details>
-        <summary>{titel}</summary>
-        <Text size="xs"><u>Kurztitel:</u> {kurztitel} <Anchor href={link}>(Volltext-Link)</Anchor></Text>
-        <Text size="xs"><u>Langtitel</u>: {langtitel}</Text>
+        <summary>{titel ?? pf.name}</summary>
+        {kurztitel && <Text size="xs"><u>Kurztitel:</u> {kurztitel} {link && <Anchor href={link}>(Volltext-Link)</Anchor>}</Text>}
+        {langtitel && <Text size="xs"><u>Langtitel</u>: {langtitel}</Text>}
         <CodeView
           code={pf.evaluatedProlog}
           language="code"

@@ -6,20 +6,14 @@ import Vapor
 
 let version = String(BuildInformation.getCurrentVersionAsString())
 
-guard let workerPortString = ProcessInfo.processInfo.environment["WORKER_LISTEN_PORT"] else {
-    print("could not get WORKER_LISTEN_PORT")
-    exit(1)
-}
+let workerPortString = ProcessInfo.processInfo.environment["WORKER_LISTEN_PORT"] ?? "1337"
 
 guard let workerPort = Int(workerPortString) else {
     print("WORKER_LISTEN_PORT is not an Int")
     exit(1)
 }
 
-guard let workerHostname = ProcessInfo.processInfo.environment["WORKER_LISTEN_ON"] else {
-    print("could not get WORKER_LISTEN_ON")
-    exit(1)
-}
+let workerHostname = ProcessInfo.processInfo.environment["WORKER_LISTEN_ON"] ?? "0.0.0.0"
 
 print("Running digital law server in version: \(version) ✨🚀")
 
@@ -40,13 +34,31 @@ func fetchLaw(withName name: String) -> String? {
         return nil
     }
 
-    let resource = rustResource.toString()
-    return resource
+    return rustResource.toString()
 }
 
 @Sendable
 func fetchCorpus() -> [String] {
     return list_corpus().map { $0.as_str().toString() }
+}
+
+@Sendable
+func fetchFromWebAppData(withName path: String) -> String? {
+    guard let rustResource = fetch_from_web_app_data(path) else {
+        return nil
+    }
+    return rustResource.toString()
+}
+
+@Sendable
+func guessMimeType(fromPath path: String) -> String? {
+    switch path.pathExtension {
+    case "js": "application/javascript"
+    case "css": "text/css"
+    case "svg": "image/svg+xml"
+    case "html": "text/html"
+    default: nil
+    }
 }
 
 func routes(withApp app: Application, andLogicVM lvm: LogicVM) throws {
@@ -108,16 +120,33 @@ func routes(withApp app: Application, andLogicVM lvm: LogicVM) throws {
         return result
     }
 
-    app.get("index.html") { req async throws -> String in
-        return ""
+    @Sendable
+    func fetchIndexHTML(req: Request) async throws -> Response {
+        guard let result = fetchFromWebAppData(withName: "index.html") else {
+            throw Abort(.notFound)
+        }
+
+        return Response(
+            status: .ok,
+            headers: ["Content-Type": "text/html"],
+            body: .init(stringLiteral: result)
+        )
     }
 
-    app.get("app") { req async throws -> String in
-        return ""
-    }
+    app.get("index.html", use: fetchIndexHTML)
+    app.get(use: fetchIndexHTML)
+    app.get("app", use: fetchIndexHTML)
 
-    app.get("assets") { req async throws -> String in
-        return ""
+    app.get("assets", "**") { req async throws -> Response in
+        let name = "assets/\(req.parameters.getCatchall().joined(separator: "/"))"
+
+        guard let result = fetchFromWebAppData(withName: name) else {
+            throw Abort(.notFound)
+        }
+
+        return Response(
+            status: .ok, headers: ["Content-Type": guessMimeType(fromPath: name) ?? "text/plain"],
+            body: .init(stringLiteral: result))
     }
 }
 

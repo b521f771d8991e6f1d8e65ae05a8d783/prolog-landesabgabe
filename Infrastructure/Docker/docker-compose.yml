@@ -12,18 +12,6 @@ services:
       - "1337:1337"
     volumes:
       - ../..:/workspace
-  frontend:
-    build:
-      context: ../..
-      dockerfile: Infrastructure/WebFrontend.dockerfile
-      target: ${FRONTEND_TARGET_STAGE}
-      args:
-        - BUILD_MODE=${ENV_NAME}
-    tty: true
-    ports:
-      - "4434:4434"
-    volumes:
-      - ../../:/workspace
 networks:
   default:
     name: "traefik_proxy_sprachguru_prod_local"

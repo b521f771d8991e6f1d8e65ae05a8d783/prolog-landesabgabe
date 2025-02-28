@@ -58,6 +58,6 @@ mod ffi {
     extern "Rust" {
         pub fn fetch_from_corpus(file_path: &str) -> Option<String>;
         pub fn list_corpus() -> Vec<String>;
-        //pub fn fetch_from_web_app_data(file_path: &str) -> Option<String>;
+        pub fn fetch_from_web_app_data(file_path: &str) -> Option<String>;
     }
 }

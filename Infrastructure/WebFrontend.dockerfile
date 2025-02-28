@@ -17,6 +17,7 @@ COPY . /workspace
 
 WORKDIR /workspace/Sources/lxui
 RUN npm install
+RUN echo Building using ${BUILD_MODE}
 RUN npm run build -- --mode $BUILD_MODE
 
 FROM nginx:stable-alpine AS production

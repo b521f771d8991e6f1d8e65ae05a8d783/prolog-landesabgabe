@@ -1,4 +1,4 @@
-name: Build Backend
+name: Build Frontend
 run-name: version-release on branch ${{ github.ref_name }} triggered by @${{ github.actor}}
 on:
   workflow_dispatch:
@@ -43,28 +43,28 @@ jobs:
         registry: containers.github.scch.at
         username: ${{ github.actor }}
         password: ${{ github.token }}
-    - name: Extract metadata (tags, labels) for backend
-      id: backend-meta
+    - name: Extract metadata (tags, labels) for frontend
+      id: frontend-meta
       uses: docker/metadata-action@v4
       with:
-        images: containers.github.scch.at/Land-OOE/lx-worker
+        images: containers.github.scch.at/land-ooe/lx-frontend
         tags: |
             type=ref,event=branch,suffix=-{{ date -s }}
             type=ref,event=tag,suffix=-{{ date -s }}
-    - name: Build and push backend image
+    - name: Build and push frontend image
       uses: docker/build-push-action@v5
       with:
         push: ${{ github.event_name != 'pull_request' }}
-        file: ./Infrastructure/Worker.dockerfile
+        file: ./Infrastructure/WebFrontend.dockerfile
         context: .
         platforms: linux/amd64
         cache-from: type=gha
         cache-to: type=gha,mode=max
         tags: |
-          ${{ steps.backend-meta.outputs.tags }}
-          containers.github.scch.at/land-ooe/lx-worker:${{ steps.fetch_branch.outputs.branch }}-latest
+          ${{ steps.frontend-meta.outputs.tags }}
+          containers.github.scch.at/land-ooe/lx-frontend:${{ steps.fetch_branch.outputs.branch }}-latest
         labels: |
-          ${{ steps.backend-meta.outputs.labels }}
+          ${{ steps.frontend-meta.outputs.labels }}
         build-args: BUILD_MODE=production-server
       env:
           SOURCE_DATE_EPOCH: 0

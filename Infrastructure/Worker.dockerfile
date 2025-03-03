@@ -1,17 +1,29 @@
-FROM containers.github.scch.at/land-ooe/docker-images/swift-cpp-rust-toolchain:main-latest AS development
+FROM containers.github.scch.at/land-ooe/docker-images/swift-cpp-rust-toolchain:main-latest AS vcpkg-builder
+
+VOLUME "/vcpkg-cache"
+ENV VCPKG_BUILD_PARALLEL_LEVEL=8
+ENV VCPKG_BINARY_SOURCES=clear;files,/vcpkg-cache
+
+RUN apt update && apt install -y zip unzip build-essential pkg-config wget
+RUN wget -O vcpkg.tar.gz https://github.com/microsoft/vcpkg/archive/master.tar.gz
+RUN mkdir /opt/vcpkg
+RUN tar xf vcpkg.tar.gz --strip-components=1 -C /opt/vcpkg
+RUN /opt/vcpkg/bootstrap-vcpkg.sh
+RUN ln -s /opt/vcpkg/vcpkg /usr/local/bin/vcpkg
+
+COPY vcpkg.json .
+RUN vcpkg install --triplet x64-linux
+
+FROM vcpkg-builder AS development
 ARG BUILD_MODE
 
 WORKDIR /
-
 RUN git config --global --add safe.directory /workspace
-EXPOSE 5173
 
 FROM development AS build
 ARG BUILD_MODE
 
-VOLUME ["/nix", "/vcpkg-cache"]
-ENV VCPKG_BUILD_PARALLEL_LEVEL=8
-ENV VCPKG_BINARY_SOURCES=files,/vcpkg-cache
+VOLUME "/nix"
 
 # TODO: build it to a static binary
 

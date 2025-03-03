@@ -28,5 +28,4 @@ add_compile_options(
     $<$<COMPILE_LANGUAGE:Swift>:-std=c++20>
 )
 
-set(VCPKG_INSTALL_OPTIONS --debug)
 include(${CMAKE_CURRENT_LIST_DIR}/../../Dependencies/vcpkg/scripts/buildsystems/vcpkg.cmake)

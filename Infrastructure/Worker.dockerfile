@@ -37,9 +37,7 @@ FROM development AS build
 ARG BUILD_MODE
 
 COPY --from=vcpkg-builder --chmod=777 /tmp/vcpkg-cache /vcpkg-cache
-ENV VCPKG_BINARY_SOURCES=clear;files,/vcpkg-cache
-
-VOLUME "/nix"
+ENV VCPKG_DEFAULT_BINARY_CACHE=/vcpkg-cache
 
 # TODO: build it to a static binary
 

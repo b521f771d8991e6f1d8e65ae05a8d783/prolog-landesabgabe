@@ -23,35 +23,9 @@ set(EXTERNAL_PROJECT_OPTIONS
     -fPIC
 )
 add_compile_options(
-    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-march=native>
-    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-mtune=native>
-    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-m64>
-    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-O3>
-    $<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-fPIC>
     $<$<COMPILE_LANGUAGE:Swift>:-cxx-interoperability-mode=default>
     $<$<COMPILE_LANGUAGE:Swift>:-Xcc>
     $<$<COMPILE_LANGUAGE:Swift>:-std=c++20>
-)
-
-set(VCPKG_TARGET_ARCHITECTURE x64)
-set(VCPKG_CMAKE_SYSTEM_NAME linux)
-set(VCPKG_LIBRARY_LINKAGE static)
-#  there is really no need to further complicate this by using debug versions
-set(VCPKG_BUILD_TYPE release)
-
-set(VCPKG_C_FLAGS
-    -fPIC
-    -m64
-    -O3
-    -march=native
-    -mtune=native
-)
-set(VCPKG_CXX_FLAGS
-    -fPIC
-    -m64
-    -O3
-    -march=native
-    -mtune=native
 )
 
 set(VCPKG_INSTALL_OPTIONS --debug)

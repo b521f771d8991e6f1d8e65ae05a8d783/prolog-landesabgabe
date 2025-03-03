@@ -6,3 +6,8 @@
 /.devcontainer
 /.github
 /Playground
+
+/.build
+/out
+/generated
+/target

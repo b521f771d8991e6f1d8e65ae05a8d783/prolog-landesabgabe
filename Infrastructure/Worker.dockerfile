@@ -36,8 +36,7 @@ RUN git config --global --add safe.directory /workspace
 FROM development AS build
 ARG BUILD_MODE
 
-COPY --from=vcpkg-builder --chmod=777 /tmp/vcpkg-cache /vcpkg-cache
-ENV VCPKG_DEFAULT_BINARY_CACHE=/vcpkg-cache
+COPY --from=vcpkg-builder --chmod=777 /root/.cache/vcpkg ~/.cache/vcpkg
 
 # TODO: build it to a static binary
 

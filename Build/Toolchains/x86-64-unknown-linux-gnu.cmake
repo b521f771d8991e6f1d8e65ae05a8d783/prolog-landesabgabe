@@ -54,5 +54,4 @@ set(VCPKG_CXX_FLAGS
     -mtune=native
 )
 
-set(VCPKG_INSTALL_OPTIONS --clean-after-build)
 include(${CMAKE_CURRENT_LIST_DIR}/../../Dependencies/vcpkg/scripts/buildsystems/vcpkg.cmake)

@@ -185,7 +185,7 @@ function AppView({ prologVM }: { prologVM: PrologVM }) {
     return pf.reduce((p, c) => `${p}\n% Filename: ${c.name}\n${c.evaluatedProlog}`, '').substring(1); // substring is used to prevent the first newline from being shown
   }
 
-  const addToFactBase = (newFile: PrologFile) => {
+  function addToFactBase(newFile: PrologFile) {
       setFactFiles([...factBase, newFile]);
   }
 

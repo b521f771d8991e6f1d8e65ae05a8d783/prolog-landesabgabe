@@ -22,7 +22,7 @@
         "--compile-commands-dir=/workspace/out/build/debug-x86-64-unknown-linux-gnu"
     ],
     "C_Cpp.intelliSenseEngine": "disabled",
-    "prettier.configPath": "/workspace/Sources/lxui/.prettierrc.mjs",
+    "prettier.configPath": "/workspace/Sources/lxui/.prettierrc",
     "eslint.workingDirectories": [
         "/workspace/Sources/lxui/"
     ]

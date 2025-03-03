@@ -9,6 +9,10 @@ EXPOSE 5173
 FROM development AS build
 ARG BUILD_MODE
 
+VOLUME ["/nix", "/vcpkg-cache"]
+ENV VCPKG_BUILD_PARALLEL_LEVEL=8
+ENV VCPKG_BINARY_SOURCES=files,/vcpkg-cache
+
 # TODO: build it to a static binary
 
 RUN mkdir /workspace

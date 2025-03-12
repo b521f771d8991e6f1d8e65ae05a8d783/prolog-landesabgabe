@@ -156,7 +156,7 @@ func configure(app a: Application) {
             "https://innovation-studio.landooe.fivesquare.dev", "https://lx.landooe.fivesquare.dev",
             "http://localhost:4434",
         ]),
-        allowedMethods: [.GET, .POST, .PUT, .OPTIONS, .DELETE, .PATCH],
+        allowedMethods: [.GET, .POST],
         allowedHeaders: [
             .accept, .authorization, .contentType, .origin, .xRequestedWith, .userAgent,
             .accessControlAllowOrigin,

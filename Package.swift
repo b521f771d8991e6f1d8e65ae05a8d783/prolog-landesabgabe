@@ -48,13 +48,15 @@ let package = Package(
             targets: ["LX"])
     ],
     dependencies: [
-        .package(url: "https://github.com/vapor/vapor", from: "4.112.0")
+        .package(url: "https://github.com/vapor/vapor", from: "4.112.0"),
+        .package(url: "https://github.com/vapor-community/Imperial.git", from: "2.0.0-beta.2"),
     ],
     targets: [
         .executableTarget(
             name: "LX",
             dependencies: [
-                .product(name: "Vapor", package: "Vapor")
+                .product(name: "Vapor", package: "Vapor"),
+                .product(name: "ImperialGitHub", package: "imperial"),
             ],
             swiftSettings: [
                 .interoperabilityMode(.Cxx),

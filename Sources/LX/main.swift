@@ -165,6 +165,7 @@ func configure(app a: Application) {
     let cors = CORSMiddleware(configuration: corsConfiguration)
     // cors-Middleware sollte vor der Standard-Fehler-Middleware mit `at: .beginning` stehen
     app.middleware.use(cors, at: .beginning)
+    app.middleware.use(app.sessions.middleware, at: .end)
 
     app.http.server.configuration.hostname = workerHostname
     app.http.server.configuration.port = workerPort

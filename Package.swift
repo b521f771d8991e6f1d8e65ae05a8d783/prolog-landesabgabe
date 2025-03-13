@@ -1,15 +1,6 @@
 // swift-tools-version: 6.0
 
-import Foundation
 import PackageDescription
-
-func executeCommand(command: String, args: [String]) {
-    let task = Process()
-    task.launchPath = "/usr/bin/env"
-    task.arguments = [command]
-    task.arguments?.append(contentsOf: args)
-    task.launch()
-}
 
 let rootPath = "/workspace/"
 
@@ -21,17 +12,6 @@ let rustFFIFlags = [
 ]
 
 let cmakeOutputDir = "\(rootPath)/out/build/debug-x86-64-unknown-linux-gnu"
-
-executeCommand(command: "cargo", args: ["build"])
-executeCommand(
-    command: "cmake",
-    args: [
-        "-S.", "-B\(cmakeOutputDir)", "-GNinja",
-        "--preset=debug-x86-64-unknown-linux-gnu",
-    ])
-executeCommand(
-    command: "cmake",
-    args: ["--build", "\(cmakeOutputDir)", "--target", "ActKit", "LogicKit"])
 
 #if DEBUG
     let buildType = "debug"

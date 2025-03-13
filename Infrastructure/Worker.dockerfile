@@ -9,7 +9,7 @@ FROM build1-environment AS build2-environment
 
 RUN apt install -y curl git cmake \
     ninja-build gdb clangd clang-format clang-tidy zip unzip swi-prolog \
-    cargo rustc rust-src rustfmt npm
+    cargo rustc rust-src rustfmt npm make
 # we do not need to install clang since it is included in the swift:noble image
 
 FROM build2-environment AS vcpkg-builder
@@ -45,7 +45,7 @@ RUN mkdir /workspace
 COPY . /workspace
 WORKDIR /workspace
 
-RUN dotenvx run -f .env.${BUILD_MODE} -- swift build
+RUN make all
 RUN strip .build/debug/LX
 
 # TODO switch to alpine:latest once we can build it statically
@@ -58,6 +58,6 @@ COPY --from=build /workspace/.build/debug/LX /app
 COPY --from=build /workspace/.env* /app
 
 WORKDIR /app
-CMD /usr/bin/env dotenvx run -f .env.${BUILD_MODE} -- /app/LX
+CMD /usr/bin/env dotenvx run -f .env -- /app/LX
 EXPOSE 1337
 HEALTHCHECK CMD curl --fail http://localhost:1337/version || exit 1

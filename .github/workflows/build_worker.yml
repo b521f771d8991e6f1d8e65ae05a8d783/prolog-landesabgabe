@@ -48,7 +48,7 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         push: ${{ github.event_name != 'pull_request' }}
-        file: ./Infrastructure/Worker.dockerfile
+        file: ./Dockerfile
         context: .
         platforms: linux/amd64
         cache-from: type=gha

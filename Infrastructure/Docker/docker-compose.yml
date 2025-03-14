@@ -3,7 +3,7 @@ services:
   worker:
     build:
       context: ../..
-      dockerfile: Infrastructure/Worker.dockerfile
+      dockerfile: Dockerfile
       target: ${WORKER_TARGET_STAGE}
       args:
         - BUILD_MODE=${ENV_NAME}

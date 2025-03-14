@@ -60,7 +60,7 @@ let package = Package(
                 .unsafeFlags(
                     rustFFIFlags + [
                         // cmake dependencies
-                        "-L\(rootPath)target/\(buildType)", "-lassets",
+                        "-L\(rootPath)target/x86_64-unknown-linux-gnu/\(buildType)", "-lassets",
                         "-L\(cmakeOutputDir)/Sources/ActKit",
                         "-L\(cmakeOutputDir)/Sources/LogicKit",
                         "-L\(cmakeOutputDir)/swi-prolog-prefix/src/swi-prolog-build/src",

@@ -1,10 +1,29 @@
-# TODO call this from Package.swift and remove swift build
+#! /usr/bin/env make
+.DEFAULT_GOAL := all
 
+VARIANT := debug
+# or release - do not put a space after debug
+TARGET := x86_64-unknown-linux-gnu
+
+.PHONY: all
 all:
 	dotenvx run -- npm run build --workspaces
-	dotenvx run -- cmake -S . -B ./out/build/debug-x86-64-unknown-linux-gnu --preset=debug-x86-64-unknown-linux-gnu
-	dotenvx run -- cargo build
+	dotenvx run -- cmake -S . -B ./out/build/${VARIANT}-${TARGET} --preset=${VARIANT}-${TARGET}
+	dotenvx run -- cargo build --target ${TARGET} 
 	dotenvx run -- swift build
 
+.PHONY: run
 run: all
 	dotenvx run -- swift run
+
+.PHONY: clean
+clean:
+	cargo clean
+	swift package clean
+	rm -rf out
+	rm -f *.d *.o *.swiftdeps *.swiftdeps~
+
+.PHONY: frontend-dev
+frontend-dev: all
+	(dotenvx run -- swift run)&
+	(cd Sources/lxui/; npm run dev)

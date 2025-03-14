@@ -5,6 +5,10 @@ VARIANT := debug
 # or release - do not put a space after debug
 TARGET := x86_64-unknown-linux-gnu
 
+.PHONY: init
+init:
+	git submodule update --init --recursive
+
 .PHONY: all
 all:
 	dotenvx run -- npm run build --workspaces

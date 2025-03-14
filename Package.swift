@@ -11,14 +11,15 @@ let rustFFIFlags = [
     "-import-objc-header", "\(rootPath)/Sources/Assets/include/rust-bridging-header.h",
 ]
 
-let cmakeOutputDir = "\(rootPath)/out/build/debug-x86-64-unknown-linux-gnu"
-
 #if DEBUG
     let buildType = "debug"
 #else
     // TODO rename this
     let buildType = "debug"
 #endif
+
+let target = "x86_64-unknown-linux-gnu"
+let cmakeOutputDir = "\(rootPath)/out/build/\(buildType)-\(target)"
 
 let package = Package(
     name: "LX",
@@ -43,11 +44,9 @@ let package = Package(
                 .unsafeFlags(
                     rustFFIFlags + [
                         // cmake dependencies
-                        "-I\(cmakeOutputDir)/Sources/ActKit",
                         "-I\(cmakeOutputDir)/Sources/LogicKit",
                         "-I\(cmakeOutputDir)/BuildInformation",
                         "-I\(cmakeOutputDir)",
-                        "-L\(cmakeOutputDir)/Sources/ActKit",
                         "-L\(cmakeOutputDir)/Sources/LogicKit",
                         "-L\(cmakeOutputDir)/BuildInformation",
                         "-L\(cmakeOutputDir)",
@@ -61,11 +60,9 @@ let package = Package(
                     rustFFIFlags + [
                         // cmake dependencies
                         "-L\(rootPath)target/x86_64-unknown-linux-gnu/\(buildType)", "-lassets",
-                        "-L\(cmakeOutputDir)/Sources/ActKit",
                         "-L\(cmakeOutputDir)/Sources/LogicKit",
                         "-L\(cmakeOutputDir)/swi-prolog-prefix/src/swi-prolog-build/src",
                         "-L\(cmakeOutputDir)/vcpkg_installed/x64-linux/lib",
-                        "-lActKit",
                         "-lLogicKit",
                         "-lswipl_static",
                         "-larchive",

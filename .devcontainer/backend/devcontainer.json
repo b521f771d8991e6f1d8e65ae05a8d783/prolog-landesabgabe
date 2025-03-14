@@ -21,7 +21,8 @@
                 "james-yu.latex-workshop",
                 "vscodevim.vim",
                 "arthurwang.vsc-prolog",
-                "rust-lang.rust-analyzer"
+                "rust-lang.rust-analyzer",
+                "ms-vscode.makefile-tools"
             ]
         }
     },

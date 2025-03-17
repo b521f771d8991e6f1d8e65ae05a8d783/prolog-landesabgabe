@@ -121,28 +121,3 @@ export const useGetWebServerString = (urlSuffix: string): UseQueryResult<string,
   });
 };
 
-export const usePostNormTransformationTaskStartRequest = (
-  selection: string
-): UseQueryResult<TaskResult, Error> => {
-  return useQuery({
-    queryKey: ['postNormTransformationTaskStartRequest'],
-    queryFn: () =>
-      post<TaskResult>(
-        new URL(`${import.meta.env.VITE_PROTOTYPE_PIPELINE_URL}task/celery/start/`),
-        buildPrototypeRequestBody([selection], 'transformIntoNorm')
-      ),
-    enabled: false,
-  });
-};
-
-export const usePostTaskStatusRequest = (id: string): UseQueryResult<TaskResult, Error> => {
-  return useQuery({
-    queryKey: ['postCeleryTaskStatusRequest'],
-    queryFn: () =>
-      post<TaskResult>(
-        new URL(`${import.meta.env.VITE_PROTOTYPE_PIPELINE_URL}task/celery/status/` + id),
-        { task_id: id }
-      ),
-    enabled: false,
-  });
-};

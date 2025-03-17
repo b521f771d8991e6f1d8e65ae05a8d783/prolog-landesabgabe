@@ -11,10 +11,12 @@ init:
 
 .PHONY: all
 all:
+	@echo Building variant: ${VARIANT}
 	dotenvx run -- npm run build --workspaces
 	dotenvx run -- cmake -S . -B ./out/build/${VARIANT}-${TARGET} --preset=${VARIANT}-${TARGET}
+	dotenvx run -- cmake --build ./out/build/${VARIANT}-${TARGET}
 	dotenvx run -- cargo build --target ${TARGET} 
-	dotenvx run -- swift build
+	dotenvx run -- swift build --configuration ${VARIANT}
 
 .PHONY: run
 run: all

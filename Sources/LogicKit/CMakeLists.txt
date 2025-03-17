@@ -16,7 +16,6 @@ target_compile_definitions(LogicKit PRIVATE
   SWI_PROLOG_HOME_STORE="${SWI_PROLOG_HOME_STORE_PATH}"
 )
 target_link_libraries(LogicKit PUBLIC
-  ActKit
   ${DEPENDENCY_LIBRARIES_DIRS}
 PRIVATE
   nlohmann_json::nlohmann_json
@@ -42,7 +41,6 @@ PUBLIC
   GTest::GTest
   Boost::numeric_conversion
   LogicKit
-  ActKit
   BuildInformation
   ${DEPENDENCY_LIBRARIES_DIRS} # why do we need this?
 )

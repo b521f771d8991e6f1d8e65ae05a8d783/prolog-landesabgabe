@@ -33,6 +33,10 @@ let package = Package(
         .package(url: "https://github.com/vapor-community/Imperial.git", from: "2.0.0-beta.2"),
     ],
     targets: [
+        .target(
+            name: "ActKit",
+            exclude: ["Sources/ActKit/Testing"]
+        ),
         .executableTarget(
             name: "LX",
             dependencies: [
@@ -69,7 +73,7 @@ let package = Package(
                         "-lncurses",
                         "-lboost_filesystem",
                     ])
-            ])
+            ]),
     ],
     cxxLanguageStandard: .cxx20
 )

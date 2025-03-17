@@ -5,14 +5,12 @@ services:
       context: ../..
       dockerfile: Dockerfile
       target: ${WORKER_TARGET_STAGE}
-      args:
-        - BUILD_MODE=${ENV_NAME}
     tty: true
     ports:
       - "1337:1337"
     volumes:
       - ../..:/workspace
-      - ~/.ssh:${HOME}/ssh
+      - ~/.ssh:${HOME}/.ssh
       - ~/.gnupg:${HOME}/gnupg
     env_file: ".env"
 networks:

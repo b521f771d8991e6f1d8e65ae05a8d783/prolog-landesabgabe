@@ -30,18 +30,17 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/vapor/vapor", from: "4.112.0"),
-        .package(url: "https://github.com/vapor-community/Imperial.git", from: "2.0.0-beta.2"),
+        .package(url: "https://github.com/vapor/jwt.git", from: "5.1.2"),
     ],
     targets: [
         .target(
-            name: "ActKit",
-            exclude: ["Sources/ActKit/Testing"]
+            name: "ActKit"
         ),
         .executableTarget(
             name: "LX",
             dependencies: [
                 .product(name: "Vapor", package: "Vapor"),
-                .product(name: "ImperialGitHub", package: "imperial"),
+                .product(name: "JWT", package: "jwt"),
             ],
             swiftSettings: [
                 .interoperabilityMode(.Cxx),

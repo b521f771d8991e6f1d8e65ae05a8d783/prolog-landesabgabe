@@ -26,7 +26,7 @@ run: all
 clean:
 	cargo clean
 	swift package clean
-	rm -rf out
+	rm -rf out .build target
 	rm -f *.d *.o *.swiftdeps *.swiftdeps~
 
 .PHONY: frontend-dev

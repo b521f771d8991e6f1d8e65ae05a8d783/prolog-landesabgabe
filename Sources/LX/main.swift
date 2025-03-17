@@ -1,6 +1,7 @@
 //import ActKit
 import BuildInformation
 import Foundation
+import JWT
 import LogicKit
 import Vapor
 
@@ -15,7 +16,30 @@ guard let workerPort = Int(workerPortString) else {
 
 let workerHostname = ProcessInfo.processInfo.environment["WORKER_LISTEN_ON"] ?? "0.0.0.0"
 
+let secret = ProcessInfo.processInfo.environment["WORKER_KEY"] ?? "none"
+
+if secret == "none" {
+    print("Could not find a secret to use for JWT, will most likely fail")
+}
+
 print("Running digital law server in version: \(version) ✨🚀")
+
+// JWT payload structure.
+struct LXAuthenticationPayload: JWTPayload {
+    // Maps the longer Swift property names to the
+    // shortened keys used in the JWT payload.
+    enum CodingKeys: String, CodingKey {
+        //case subject = "sub"
+        case expiration = "exp"
+    }
+
+    //var subject: SubjectClaim
+    var expiration: ExpirationClaim
+
+    func verify(using algorithm: some JWTAlgorithm) async throws {
+        try self.expiration.verifyNotExpired()
+    }
+}
 
 public func configure(withApp app: Application, andLogicVM lvm: LogicVM) throws {
     try routes(withApp: app, andLogicVM: lvm)
@@ -62,7 +86,11 @@ func guessMimeType(fromPath path: String) -> String? {
 }
 
 func routes(withApp app: Application, andLogicVM lvm: LogicVM) throws {
+    // the following methods should be protected by a keycloak access token
+
     app.get("fetch-law") { req async throws -> String in
+        try await req.jwt.verify(as: LXAuthenticationPayload.self)
+
         guard let kurztitel = req.query[String.self, at: "kurztitel"] else {
             let corpus = fetchCorpus()
             do {
@@ -94,21 +122,26 @@ func routes(withApp app: Application, andLogicVM lvm: LogicVM) throws {
         return law
     }
 
-    app.get("status") { req async -> String in
+    app.get("status") { req async throws -> String in
+        let result = try await req.jwt.verify(as: LXAuthenticationPayload.self)
+        print(result)
         return "OK"
     }
 
-    app.get("version") { req async -> String in
+    app.get("version") { req async throws -> String in
+        try await req.jwt.verify(as: LXAuthenticationPayload.self)
         return version
     }
 
     app.get("🫖") { req async throws -> String in
+        try await req.jwt.verify(as: LXAuthenticationPayload.self)
         // TODO: magical function that converts this computer into a teapot
         print("Attention! This server is being converted into a teapot 🪄")
         throw Abort(.imATeapot)
     }
 
-    app.get("query") { req async throws -> String in
+    app.get("queryModel") { req async throws -> String in
+        try await req.jwt.verify(as: LXAuthenticationPayload.self)
         guard let query: String = req.query[String.self, at: "query"] else {
             throw Abort(.badRequest)
         }
@@ -119,6 +152,8 @@ func routes(withApp app: Application, andLogicVM lvm: LogicVM) throws {
 
         return result
     }
+
+    // the following methods should NOT be protected by KeyCloak
 
     @Sendable
     func fetchIndexHTML(req: Request) async throws -> Response {
@@ -154,7 +189,7 @@ func configure(app a: Application) {
     let corsConfiguration = CORSMiddleware.Configuration(
         allowedOrigin: .any([
             "https://innovation-studio.landooe.fivesquare.dev", "https://lx.landooe.fivesquare.dev",
-            "http://localhost:4434",
+            "http://localhost:4434", "http://localhost:1337",
         ]),
         allowedMethods: [.GET, .POST],
         allowedHeaders: [
@@ -173,13 +208,14 @@ func configure(app a: Application) {
 }
 
 let lvm = LogicVM()
-let app = Application()
+let app = try await Application.make(.detect())
 configure(app: app)
+await app.jwt.keys.add(hmac: HMACKey.init(from: secret), digestAlgorithm: .sha256)
 
-defer {
-    print("Exiting server ... Goodbye 🌙✨")
-    app.shutdown()
-}
+//defer {
+//    print("Exiting server ... Goodbye 🌙✨")
+//    app.shutdown()
+//}
 
 try configure(withApp: app, andLogicVM: lvm)
-try app.run()
+try await app.execute()

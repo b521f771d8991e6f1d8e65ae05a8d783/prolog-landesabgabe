@@ -1,5 +1,5 @@
 {
-  "originHash" : "4fb89be3dfe88e0949c703cde145846c1e02f1ec30da478ac4ff95a1095f9ba9",
+  "originHash" : "b745f7c6633b83d7e37d91d77cb7e47dcf63cd6ae1a81dcf7b2535a4ed3ca76a",
   "pins" : [
     {
       "identity" : "async-http-client",
@@ -29,12 +29,12 @@
       }
     },
     {
-      "identity" : "imperial",
+      "identity" : "jwt",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/vapor-community/Imperial.git",
+      "location" : "https://github.com/vapor/jwt.git",
       "state" : {
-        "revision" : "6443dbc6ea42ac0638abc4d5f07aaeccada1eb60",
-        "version" : "2.0.0-beta.2"
+        "revision" : "af1c59762d70d1065ddbc0d7902ea9b3dacd1a26",
+        "version" : "5.1.2"
       }
     },
     {

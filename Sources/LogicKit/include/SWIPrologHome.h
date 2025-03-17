@@ -1,26 +1,15 @@
 #ifndef SWI_PROLOG_HOME_H
 #define SWI_PROLOG_HOME_H
 
-#define INCBIN_PREFIX lx_rawdata_
-
-#ifdef __clang__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wnewline-eof"
-//  this is brain-damaged, TODO: fix it upstream
-#endif
-
-#include <incbin.h>
-
-#ifdef __clang__
-#pragma GCC diagnostic pop
-#endif
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-  INCBIN_EXTERN(char, SwiPrologHome);
+  extern const char swiPrologHome[];
+  extern const size_t swiPrologHomeSize;
 
 #ifdef __cplusplus
 }

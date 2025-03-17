@@ -1,5 +1,7 @@
 #include <SWIPrologHome.h>
 
-#include <incbin.h>
+const char swiPrologHome[] = {
+#embed SWI_PROLOG_HOME_STORE
+};
 
-INCBIN(char, SwiPrologHome, SWI_PROLOG_HOME_STORE);
+const size_t swiPrologHomeSize = sizeof(swiPrologHome);

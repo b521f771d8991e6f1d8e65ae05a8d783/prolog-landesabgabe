@@ -2,8 +2,8 @@ set(CMAKE_SYSTEM_NAME Linux)
 set(CMAKE_SYSTEM_PROCESSOR x86_64)
 
 # Set the compiler and its path
-find_program(CLANG_EXE NAMES $ENV{CC} "clang" "gcc" "cc" REQUIRED)
-find_program(CLANGXX_EXE NAMES $ENV{CXX} "clang++" "g++" "c++" REQUIRED)
+find_program(CLANG_EXE NAMES $ENV{CC} "clang-19" "gcc-15" "clang" "gcc" "cc" REQUIRED)
+find_program(CLANGXX_EXE NAMES $ENV{CXX} "clang++-19" "gcc-16" "clang++" "g++" "c++" REQUIRED)
 find_program(SWIFTC_EXE NAMES "swiftc" REQUIRED)
 find_program(SWIFT_EXE NAMES "swift" REQUIRED)
 

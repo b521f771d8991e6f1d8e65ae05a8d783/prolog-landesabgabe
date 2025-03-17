@@ -19,7 +19,6 @@ target_link_libraries(LogicKit PUBLIC
   ${DEPENDENCY_LIBRARIES_DIRS}
 PRIVATE
   Boost::headers
-  incbin
   BuildInformation
   ZLIB::ZLIB
   LibArchive::LibArchive

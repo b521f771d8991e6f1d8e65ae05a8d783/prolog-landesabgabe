@@ -12,8 +12,6 @@ find_package(Curses REQUIRED)
 
 # from git submodules:
 
-include(Dependencies/incbin.cmake)
-
 include(ExternalProject)
 
 # zlib https://www.swi-prolog.org/build/prerequisites.html

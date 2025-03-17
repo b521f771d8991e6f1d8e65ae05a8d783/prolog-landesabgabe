@@ -52,17 +52,22 @@ dump_tar_if_debug(void)
 #endif
 }
 
-void create_empty_root_dir(const std::filesystem::path & rootDir) {
-if(std::filesystem::exists(rootDir))
-      {
-        std::clog << "'" << rootDir.c_str() << "' already exists, deleting it.";
-        std::filesystem::remove(rootDir);
-      }
+void
+create_empty_root_dir(const std::filesystem::path &rootDir)
+{
+  if(std::filesystem::exists(rootDir))
+    {
+      std::clog << "'" << rootDir.c_str() << "' already exists, deleting it.";
+      std::filesystem::remove(rootDir);
+    }
 
-    std::filesystem::create_directory(rootDir);
+  std::filesystem::create_directory(rootDir);
 }
 
-void extract_archive_to_directory(const std::filesystem::path & rootDir, const void* buffer, const size_t &size) {
+void
+extract_archive_to_directory(const std::filesystem::path &rootDir,
+                             const void *buffer, const size_t &size)
+{
   struct archive *archive = archive_read_new();
 
   archive_read_support_format_tar(archive);
@@ -77,8 +82,7 @@ void extract_archive_to_directory(const std::filesystem::path & rootDir, const v
 
   create_swipl_home_run_path(rootDir);
 
-  while((entryNumber = archive_read_next_header(archive, &entry))
-        == ARCHIVE_OK)
+  while((entryNumber = archive_read_next_header(archive, &entry)) == ARCHIVE_OK)
     {
       const std::string entryPath(
         std::string(archive_entry_pathname(entry)).substr(2));
@@ -91,8 +95,8 @@ void extract_archive_to_directory(const std::filesystem::path & rootDir, const v
         {
           if(!std::filesystem::create_directory(currentFile.c_str()))
             {
-              std::cerr << "Failed to create directory: "
-                        << currentFile.c_str() << std::endl;
+              std::cerr << "Failed to create directory: " << currentFile.c_str()
+                        << std::endl;
             }
           continue;
         }
@@ -110,7 +114,7 @@ void extract_archive_to_directory(const std::filesystem::path & rootDir, const v
           ssize_t bytesRead(0);
 
           while((bytesRead
-                  = archive_read_data(archive, buffer.data(), buffer.size()))
+                 = archive_read_data(archive, buffer.data(), buffer.size()))
                 > 0)
             {
               outFile.write(buffer.data(), bytesRead);
@@ -120,16 +124,18 @@ void extract_archive_to_directory(const std::filesystem::path & rootDir, const v
         }
     }
 
-    archive_read_close(archive);
-    archive_read_free(archive);
+  archive_read_close(archive);
+  archive_read_free(archive);
 }
 
-void init_prolog_home() {
+void
+init_prolog_home()
+{
   static std::once_flag flag;
 
   std::call_once(flag, []() -> void {
-    std::clog << "Stored archive of size " << lx_rawdata_SwiPrologHomeSize
-                << " from (" << SWI_PROLOG_HOME_STORE << ")\n";
+    std::clog << "Stored archive of size " << swiPrologHomeSize << " from ("
+              << SWI_PROLOG_HOME_STORE << ")\n";
 
     static const std::filesystem::path rootDir(
       std::filesystem::temp_directory_path()
@@ -137,7 +143,7 @@ void init_prolog_home() {
 
     create_empty_root_dir(rootDir);
     dump_tar_if_debug();
-    extract_archive_to_directory(rootDir, lx_rawdata_SwiPrologHomeData, lx_rawdata_SwiPrologHomeSize);
+    extract_archive_to_directory(rootDir, swiPrologHome, swiPrologHomeSize);
   });
 };
 

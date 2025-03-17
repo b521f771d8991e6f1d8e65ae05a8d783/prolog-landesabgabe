@@ -1,9 +1,6 @@
 [submodule "Dependencies/swi-prolog"]
 	path = Dependencies/swi-prolog
 	url = https://github.com/SWI-Prolog/swipl
-[submodule "Dependencies/incbin"]
-	path = Dependencies/incbin
-	url = https://github.com/graphitemaster/incbin
 [submodule "Dependencies/vcpkg"]
 	path = Dependencies/vcpkg
 	url = https://github.com/microsoft/vcpkg

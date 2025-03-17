@@ -12,6 +12,9 @@ services:
       - "1337:1337"
     volumes:
       - ../..:/workspace
+      - ~/.ssh:${HOME}/ssh
+      - ~/.gnupg:${HOME}/gnupg
+    env_file: ".env"
 networks:
   default:
     name: "traefik_proxy_sprachguru_prod_local"

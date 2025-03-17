@@ -16,10 +16,26 @@ guard let workerPort = Int(workerPortString) else {
 
 let workerHostname = ProcessInfo.processInfo.environment["WORKER_LISTEN_ON"] ?? "0.0.0.0"
 
-let secret = ProcessInfo.processInfo.environment["WORKER_KEY"] ?? "none"
+let secret =
+    ProcessInfo.processInfo.environment["WORKER_KEY"]
 
-if secret == "none" {
-    print("Could not find a secret to use for JWT, will most likely fail")
+@Sendable
+func authEnabled() -> Bool {
+    return secret != nil
+}
+
+@Sendable
+func initAuth(onApp app: Application) async throws {
+    if authEnabled() {
+        await app.jwt.keys.add(ecdsa: try ES384PublicKey.init(pem: secret!))
+    }
+}
+
+@Sendable
+func checkAuth(onReq req: Request) throws {
+    if authEnabled() {
+
+    }
 }
 
 print("Running digital law server in version: \(version) ✨🚀")
@@ -89,7 +105,7 @@ func routes(withApp app: Application, andLogicVM lvm: LogicVM) throws {
     // the following methods should be protected by a keycloak access token
 
     app.get("fetch-law") { req async throws -> String in
-        try await req.jwt.verify(as: LXAuthenticationPayload.self)
+        try checkAuth(onReq: req)
 
         guard let kurztitel = req.query[String.self, at: "kurztitel"] else {
             let corpus = fetchCorpus()
@@ -123,25 +139,28 @@ func routes(withApp app: Application, andLogicVM lvm: LogicVM) throws {
     }
 
     app.get("status") { req async throws -> String in
-        let result = try await req.jwt.verify(as: LXAuthenticationPayload.self)
-        print(result)
+        try checkAuth(onReq: req)
+
         return "OK"
     }
 
     app.get("version") { req async throws -> String in
-        try await req.jwt.verify(as: LXAuthenticationPayload.self)
+        try checkAuth(onReq: req)
+
         return version
     }
 
     app.get("🫖") { req async throws -> String in
-        try await req.jwt.verify(as: LXAuthenticationPayload.self)
+        try checkAuth(onReq: req)
+
         // TODO: magical function that converts this computer into a teapot
         print("Attention! This server is being converted into a teapot 🪄")
         throw Abort(.imATeapot)
     }
 
     app.get("queryModel") { req async throws -> String in
-        try await req.jwt.verify(as: LXAuthenticationPayload.self)
+        try checkAuth(onReq: req)
+
         guard let query: String = req.query[String.self, at: "query"] else {
             throw Abort(.badRequest)
         }
@@ -210,7 +229,7 @@ func configure(app a: Application) {
 let lvm = LogicVM()
 let app = try await Application.make(.detect())
 configure(app: app)
-await app.jwt.keys.add(hmac: HMACKey.init(from: secret), digestAlgorithm: .sha256)
+try await initAuth(onApp: app)
 
 //defer {
 //    print("Exiting server ... Goodbye 🌙✨")

@@ -105,18 +105,26 @@ export const queryClient = new QueryClient({
   },
 });
 
+function getBaseURL() {
+  return import.meta.env.VITE_SERVER_URL + "/";
+}
+
 export function useGetWebServerJSON<T>(urlSuffix: string): UseQueryResult<T, Error> {
+  const url = new URL("/" + urlSuffix, getBaseURL());
+
   return useQuery({
     queryKey: [urlSuffix],
-    queryFn: (): Promise<T> => get<T>(new URL(import.meta.env.VITE_SERVER_URL + urlSuffix)),
+    queryFn: (): Promise<T> => get<T>(url),
     enabled: true,
   });
 }
 
 export const useGetWebServerString = (urlSuffix: string): UseQueryResult<string, Error> => {
+  const url = new URL("/" + urlSuffix, getBaseURL());
+
   return useQuery({
     queryKey: [urlSuffix],
-    queryFn: (): Promise<string> => getString(new URL(import.meta.env.VITE_SERVER_URL + urlSuffix)),
+    queryFn: (): Promise<string> => getString(url),
     enabled: true,
   });
 };

@@ -29,6 +29,9 @@ clean:
 	rm -rf out .build target
 	rm -f *.d *.o *.swiftdeps *.swiftdeps~
 
+.PHONY: clean-build
+clean-build: clean all
+
 .PHONY: frontend-dev
 frontend-dev: all
 	(dotenvx run -- swift run)&

@@ -9,7 +9,8 @@ public final class LogicVM: Sendable {
     }
 
     public func process(query: String) -> String? {
-        let result = looe.LogicKitC.run_query(std.string(query))
+        // TODO
+        let result = "TODO"
 
         if result == "" {
             return String(result)

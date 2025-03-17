@@ -18,5 +18,6 @@ fn build_swift_bindings() {
 }
 
 fn main() {
+    println!("cargo:rerun-if-changed=../lxui/dist");
     build_swift_bindings();
 }

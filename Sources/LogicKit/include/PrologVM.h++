@@ -10,12 +10,14 @@ class PlEngine;
 namespace looe::LogicKitC
 {
 
-class prolog_query final {
+class prolog_query final
+{
 public:
-  struct Variable {
+  struct Variable
+  {
     char identifier;
   };
-  
+
   using arg_type = std::variant<Variable, std::string>;
 
 private:
@@ -23,40 +25,41 @@ private:
   std::vector<arg_type> args;
 
 public:
-  prolog_query(const std::string &predicate
-            , const std::vector<arg_type> &args = {})
-    : predicateName(predicate)
-    , args(args)
-    { }
+  prolog_query(const std::string &predicate,
+               const std::vector<arg_type> &args = {})
+      : predicateName(predicate), args(args)
+  {
+  }
 
-  prolog_query(const prolog_query&) = default;
+  prolog_query(const prolog_query &) = default;
 
-  inline int get_arity(void) const {
+  inline int
+  get_arity(void) const
+  {
     return this->args.size();
   }
 
-  inline std::string_view get_predicate_name(void) const {
+  inline std::string_view
+  get_predicate_name(void) const
+  {
     return this->predicateName;
   }
 
-  inline const char* get_predicate_name_cstr(void) const {
+  inline const char *
+  get_predicate_name_cstr(void) const
+  {
     return this->predicateName.c_str();
   }
 
-  inline const std::vector<arg_type>& get_parameters(void) const {
+  inline const std::vector<arg_type> &
+  get_parameters(void) const
+  {
     return this->args;
   }
-
-  //static PrologQuery fromFlatbuffer() {
-  //  
-  //}
-  //
-  //std::string toFlatbuffer() {
-  //  
-  //}
 };
 
-class prolog_result {
+class prolog_result
+{
 public:
   using result = bool;
 
@@ -64,24 +67,22 @@ private:
   std::vector<result> results;
 
 public:
-  prolog_result(const std::vector<result>& r)
-  : results(r)
-  { }
-  
-  
+  prolog_result(const std::vector<result> &r) : results(r) {}
 
-  const std::vector<result>& get_results(void) const {
+  const std::vector<result> &
+  get_results(void) const
+  {
     return this->results;
   }
 
-  size_t result_count(void) const {
+  size_t
+  result_count(void) const
+  {
     return this->results.size();
   }
 };
 
 extern void start_prolog_VM(const std::string &argv0);
-extern std::string run_query(const std::string &);
-extern std::vector<prolog_query::arg_type> run_query (const prolog_query &);
 extern bool is_initialised(void);
 extern void stop_prolog_VM(void);
 

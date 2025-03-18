@@ -8,9 +8,8 @@ FROM build1-environment AS build2-environment
 # https://github.com/NixOS/nixpkgs/issues/343210#issuecomment-2424134735
 
 RUN apt install -y curl git cmake \
-    ninja-build gdb clangd clang-format clang-tidy zip unzip swi-prolog \
+    ninja-build gdb clang-19 clangd-19 clang-format-19 clang-tidy-19 zip unzip swi-prolog \
     cargo rustc rust-src rustfmt npm make
-# we do not need to install clang since it is included in the swift:noble image
 
 FROM build2-environment AS vcpkg-builder
 

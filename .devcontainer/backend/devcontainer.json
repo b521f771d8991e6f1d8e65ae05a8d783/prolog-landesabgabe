@@ -2,7 +2,7 @@
     "name": "Backend",
     "dockerComposeFile": [
         "docker-compose.yml",
-        "../../Infrastructure/Docker/docker-compose.yml"
+        "../../Sources/Docker/docker-compose.yml"
     ],
     "service": "worker",
     "customizations": {

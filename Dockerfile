@@ -1,4 +1,4 @@
-FROM swift:6.0.3-noble AS build1-environment
+FROM swift:6.0.3-bookworm AS build1-environment
 
 RUN apt update && apt upgrade -y && apt install -y curl && curl -sfS https://dotenvx.sh | sh
 
@@ -8,18 +8,32 @@ FROM build1-environment AS build2-environment
 # FROM nixos/nix
 # https://github.com/NixOS/nixpkgs/issues/343210#issuecomment-2424134735
 
-RUN apt install -y curl git cmake \
+RUN apt install -y git zsh \
     ninja-build gdb clang-19 clangd-19 clang-format-19 clang-tidy-19 zip unzip swi-prolog \
-    cargo rustc rust-src rustfmt npm make
+    npm make wget
+# curl is included in build1-environment
+
+# We need a newer cmake
+WORKDIR /tmp
+RUN wget https://github.com/Kitware/CMake/releases/download/v3.31.6/cmake-3.31.6-linux-x86_64.tar.gz
+RUN tar xvf cmake-3.31.6-linux-x86_64.tar.gz
+RUN mv cmake-3.31.6-linux-x86_64 cmake
+RUN mv cmake /opt
+ENV PATH="$PATH:/opt/cmake/bin"
+
+
+# Download Rust from the Repos
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
 FROM build2-environment AS development
-ARG BUILD_MODE
 
 WORKDIR /
 RUN git config --global --add safe.directory /workspace
 
 FROM build2-environment AS build
-ARG BUILD_MODE
+
+ARG BUILD_TARGET=x86_64-unknown-linux-gnu
+ARG BUILD_VARIANT=debug
 
 # TODO: build it to a static binary
 
@@ -28,13 +42,11 @@ RUN mkdir /workspace
 COPY . /workspace
 WORKDIR /workspace
 
-RUN make all
+RUN TARGET=${BUILD_TARGET} VARIANt=${BUILD_VARIANT} make all
 RUN strip .build/debug/LX
 
 # TODO switch to FROM scratch once we can build it statically
 FROM build1-environment AS production
-ARG BUILD_MODE
-ENV BUILD_MODE=${BUILD_MODE}
 
 WORKDIR /app
 COPY --from=build /workspace/.build/debug/LX /app

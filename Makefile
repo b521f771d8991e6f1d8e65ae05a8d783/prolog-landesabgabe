@@ -1,9 +1,17 @@
 #! /usr/bin/env make
 .DEFAULT_GOAL := all
 
-VARIANT := debug
+SHELL = /usr/bin/zsh
+VARIANT ?= debug
 # or release - do not put a space after debug
-TARGET := x86_64-unknown-linux-gnu
+TARGET ?= x86_64-unknown-linux-gnu
+
+# some tools require special treatment 🦄
+ifeq ($(VARIANT),release)
+	CARGO_RELEASE_FLAG := --release
+else
+	CARGO_RELEASE_FLAG :=
+endif
 
 .PHONY: init
 init:
@@ -11,12 +19,12 @@ init:
 
 .PHONY: all
 all:
-	@echo Building variant: ${VARIANT}
-	dotenvx run -- npm run build --workspaces --
-	dotenvx run -- cmake -S . -B ./out/build/${VARIANT}-${TARGET} --preset=${VARIANT}-${TARGET}
-	dotenvx run -- cmake --build ./out/build/${VARIANT}-${TARGET}
-	dotenvx run -- cargo build --target ${TARGET} 
-	dotenvx run -- swift build --configuration ${VARIANT}
+	@echo Building variant: ${VARIANT} for target ${TARGET}
+	npm run build --workspaces --${VARIANT}
+	cmake -S . -B ./out/build/${VARIANT}-${TARGET} --preset=${VARIANT}-${TARGET}
+	cmake --build ./out/build/${VARIANT}-${TARGET}
+	cargo build --target ${TARGET} ${CARGO_RELEASE_FLAG}
+	swift build --configuration ${VARIANT}
 
 .PHONY: run
 run: all

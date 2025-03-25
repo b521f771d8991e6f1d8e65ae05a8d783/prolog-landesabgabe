@@ -7,7 +7,7 @@
 
 class PlEngine;
 
-namespace looe::LogicKitC
+namespace looe::LogicKit
 {
 
 class prolog_query final

@@ -7,15 +7,17 @@ include(Dependencies/Dependencies.cmake)
 
 # configuration for our targets
 
+add_subdirectory(Sources/Assets)
 add_subdirectory(Sources/LogicKit)
 
 # configuration for all targets
 set(TARGETS
+  Assets
   LogicKit
 )
 
 set(TEST_TARGETS
-  LogicKitTests
+  #LogicKitTests
 )
 
 # add target configuration

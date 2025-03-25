@@ -19,7 +19,7 @@
 #include <SWI-cpp2.h>
 #pragma GCC diagnostic pop
 
-namespace looe::LogicKitC
+namespace looe::LogicKit
 {
 
 std::vector<std::string> args;
@@ -47,8 +47,8 @@ start_prolog_VM(const std::string &argv0)
       args = std::vector<std::string>(
         { argv0, std::string("--home=") + swiplHomeRunPath });
 
-      cArgs = std::vector<char *>(
-        map<char *>(args, +[](std::string &i) -> char * { return &i[0]; }));
+      cArgs = std::vector<char *>(map<char *>(
+        args, +[](std::string &i) -> char * { return &i[0]; }));
 
       engine = std::make_unique<PlEngine>(
         boost::numeric_cast<int>(cArgs.size()), cArgs.data());
@@ -117,4 +117,4 @@ stop_prolog_VM(void)
     }
 }
 
-} // namespace looe::LogicKitC
+} // namespace looe::LogicKit

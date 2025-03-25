@@ -34,17 +34,6 @@ ExternalProject_Add(swi-prolog
     ${CMAKE_CURRENT_BINARY_DIR}/root/lib/swipl/lib/x86_64-linux/libswipl_static.a
 )
 
-set(SWI_PROLOG_HOME_STORE_PATH "${CMAKE_CURRENT_BINARY_DIR}/swipl-prolog-home.tar")
-add_custom_target(swi_prolog_home_tar
-WORKING_DIRECTORY
-  "${CMAKE_CURRENT_BINARY_DIR}/root/lib/swipl"
-COMMAND
-  # ${CMAKE_COMMAND} -E # cmake has no support for the -h option needed
-  # to dereference symlink
-  tar "cfh" ${SWI_PROLOG_HOME_STORE_PATH} .
-)
-add_dependencies(swi_prolog_home_tar swi-prolog)
-
 set(DEPENDENCY_INCLUDE_DIRS
   "${CMAKE_CURRENT_BINARY_DIR}/root/lib/swipl/include"
   ${CURSES_INCLUDE_DIRS}

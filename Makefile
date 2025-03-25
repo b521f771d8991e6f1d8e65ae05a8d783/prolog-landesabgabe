@@ -23,7 +23,6 @@ all:
 	npm run build --workspaces --${VARIANT}
 	cmake -S . -B ./out/build/${VARIANT}-${TARGET} --preset=${VARIANT}-${TARGET}
 	cmake --build ./out/build/${VARIANT}-${TARGET}
-	cargo build --target ${TARGET} ${CARGO_RELEASE_FLAG}
 	swift build --configuration ${VARIANT}
 
 .PHONY: run
@@ -32,10 +31,8 @@ run: all
 
 .PHONY: clean
 clean:
-	cargo clean
 	swift package clean
-	rm -rf out .build target
-	rm -f *.d *.o *.swiftdeps *.swiftdeps~
+	rm -rf out .build
 
 .PHONY: clean-build
 clean-build: clean all

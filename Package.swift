@@ -4,13 +4,6 @@ import PackageDescription
 
 let rootPath = "/workspace/"
 
-let rustFFIFlags = [
-    // corpus
-    "\(rootPath)/Sources/Assets/generated/SwiftBridgeCore.swift",
-    "\(rootPath)/Sources/Assets/generated/assets/assets.swift",
-    "-import-objc-header", "\(rootPath)/Sources/Assets/include/rust-bridging-header.h",
-]
-
 #if DEBUG
     let buildType = "debug"
 #else
@@ -29,8 +22,7 @@ let package = Package(
             targets: ["LX"])
     ],
     dependencies: [
-        .package(url: "https://github.com/vapor/vapor", from: "4.112.0"),
-        .package(url: "https://github.com/vapor/jwt.git", from: "5.1.2"),
+        .package(url: "https://github.com/vapor/vapor", from: "4.112.0")
     ],
     targets: [
         .target(
@@ -39,35 +31,39 @@ let package = Package(
         .executableTarget(
             name: "LX",
             dependencies: [
-                .product(name: "Vapor", package: "Vapor"),
-                .product(name: "JWT", package: "jwt"),
+                .product(name: "Vapor", package: "Vapor")
             ],
             swiftSettings: [
                 .interoperabilityMode(.Cxx),
                 .unsafeFlags(
-                    rustFFIFlags + [
+                    [
                         // cmake dependencies
                         "-I\(cmakeOutputDir)/Sources/LogicKit",
                         "-I\(cmakeOutputDir)/BuildInformation",
+                        "-I\(cmakeOutputDir)/Sources/Assets",
                         "-I\(cmakeOutputDir)",
                         "-L\(cmakeOutputDir)/Sources/LogicKit",
                         "-L\(cmakeOutputDir)/BuildInformation",
+                        "-L\(cmakeOutputDir)/Sources/Assets",
                         "-L\(cmakeOutputDir)",
                         "-F\(rootPath)/Sources/LogicKit/include",
                         "-I\(rootPath)/Sources/LogicKit/include",
                         "-L\(rootPath)/Sources/LogicKit/include",
+                        "-F\(rootPath)/Sources/Assets/include",
+                        "-I\(rootPath)/Sources/Assets/include",
+                        "-L\(rootPath)/Sources/Assets/include",
                     ]),
             ],
             linkerSettings: [
                 .unsafeFlags(
-                    rustFFIFlags + [
-                        // cmake dependencies
-                        "-L\(rootPath)target/x86_64-unknown-linux-gnu/\(buildType)", "-lassets",
+                    [
                         "-L\(cmakeOutputDir)/Sources/LogicKit",
-                        "-L\(cmakeOutputDir)/swi-prolog-prefix/src/swi-prolog-build/src",
-                        "-L\(cmakeOutputDir)/vcpkg_installed/x64-linux/lib",
+                        "-L\(cmakeOutputDir)/Sources/Assets",
+                        "-lAssets",
                         "-lLogicKit",
+                        "-L\(cmakeOutputDir)/swi-prolog-prefix/src/swi-prolog-build/src",
                         "-lswipl_static",
+                        "-L\(cmakeOutputDir)/vcpkg_installed/x64-linux/lib",
                         "-larchive",
                         "-lncurses",
                         "-lboost_filesystem",

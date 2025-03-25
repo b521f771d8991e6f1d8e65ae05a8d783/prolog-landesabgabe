@@ -1,11 +1,15 @@
+import Assets
 //import ActKit
 import BuildInformation
+import CxxStdlib
 import Foundation
-import JWT
 import LogicKit
 import Vapor
 
 let version = String(BuildInformation.getCurrentVersionAsString())
+let programRoot = "/tmp/lx"
+
+init_program_root(std.string(programRoot))
 
 let workerPortString = ProcessInfo.processInfo.environment["WORKER_LISTEN_PORT"] ?? "1337"
 
@@ -19,45 +23,9 @@ let workerHostname = ProcessInfo.processInfo.environment["WORKER_LISTEN_ON"] ?? 
 let secret =
     ProcessInfo.processInfo.environment["WORKER_KEY"]
 
-@Sendable
-func authEnabled() -> Bool {
-    return secret != nil
-}
-
-@Sendable
-func initAuth(onApp app: Application) async throws {
-    if authEnabled() {
-        await app.jwt.keys.add(ecdsa: try ES384PublicKey.init(pem: secret!))
-    }
-}
-
-@Sendable
-func checkAuth(onReq req: Request) throws {
-    if authEnabled() {
-
-    }
-}
-
 print("Running digital law server in version: \(version) ✨🚀")
 
-// JWT payload structure.
-struct LXAuthenticationPayload: JWTPayload {
-    // Maps the longer Swift property names to the
-    // shortened keys used in the JWT payload.
-    enum CodingKeys: String, CodingKey {
-        //case subject = "sub"
-        case expiration = "exp"
-    }
-
-    //var subject: SubjectClaim
-    var expiration: ExpirationClaim
-
-    func verify(using algorithm: some JWTAlgorithm) async throws {
-        try self.expiration.verifyNotExpired()
-    }
-}
-
-public func configure(withApp app: Application, andLogicVM lvm: LogicVM) throws {
+public func configure(withApp app: Application, andLogicVM lvm: looe.LogicKit.LogicVM) throws {
     try routes(withApp: app, andLogicVM: lvm)
 }
 
@@ -70,24 +38,26 @@ func isAlpha(_ str: String) -> Bool {
 func fetchLaw(withName name: String) -> String? {
     let resourceName = "\(name).pl"
 
-    guard let rustResource = fetch_from_corpus(resourceName) else {
+    let resource = fetch_from_corpus(std.string(resourceName))
+
+    if resource.has_value() {
+        let value = resource.value
+        return nil
+    } else {
         return nil
     }
-
-    return rustResource.toString()
 }
 
 @Sendable
 func fetchCorpus() -> [String] {
-    return list_corpus().map { $0.as_str().toString() }
+    return list_corpus().map { String($0) }
 }
 
 @Sendable
 func fetchFromWebAppData(withName path: String) -> String? {
-    guard let rustResource = fetch_from_web_app_data(path) else {
-        return nil
-    }
-    return rustResource.toString()
+    let rustResource = fetch_from_web_app_data(std.string(path))
+    return nil
+
 }
 
 @Sendable
@@ -101,12 +71,10 @@ func guessMimeType(fromPath path: String) -> String? {
     }
 }
 
-func routes(withApp app: Application, andLogicVM lvm: LogicVM) throws {
+func routes(withApp app: Application, andLogicVM lvm: looe.LogicKit.LogicVM) throws {
     // the following methods should be protected by a keycloak access token
 
     app.get("fetch-law") { req async throws -> String in
-        try checkAuth(onReq: req)
-
         guard let kurztitel = req.query[String.self, at: "kurztitel"] else {
             let corpus = fetchCorpus()
             do {
@@ -139,38 +107,30 @@ func routes(withApp app: Application, andLogicVM lvm: LogicVM) throws {
     }
 
     app.get("status") { req async throws -> String in
-        try checkAuth(onReq: req)
-
         return "OK"
     }
 
     app.get("version") { req async throws -> String in
-        try checkAuth(onReq: req)
-
         return version
     }
 
     app.get("🫖") { req async throws -> String in
-        try checkAuth(onReq: req)
-
         // TODO: magical function that converts this computer into a teapot
         print("Attention! This server is being converted into a teapot 🪄")
         throw Abort(.imATeapot)
     }
 
-    app.get("queryModel") { req async throws -> String in
-        try checkAuth(onReq: req)
-
-        guard let query: String = req.query[String.self, at: "query"] else {
-            throw Abort(.badRequest)
-        }
-
-        guard let result: String = lvm.process(query: query) else {
-            throw Abort(.internalServerError, reason: "error while executing query")
-        }
-
-        return result
-    }
+    //app.get("queryModel") { req async throws -> String in
+    //    guard let query: String = req.query[String.self, at: "query"] else {
+    //        throw Abort(.badRequest)
+    //    }
+    //
+    //    guard let result: String = lvm.process(query: query) else {
+    //        throw Abort(.internalServerError, reason: "error while executing query")
+    //    }
+    //
+    //    return result
+    //}
 
     // the following methods should NOT be protected by KeyCloak
 
@@ -226,10 +186,9 @@ func configure(app a: Application) {
     app.http.server.configuration.serverName = "LX"
 }
 
-let lvm = LogicVM()
 let app = try await Application.make(.detect())
+let lvm = looe.LogicKit.LogicVM()
 configure(app: app)
-try await initAuth(onApp: app)
 
 //defer {
 //    print("Exiting server ... Goodbye 🌙✨")

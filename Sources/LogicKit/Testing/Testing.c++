@@ -10,7 +10,7 @@
 
 #include <BuildInformation.h>
 
-using namespace looe::LogicKitC;
+using namespace looe::LogicKit;
 
 std::vector<std::string> arguments;
 

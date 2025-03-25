@@ -15,11 +15,11 @@
 #include <archive.h>
 #include <archive_entry.h>
 
-#include <SWIPrologHome.h>
+#include "assets.h"
 
 #include "LogicKit.h++"
 
-namespace looe::LogicKitC
+namespace looe::LogicKit
 {
 
 void
@@ -31,26 +31,6 @@ create_swipl_home_run_path(const std::filesystem::path &root)
 }
 
 const std::string swiplHomeRunPath("Library/SWIPL/home");
-
-void
-dump_tar_if_debug(void)
-{
-#ifdef DEBUG
-  std::clog << "dumping tar" << std::endl;
-  {
-    const std::filesystem::path dumpTarPath(
-      std::filesystem::temp_directory_path() / "tar-dump.tar");
-    if(std::filesystem::exists(dumpTarPath))
-      {
-        std::filesystem::remove(dumpTarPath);
-      }
-    std::ofstream s(dumpTarPath, std::ios::binary);
-    s.write(lx_rawdata_SwiPrologHomeData, lx_rawdata_SwiPrologHomeSize);
-    s.close();
-    printf("Dumped tar to: %s\n", dumpTarPath.c_str());
-  }
-#endif
-}
 
 void
 create_empty_root_dir(const std::filesystem::path &rootDir)
@@ -65,85 +45,20 @@ create_empty_root_dir(const std::filesystem::path &rootDir)
 }
 
 void
-extract_archive_to_directory(const std::filesystem::path &rootDir,
-                             const void *buffer, const size_t &size)
-{
-  struct archive *archive = archive_read_new();
-
-  archive_read_support_format_tar(archive);
-
-  archive_read_open_memory(archive, buffer, size);
-
-  struct archive_entry *entry(nullptr);
-  int entryNumber(0);
-
-  // platform independent chdir(2)
-  std::filesystem::current_path(rootDir.c_str());
-
-  create_swipl_home_run_path(rootDir);
-
-  while((entryNumber = archive_read_next_header(archive, &entry)) == ARCHIVE_OK)
-    {
-      const std::string entryPath(
-        std::string(archive_entry_pathname(entry)).substr(2));
-      const std::filesystem::path currentFile(rootDir / swiplHomeRunPath
-                                              / entryPath);
-
-      std::clog << "Extracting to '" << currentFile << "'" << std::endl;
-
-      if(archive_entry_filetype(entry) == AE_IFDIR)
-        {
-          if(!std::filesystem::create_directory(currentFile.c_str()))
-            {
-              std::cerr << "Failed to create directory: " << currentFile.c_str()
-                        << std::endl;
-            }
-          continue;
-        }
-      else
-        {
-          std::ofstream outFile(currentFile, std::ios::out);
-
-          if(!outFile)
-            {
-              std::cerr << "Failed to create file: " << currentFile.c_str();
-              continue;
-            }
-
-          std::array<char, 4096> buffer;
-          ssize_t bytesRead(0);
-
-          while((bytesRead
-                 = archive_read_data(archive, buffer.data(), buffer.size()))
-                > 0)
-            {
-              outFile.write(buffer.data(), bytesRead);
-            }
-
-          outFile.close();
-        }
-    }
-
-  archive_read_close(archive);
-  archive_read_free(archive);
-}
-
-void
 init_prolog_home()
 {
   static std::once_flag flag;
 
   std::call_once(flag, []() -> void {
-    std::clog << "Stored archive of size " << swiPrologHomeSize << " from ("
-              << SWI_PROLOG_HOME_STORE << ")\n";
+    std::clog << "Stored archive of size " << swi_prolog_home_tar_size;
 
     static const std::filesystem::path rootDir(
       std::filesystem::temp_directory_path()
       / boost::filesystem::unique_path("%%%%-%%%%-%%%%-%%%%").c_str());
 
     create_empty_root_dir(rootDir);
-    dump_tar_if_debug();
-    extract_archive_to_directory(rootDir, swiPrologHome, swiPrologHomeSize);
+    extract_archive_to_directory(rootDir, swi_prolog_home_tar,
+                                 swi_prolog_home_tar_size);
   });
 };
 

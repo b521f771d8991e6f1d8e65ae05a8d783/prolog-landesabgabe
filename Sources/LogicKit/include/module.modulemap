@@ -1,4 +1,4 @@
-module LogicKitC {
+module LogicKit {
     requires cplusplus20
     
     header "LogicKit.h++"

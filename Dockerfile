@@ -10,20 +10,8 @@ FROM build1-environment AS build2-environment
 
 RUN apt install -y git zsh \
     ninja-build gdb clang-19 clangd-19 clang-format-19 clang-tidy-19 zip unzip swi-prolog \
-    npm make wget
+    npm make wget cmake
 # curl is included in build1-environment
-
-# We need a newer cmake
-WORKDIR /tmp
-RUN wget https://github.com/Kitware/CMake/releases/download/v3.31.6/cmake-3.31.6-linux-x86_64.tar.gz
-RUN tar xvf cmake-3.31.6-linux-x86_64.tar.gz
-RUN mv cmake-3.31.6-linux-x86_64 cmake
-RUN mv cmake /opt
-ENV PATH="$PATH:/opt/cmake/bin"
-
-
-# Download Rust from the Repos
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
 FROM build2-environment AS development
 

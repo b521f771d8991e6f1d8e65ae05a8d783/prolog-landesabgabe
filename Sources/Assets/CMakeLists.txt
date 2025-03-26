@@ -1,44 +1,73 @@
 # ${CMAKE_COMMAND} -E # cmake has no support for the -h option needed
 # to dereference symlink
 
+find_program(tar tar)
+find_program(rm rm)
+find_program(mkdir mkdir)
+
 set(swi_prolog_home_store_path "${CMAKE_CURRENT_BINARY_DIR}/swipl-prolog-home.tar")
 add_custom_target(swi_prolog_home_tar
 WORKING_DIRECTORY
-  "${CMAKE_BINARY_DIR}/root/lib/swipl"
+  "${CMAKE_BINARY_DIR}/root/lib"
 COMMAND
-  tar "cfh" ${swi_prolog_home_store_path} .
+  ${rm} ${swi_prolog_home_store_path} && ${tar} "cfh" ${swi_prolog_home_store_path} swipl
 )
 add_dependencies(swi_prolog_home_tar swi-prolog)
 
-set(lxui_home_tar_path "${CMAKE_CURRENT_BINARY_DIR}/lxui.tar")
+set(lxui_tar_path "${CMAKE_CURRENT_BINARY_DIR}/lxui.tar")
 add_custom_target(lxui_tar
 WORKING_DIRECTORY
-  "${CMAKE_CURRENT_LIST_DIR}/../lxui/dist"
+  "${CMAKE_CURRENT_LIST_DIR}/../lxui"
 COMMAND
-  tar "cfh" ${lxui_home_tar_path} .
+  ${rm} ${lxui_tar_path} && ${tar} "cfh" ${lxui_tar_path} dist
 )
 
 set(corpus_tar_path "${CMAKE_CURRENT_BINARY_DIR}/corpus.tar")
 add_custom_target(corpus_tar
 WORKING_DIRECTORY
-  "${CMAKE_CURRENT_LIST_DIR}/../Corpus"
+  "${CMAKE_CURRENT_LIST_DIR}/../"
 COMMAND
-  tar "cfh" ${corpus_tar_path} .
+  ${rm} ${corpus_tar_path} && ${tar} "cfh" ${corpus_tar_path} Corpus
 )
 
-add_library(Assets STATIC assets.c assets.c++)
-add_dependencies(Assets 
+# Repack it
+set(assets_tar_path "${CMAKE_CURRENT_BINARY_DIR}/assets.tar")
+add_custom_target(assets_tar
+WORKING_DIRECTORY
+  "${CMAKE_CURRENT_BINARY_DIR}"
+COMMAND
+  ${rm} ${assets_tar_path} -rf tmp_dir
+  && ${mkdir} tmp_dir
+  && cd tmp_dir
+  && ${tar} "xf" ${swi_prolog_home_store_path}
+  && ${tar} "xf" ${lxui_tar_path}
+  && ${tar} "xf" ${corpus_tar_path}
+  && ${tar} "cfh" ${assets_tar_path} .
+  && cd ..
+  && ${rm} -rf tmp_dir
+)
+add_dependencies(assets_tar 
     swi_prolog_home_tar
     lxui_tar
     corpus_tar
 )
-target_include_directories(Assets PUBLIC include)
+
+add_library(Assets STATIC assets.c assets.c++)
+add_dependencies(Assets assets_tar)
+target_include_directories(Assets PUBLIC Include)
 target_link_libraries(Assets PUBLIC
   LibArchive::LibArchive
   Boost::filesystem
 )
 target_compile_definitions(Assets PRIVATE
-  CORPUS_TAR="${corpus_tar_path}"
-  SWI_PROLOG_HOME_TAR="${swi_prolog_home_store_path}"
-  LX_UI_HOME_TAR="${lxui_home_tar_path}"
+  ASSETS_TAR_PATH="${assets_tar_path}"
 )
+
+add_executable(test_assets
+  Testing/test_get_from_assets.c++
+)
+target_link_libraries(test_assets PUBLIC
+  Assets
+)
+
+add_test(test_assets COMMAND ${CMAKE_CURRENT_BINARY_DIR}/test_assets)

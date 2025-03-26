@@ -49,9 +49,9 @@ let package = Package(
                         "-F\(rootPath)/Sources/LogicKit/include",
                         "-I\(rootPath)/Sources/LogicKit/include",
                         "-L\(rootPath)/Sources/LogicKit/include",
-                        "-F\(rootPath)/Sources/Assets/include",
-                        "-I\(rootPath)/Sources/Assets/include",
-                        "-L\(rootPath)/Sources/Assets/include",
+                        "-F\(rootPath)/Sources/Assets/Include",
+                        "-I\(rootPath)/Sources/Assets/Include",
+                        "-L\(rootPath)/Sources/Assets/Include",
                     ]),
             ],
             linkerSettings: [

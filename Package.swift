@@ -66,7 +66,6 @@ let package = Package(
                         "-L\(cmakeOutputDir)/vcpkg_installed/x64-linux/lib",
                         "-larchive",
                         "-lncurses",
-                        "-lboost_filesystem",
                     ])
             ]),
     ],

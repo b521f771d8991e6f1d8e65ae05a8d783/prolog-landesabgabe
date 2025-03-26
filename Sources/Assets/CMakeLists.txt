@@ -10,7 +10,7 @@ add_custom_target(swi_prolog_home_tar
 WORKING_DIRECTORY
   "${CMAKE_BINARY_DIR}/root/lib"
 COMMAND
-  ${rm} ${swi_prolog_home_store_path} && ${tar} "cfh" ${swi_prolog_home_store_path} swipl
+  ${rm} -f ${swi_prolog_home_store_path} && ${tar} "cfh" ${swi_prolog_home_store_path} swipl
 )
 add_dependencies(swi_prolog_home_tar swi-prolog)
 
@@ -19,7 +19,7 @@ add_custom_target(lxui_tar
 WORKING_DIRECTORY
   "${CMAKE_CURRENT_LIST_DIR}/../lxui"
 COMMAND
-  ${rm} ${lxui_tar_path} && ${tar} "cfh" ${lxui_tar_path} dist
+  ${rm} -f ${lxui_tar_path} && ${tar} "cfh" ${lxui_tar_path} dist
 )
 
 set(corpus_tar_path "${CMAKE_CURRENT_BINARY_DIR}/corpus.tar")
@@ -27,7 +27,7 @@ add_custom_target(corpus_tar
 WORKING_DIRECTORY
   "${CMAKE_CURRENT_LIST_DIR}/../"
 COMMAND
-  ${rm} ${corpus_tar_path} && ${tar} "cfh" ${corpus_tar_path} Corpus
+  ${rm} -f ${corpus_tar_path} && ${tar} "cfh" ${corpus_tar_path} Corpus
 )
 
 # Repack it
@@ -57,7 +57,6 @@ add_dependencies(Assets assets_tar)
 target_include_directories(Assets PUBLIC Include)
 target_link_libraries(Assets PUBLIC
   LibArchive::LibArchive
-  Boost::filesystem
 )
 target_compile_definitions(Assets PRIVATE
   ASSETS_TAR_PATH="${assets_tar_path}"

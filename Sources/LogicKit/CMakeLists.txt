@@ -16,7 +16,6 @@ PRIVATE
   BuildInformation
   ZLIB::ZLIB
   LibArchive::LibArchive
-  Boost::filesystem
   Assets
 )
 

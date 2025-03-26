@@ -3,7 +3,6 @@
     "dependencies": [
         "libarchive",
         "zlib",
-        "boost-filesystem",
         "boost-numeric-conversion",
         "gtest",
         "ncurses"

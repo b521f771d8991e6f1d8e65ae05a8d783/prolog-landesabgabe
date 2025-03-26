@@ -24,11 +24,12 @@ extern void extract_archive_to_directory(const std::filesystem::path &rootDir,
                                          const void *buffer,
                                          const size_t &size);
 
-extern std::string init_program_root(const std::string &root
-                                     = std::tmpnam(nullptr));
+extern std::filesystem::path init_program_root(const std::filesystem::path &root
+                                               = std::tmpnam(nullptr));
 
-extern std::vector<std::string> list_all(const std::string_view &prefix = "");
-extern std::optional<std::string> fetch(const std::string &);
+extern std::vector<std::filesystem::path> list_all();
+extern std::vector<std::filesystem::path> list(const std::string & = "");
+extern std::optional<std::string> fetch(const std::filesystem::path &);
 
 #endif
 

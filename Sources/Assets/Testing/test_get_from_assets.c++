@@ -3,31 +3,18 @@
 #include <string>
 #include <iostream>
 
+#include <gtest/gtest.h>
+
 #include <assets.h>
 
-int
-main(int argc, const char *argv[])
+TEST(asset_test, test_open_file)
 {
   init_program_root();
 
+  // try to open every file
   for(const std::string &file : list())
     {
       auto i = fetch(file);
-
-      if(!i.has_value())
-        {
-          std::cerr << "Could not open file: " << file << std::endl;
-          return 1;
-        }
-
-      std::cout << "Succeeded to open: " << file << "(" << i.value().size()
-                << ")" << std::endl;
+      ASSERT_TRUE(i.has_value());
     }
-
-  for(const std::string &file : list("Corpus"))
-    {
-      std::clog << file << std::endl;
-    }
-
-  return 0;
 }

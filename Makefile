@@ -16,9 +16,10 @@ endif
 .PHONY: init
 init:
 	git submodule update --init --recursive
+	npm install --workspaces
 
 .PHONY: all
-all:
+all: init
 	@echo Building variant: ${VARIANT} for target ${TARGET}
 	npm run build --workspaces --${VARIANT}
 	cmake -S . -B ./out/build/${VARIANT}-${TARGET} --preset=${VARIANT}-${TARGET}

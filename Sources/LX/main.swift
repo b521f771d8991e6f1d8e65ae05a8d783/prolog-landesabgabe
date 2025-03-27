@@ -7,9 +7,7 @@ import LogicKit
 import Vapor
 
 let version = String(BuildInformation.getCurrentVersionAsString())
-let programRoot = "/tmp/lx"
-
-init_program_root(std.string(programRoot))
+//let programRoot: std.filesystem.path = init_program_root(std.filesystem.path("/tmp/test"))
 
 let workerPortString = ProcessInfo.processInfo.environment["WORKER_LISTEN_PORT"] ?? "1337"
 
@@ -36,26 +34,29 @@ func isAlpha(_ str: String) -> Bool {
 
 @Sendable
 func fetchLaw(withName name: String) -> String? {
-    let resourceName = "\(name).pl"
-
-    let resource = fetch_from_corpus(std.string(resourceName))
-
-    if resource.has_value() {
-        let value = resource.value
-        return nil
-    } else {
-        return nil
-    }
+    //let resourceName = "\(name).pl"
+    //
+    //let resource = fetch(
+    //    "Corpus", std.filesystem.path(resourceName))
+    //
+    //if resource.has_value() {
+    //    let value = resource.value
+    //    return nil
+    //} else {
+    //    return nil
+    //}
+    return nil
 }
 
 @Sendable
 func fetchCorpus() -> [String] {
-    return list_corpus().map { String($0) }
+    //return list("Corpus").map { String($0) }
+    return []
 }
 
 @Sendable
 func fetchFromWebAppData(withName path: String) -> String? {
-    let rustResource = fetch_from_web_app_data(std.string(path))
+    //let rustResource = fetch("dist", std.filesystem.path(path))
     return nil
 
 }

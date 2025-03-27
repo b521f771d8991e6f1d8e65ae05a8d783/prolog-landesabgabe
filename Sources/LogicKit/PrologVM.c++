@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include <boost/filesystem.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 
 #include <LogicKit.h++>

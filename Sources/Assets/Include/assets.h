@@ -30,6 +30,8 @@ extern std::filesystem::path init_program_root(const std::filesystem::path &root
 extern std::vector<std::filesystem::path> list_all();
 extern std::vector<std::filesystem::path> list(const std::string & = "");
 extern std::optional<std::string> fetch(const std::filesystem::path &);
+extern std::optional<std::string> fetch(const std::filesystem::path &prefix,
+                                        const std::filesystem::path &file_name);
 
 #endif
 

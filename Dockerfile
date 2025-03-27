@@ -1,5 +1,8 @@
 FROM swift:6.0.3-bookworm AS build1-environment
 
+RUN rm -rf /etc/apt/sources.list.d/debian.sources
+COPY Sources/Docker/*.sources /etc/apt/sources.list.d
+
 RUN apt update && apt upgrade -y && apt install -y curl && curl -sfS https://dotenvx.sh | sh
 
 FROM build1-environment AS build2-environment

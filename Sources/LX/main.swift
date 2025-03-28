@@ -7,7 +7,8 @@ import LogicKit
 import Vapor
 
 let version = String(BuildInformation.getCurrentVersionAsString())
-//let programRoot: std.filesystem.path = init_program_root(std.filesystem.path("/tmp/test"))
+
+looe.lx.assets.init_program_root_and_setup_jail()
 
 let workerPortString = ProcessInfo.processInfo.environment["WORKER_LISTEN_PORT"] ?? "1337"
 
@@ -34,31 +35,35 @@ func isAlpha(_ str: String) -> Bool {
 
 @Sendable
 func fetchLaw(withName name: String) -> String? {
-    //let resourceName = "\(name).pl"
-    //
-    //let resource = fetch(
-    //    "Corpus", std.filesystem.path(resourceName))
-    //
-    //if resource.has_value() {
-    //    let value = resource.value
-    //    return nil
-    //} else {
-    //    return nil
-    //}
-    return nil
+    let resourceName = std.string("\(name).pl")
+
+    print("Trying to fetch \(resourceName)")
+
+    let resource = String(
+        looe.lx.assets.fetch_string(std.string("Corpus"), resourceName))
+
+    if resource != "" {
+        return resource
+    } else {
+        return nil
+    }
 }
 
 @Sendable
 func fetchCorpus() -> [String] {
-    //return list("Corpus").map { String($0) }
-    return []
+    return ["krog", "labgg"]
+    //return looe.lx.assets.list_strings("Corpus").map({ String($0) })
 }
 
 @Sendable
 func fetchFromWebAppData(withName path: String) -> String? {
-    //let rustResource = fetch("dist", std.filesystem.path(path))
-    return nil
+    let resource = String(looe.lx.assets.fetch_string("dist", std.string(path)))
 
+    if resource != "" {
+        return resource
+    } else {
+        return nil
+    }
 }
 
 @Sendable

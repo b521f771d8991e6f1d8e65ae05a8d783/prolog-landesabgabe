@@ -1,3 +1,8 @@
+#include <algorithm>
+#include <iterator>
+#include <string>
+#include <unistd.h>
+
 #include <iostream>
 #include <fstream>
 #include <filesystem>
@@ -10,6 +15,9 @@
 #include <vector>
 
 #include "assets.h"
+
+namespace looe::lx::assets
+{
 
 void
 extract_archive_to_directory(const std::filesystem::path &rootDir,
@@ -155,7 +163,7 @@ list(const std::string &prefix)
   return ret;
 }
 
-std::optional<std::string>
+std::optional<std::filesystem::path>
 fetch(const std::filesystem::path &file_name)
 {
   if(!program_root.has_value())
@@ -191,9 +199,68 @@ fetch(const std::filesystem::path &file_name)
   return buffer.str();
 }
 
-std::optional<std::string>
+std::optional<std::filesystem::path>
 fetch(const std::filesystem::path &prefix,
       const std::filesystem::path &file_name)
 {
   return fetch(prefix / file_name);
+}
+
+std::string
+path_to_relative_string(const std::filesystem::path &path)
+{
+  return std::filesystem::relative(path, program_root.value()).c_str();
+}
+
+std::string
+fetch_string(const std::string &prefix, const std::string &file_name)
+{
+  const std::optional<std::filesystem::path> ret = fetch(prefix, file_name);
+  if(ret.has_value())
+    {
+      return ret.value();
+    }
+  else
+    {
+      return "";
+    }
+}
+
+std::vector<std::string>
+list_strings(const std::string &prefix)
+{
+  std::vector<std::filesystem::path> got = list(prefix);
+  std::vector<std::string> ret;
+  ret.reserve(got.size());
+
+  std::transform(got.begin(), got.end(), std::back_inserter(ret),
+                 path_to_relative_string);
+
+  return ret;
+}
+
+void
+move_to_program_root(void)
+{
+  if(program_root.has_value())
+    {
+      chdir(program_root.value().c_str());
+    }
+}
+
+void
+init_program_root_and_setup_jail(void)
+{
+  init_program_root();
+  move_to_program_root();
+
+  // if(getuid() == 0)
+  //   {
+  //     if(int err = chroot("."))
+  //       {
+  //         std::clog << "Tried to chroot, returned" << err << std::endl;
+  //       }
+  //   }
+}
+
 }

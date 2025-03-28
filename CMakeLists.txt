@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.28)
-project(LX LANGUAGES Swift CXX C)
+cmake_minimum_required(VERSION 3.25)
+project(LX LANGUAGES OBJCXX CXX OBJC C)
 
 include(CTest)
 include(Build/BuildInformation/BuildInformation.cmake)
@@ -7,18 +7,17 @@ include(Dependencies/Dependencies.cmake)
 
 # configuration for our targets
 
-add_subdirectory(Sources/ActKit)
+add_subdirectory(Sources/Assets)
 add_subdirectory(Sources/LogicKit)
 
 # configuration for all targets
 set(TARGETS
-  ActKit
+  Assets
   LogicKit
 )
 
 set(TEST_TARGETS
-  ActKitTests
-  LogicKitTests
+  #LogicKitTests
 )
 
 # add target configuration
@@ -32,6 +31,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
   set(Wextra "$<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-Wextra>")
   set(Wpedantic "$<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-Wpedantic>")
   set(Werror "$<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-Werror>")
+  set(CStandard "$<$<COMPILE_LANGUAGE:C,OBJC>:--std=c23>") # somehow this does not work right now using plain cmake, TODO remove this nonsense
 else()
   message("This program should be compiled with clang or gcc")
 endif()
@@ -54,6 +54,7 @@ foreach(TARGET ${TARGETS} ${TEST_TARGETS})
     ${Wextra}
     ${Werror}
     ${Wpedantic}
+    ${CStandard}
   )
 
   set_target_properties(${TARGET} PROPERTIES
@@ -63,8 +64,8 @@ foreach(TARGET ${TARGETS} ${TEST_TARGETS})
 
     CMAKE_OBJCXX_STANDARD 20
     CMAKE_CXX_STANDARD 20
-    CMAKE_OBJC_STANDARD 17
-    CMAKE_C_STANDARD 17
+    CMAKE_OBJC_STANDARD 23
+    CMAKE_C_STANDARD 23
 
     CMAKE_OBJCXX_STANDARD_REQUIRED ON
     CMAKE_CXX_STANDARD_REQUIRED ON
@@ -77,76 +78,3 @@ foreach(TARGET ${TARGETS} ${TEST_TARGETS})
     CMAKE_C_EXTENSIONS OFF
   )
 endforeach()
-
-# SPM-Targets
-set(ALL_TARGET_DEPENDECIES)
-
-foreach(lib ${TARGETS})
-  get_target_property(INTERFACE_LINK ${lib} INTERFACE_LINK_LIBRARIES)
-  get_target_property(LINK ${lib} LINK_LIBRARIES)
-  
-  if(LINK)
-    foreach(CURRENT ${LINK})
-      list(APPEND ALL_TARGET_DEPENDECIES ${CURRENT})
-    endforeach()
-  endif()
-endforeach()
-
-set(SWIFTC_DEPENDENCY_LIBRARIES)
-foreach(lib ${ALL_TARGET_DEPENDECIES})
-  if(IS_ABSOLUTE ${lib})
-    list(APPEND SWIFTC_DEPENDENCY_LIBRARIES -Xswiftc "-l${lib}")
-    list(APPEND SWIFTC_DEPENDENCY_LIBRARIES -Xcc "-l${lib}")
-    list(APPEND SWIFTC_DEPENDENCY_LIBRARIES -Xcxx "-l${lib}")
-  else()
-    if((NOT ${lib} STREQUAL "Boost::headers")
-      AND (NOT ${lib} STREQUAL "nlohmann_json::nlohmann_json")
-      AND (NOT ${lib} STREQUAL "tl::expected")) # TODO filter this out properly
-      list(APPEND SWIFTC_DEPENDENCY_LIBRARIES -Xswiftc "-l$<TARGET_LINKER_FILE:${lib}>")
-      list(APPEND SWIFTC_DEPENDENCY_LIBRARIES -Xcc "-l$<TARGET_LINKER_FILE:${lib}>")
-      list(APPEND SWIFTC_DEPENDENCY_LIBRARIES -Xcxx "-l$<TARGET_LINKER_FILE:${lib}>")
-    endif()
-  endif()
-endforeach()
-
-string(TOLOWER "${CMAKE_BUILD_TYPE}" SWIFT_BUILD_TYPE)
-
-find_program(CARGO_EXE NAMES "cargo" REQUIRED)
-
-if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
-  set(CARGO_FLAGS --release)
-  set(SWIFT_BUILD_TYPE release)
-else()
-  set(CARGO_FLAGS)
-  set(SWIFT_BUILD_TYPE debug)
-endif()
-
-add_custom_target(CargoPackage
-  COMMAND
-    ${CARGO_EXE} "build" ${CARGO_FLAGS}
-  WORKING_DIRECTORY
-    ${CMAKE_CURRENT_SOURCE_DIR}
-)
-
-add_custom_target(SwiftPackage
-  COMMAND
-    "CC=${CMAKE_C_COMPILER}"
-    "CXX=${CMAKE_CXX_COMPILER}"
-    ${SWIFT_EXE} "build"
-    -v
-    --configuration ${SWIFT_BUILD_TYPE}
-    --package-path ${CMAKE_CURRENT_SOURCE_DIR}
-    -Xswiftc -I${CMAKE_CURRENT_BINARY_DIR}/Sources/ActKit
-    -Xswiftc -I${CMAKE_CURRENT_BINARY_DIR}/Sources/LogicKit
-    -Xswiftc -I${CMAKE_CURRENT_BINARY_DIR}/BuildInformation
-    -Xswiftc -I${CMAKE_CURRENT_BINARY_DIR}
-    -Xswiftc -L${CMAKE_CURRENT_BINARY_DIR}/Sources/ActKit
-    -Xswiftc -L${CMAKE_CURRENT_BINARY_DIR}/Sources/LogicKit
-    -Xswiftc -L${CMAKE_CURRENT_BINARY_DIR}/BuildInformation
-    -Xswiftc -L${CMAKE_CURRENT_BINARY_DIR}
-    -Xswiftc -F${CMAKE_CURRENT_SOURCE_DIR}/Sources/LogicKit/include
-    -Xswiftc -I${CMAKE_CURRENT_SOURCE_DIR}/Sources/LogicKit/include
-    -Xswiftc -L${CMAKE_CURRENT_SOURCE_DIR}/Sources/LogicKit/include
-    ${SWIFTC_DEPENDENCY_LIBRARIES}
-)
-add_dependencies(SwiftPackage ${TARGETS} CargoPackage)

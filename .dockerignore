@@ -1,12 +1,8 @@
 /.vscode
 /Docs
-/Scripts
-/Infrastructure
 /README.md
 /.devcontainer
 /.github
-/Playground
-
 /.build
 /out
 /generated

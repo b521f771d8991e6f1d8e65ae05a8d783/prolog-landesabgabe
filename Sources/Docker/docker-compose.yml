@@ -1,0 +1,16 @@
+name: lx
+services:
+  worker:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+      target: ${WORKER_TARGET_STAGE}
+    tty: true
+    ports:
+      - "1337:1337"
+    volumes:
+      - ../..:/workspace
+    env_file: ".env"
+networks:
+  default:
+    name: "traefik_proxy_sprachguru_prod_local"

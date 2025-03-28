@@ -2,6 +2,8 @@
 
 import PackageDescription
 
+let rootPath = "/workspace/"
+
 #if DEBUG
     let buildType = "debug"
 #else
@@ -9,7 +11,8 @@ import PackageDescription
     let buildType = "debug"
 #endif
 
-let rustBridgingHeader = "Build/FFI/rust-bridging-header.h"
+let target = "x86_64-unknown-linux-gnu"
+let cmakeOutputDir = "\(rootPath)/out/build/\(buildType)-\(target)"
 
 let package = Package(
     name: "LX",
@@ -22,6 +25,9 @@ let package = Package(
         .package(url: "https://github.com/vapor/vapor", from: "4.112.0")
     ],
     targets: [
+        .target(
+            name: "ActKit"
+        ),
         .executableTarget(
             name: "LX",
             dependencies: [
@@ -29,19 +35,39 @@ let package = Package(
             ],
             swiftSettings: [
                 .interoperabilityMode(.Cxx),
-                .unsafeFlags([
-                    "generated/SwiftBridgeCore.swift", "generated/LX-rs/LX-rs.swift",
-                    "-import-objc-header", rustBridgingHeader,
-                ]),
+                .unsafeFlags(
+                    [
+                        // cmake dependencies
+                        "-I\(cmakeOutputDir)/Sources/LogicKit",
+                        "-I\(cmakeOutputDir)/BuildInformation",
+                        "-I\(cmakeOutputDir)/Sources/Assets",
+                        "-I\(cmakeOutputDir)",
+                        "-L\(cmakeOutputDir)/Sources/LogicKit",
+                        "-L\(cmakeOutputDir)/BuildInformation",
+                        "-L\(cmakeOutputDir)/Sources/Assets",
+                        "-L\(cmakeOutputDir)",
+                        "-F\(rootPath)/Sources/LogicKit/include",
+                        "-I\(rootPath)/Sources/LogicKit/include",
+                        "-L\(rootPath)/Sources/LogicKit/include",
+                        "-F\(rootPath)/Sources/Assets/Include",
+                        "-I\(rootPath)/Sources/Assets/Include",
+                        "-L\(rootPath)/Sources/Assets/Include",
+                    ]),
             ],
             linkerSettings: [
-                .unsafeFlags([
-                    "generated/SwiftBridgeCore.swift",
-                    "generated/LX-rs/LX-rs.swift",
-                    "-import-objc-header", rustBridgingHeader,
-                    "-Ltarget/\(buildType)", "-lcorpus",
-                ])
-            ])
+                .unsafeFlags(
+                    [
+                        "-L\(cmakeOutputDir)/Sources/LogicKit",
+                        "-L\(cmakeOutputDir)/Sources/Assets",
+                        "-lAssets",
+                        "-lLogicKit",
+                        "-L\(cmakeOutputDir)/swi-prolog-prefix/src/swi-prolog-build/src",
+                        "-lswipl_static",
+                        "-L\(cmakeOutputDir)/vcpkg_installed/x64-linux/lib",
+                        "-larchive",
+                        "-lncurses",
+                    ])
+            ]),
     ],
     cxxLanguageStandard: .cxx20
 )

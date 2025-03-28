@@ -3,10 +3,7 @@
     "dependencies": [
         "libarchive",
         "zlib",
-        "boost-filesystem",
         "boost-numeric-conversion",
-        "nlohmann-json",
-        "tl-expected",
         "gtest",
         "ncurses"
     ]

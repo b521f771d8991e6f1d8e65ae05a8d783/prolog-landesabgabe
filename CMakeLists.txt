@@ -10,6 +10,9 @@ include(Dependencies/Dependencies.cmake)
 add_subdirectory(Sources/Assets)
 add_subdirectory(Sources/LogicKit)
 
+# configuration for our tests
+add_subdirectory(Tests/LogicKit)
+
 # configuration for all targets
 set(TARGETS
   Assets

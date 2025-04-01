@@ -1,13 +1,12 @@
+#include <complex>
 #include <vector>
 #include <string>
 
-#include <gtest/gtest.h>
+#include <assets.h>
 
-#include <Testing.h++>
-#include <LogicKit.h++>
 #include <PrologVM.h++>
 
-#include <BuildInformation.h>
+#include <gtest/gtest.h>
 
 using namespace looe::LogicKit;
 
@@ -15,10 +14,7 @@ std::vector<std::string> arguments;
 
 TEST(PrologVM, testStartUp)
 {
-  std::cout << "Running Tests in version: "
-            << BuildInformation::VersionString::getCurrentVersion().toString()
-            << std::endl;
-  start_prolog_VM(arguments[0]);
+  start_prolog_VM(arguments[0], "swipl");
   ASSERT_TRUE(is_initialised());
 }
 
@@ -35,15 +31,11 @@ TEST(PrologVM, testPrologQueryFalse)
   // ASSERT_EQ(result.size(), 0);
 }
 
-namespace looe::LX::TestingC
-{
-
 int
-execute_tests(std::string argv0)
+main(int argc, char **argv)
 {
-  arguments = { std::move(argv0) };
-  testing::InitGoogleTest();
+  looe::lx::assets::init_program_root_and_setup_jail();
+  ::testing::InitGoogleTest(&argc, argv);
+  arguments = std::vector<std::string>(argv, argv + argc);
   return RUN_ALL_TESTS();
-}
-
 }

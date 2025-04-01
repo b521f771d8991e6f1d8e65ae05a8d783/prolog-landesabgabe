@@ -70,4 +70,7 @@ target_link_libraries(test_assets PUBLIC
   GTest::gtest_main
 )
 
-add_test(test_assets COMMAND ${CMAKE_CURRENT_BINARY_DIR}/test_assets)
+add_test(
+  NAME test_assets
+  COMMAND ${CMAKE_CURRENT_BINARY_DIR}/test_assets
+)

@@ -3,6 +3,7 @@
 #include <vector>
 #include <variant>
 #include <memory>
+#include <filesystem>
 #include <functional>
 
 #include <algorithm>
@@ -37,11 +38,15 @@ map(std::vector<A> &container, T (*const f)(A &))
 }
 
 void
-start_prolog_VM(const std::string &argv0)
+start_prolog_VM(const std::string &argv0, const std::filesystem::path &assets)
 {
   if(!is_initialised())
     {
-      args = std::vector<std::string>({ argv0, "--home=." });
+      ::std::clog << "Initializing PrologVM in: " << assets.c_str()
+                  << std::endl;
+
+      args = std::vector<std::string>(
+        { argv0, std::string("--home=") + assets.generic_string() });
 
       cArgs = std::vector<char *>(map<char *>(
         args, +[](std::string &i) -> char * { return &i[0]; }));

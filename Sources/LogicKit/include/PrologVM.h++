@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <variant>
+#include <filesystem>
 
 class PlEngine;
 
@@ -82,7 +83,8 @@ public:
   }
 };
 
-extern void start_prolog_VM(const std::string &argv0);
+extern void start_prolog_VM(const std::string &argv0,
+                            const std::filesystem::path &assets);
 extern bool is_initialised(void);
 extern void stop_prolog_VM(void);
 

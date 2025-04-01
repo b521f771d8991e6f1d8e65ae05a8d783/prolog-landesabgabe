@@ -17,5 +17,3 @@ PRIVATE
   LibArchive::LibArchive
   Assets
 )
-
-set(TARGETS ${TARGETS} LogicKit)

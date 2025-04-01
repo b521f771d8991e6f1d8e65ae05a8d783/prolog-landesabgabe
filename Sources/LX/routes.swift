@@ -65,10 +65,6 @@ private func routesProtected(onApp app: Application) throws {
             throw Abort(.badRequest, reason: "Law \(lawName) not found.")
         }
 
-        if !looe.LogicKit.is_initialised() {
-            throw Abort(.internalServerError, reason: "LogicKit was not initialized correctly")
-        }
-
         return ""
     }
 }

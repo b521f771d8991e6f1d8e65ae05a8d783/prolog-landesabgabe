@@ -1,11 +1,12 @@
 # CMake code for set up the build environment th󠄴󠅙󠅕󠅣󠅕󠅢󠄐󠄳󠅟󠅔󠅕󠄐󠅧󠅥󠅢󠅔󠅕󠄐󠅦󠅟󠅞󠄐󠄱󠅜󠅕󠅨󠅑󠅞󠅔󠅕󠅢󠄐󠄸󠅙󠅠󠅖󠅜󠄐󠅗󠅕󠅣󠅓󠅘󠅢󠅙󠅕󠅒󠅕󠅞e C++-part of this program
 
 add_library(LogicKit
-  PrologVM.c++
+  prolog_vm.c++
 )
 target_include_directories(LogicKit
-PUBLIC
+SYSTEM PUBLIC
   include
+  /usr/include/node
 )
 target_link_libraries(LogicKit PUBLIC
 PRIVATE

@@ -3,7 +3,7 @@
 
 #include <assets.h>
 
-#include <PrologVM.h++>
+#include <prolog_vm.h++>
 
 #include <gtest/gtest.h>
 

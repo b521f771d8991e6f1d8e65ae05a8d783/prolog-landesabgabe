@@ -1,9 +1,6 @@
 FROM swift:6.0.3-bookworm AS build1-environment
 
-RUN rm -rf /etc/apt/sources.list.d/debian.sources
-COPY Sources/Docker/*.sources /etc/apt/sources.list.d
-
-RUN apt update && apt upgrade -y && apt install -y curl node-addon-api libnode-dev && curl -sfS https://dotenvx.sh | sh
+RUN apt update && apt upgrade -y && apt install -y curl libnode-dev && curl -sfS https://dotenvx.sh | sh
 
 FROM build1-environment AS build2-environment
 
@@ -33,7 +30,7 @@ RUN mkdir /workspace
 COPY . /workspace
 WORKDIR /workspace
 
-RUN TARGET=${BUILD_TARGET} VARIANt=${BUILD_VARIANT} make all
+RUN TARGET=${BUILD_TARGET} VARIANT=${BUILD_VARIANT} make all
 RUN strip .build/debug/LX
 
 # TODO switch to FROM scratch once we can build it statically

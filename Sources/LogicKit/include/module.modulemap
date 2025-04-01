@@ -1,7 +1,7 @@
 module LogicKit {
     requires cplusplus20
     
-    header "PrologVM.h++"
+    header "prolog_vm.h++"
 
     export *
 }

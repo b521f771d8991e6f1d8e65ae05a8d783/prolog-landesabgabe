@@ -6,11 +6,9 @@ import Foundation
 import LogicKit
 import Vapor
 
-let version = String(BuildInformation.getCurrentVersionAsString())
-
 looe.lx.assets.init_program_root_and_setup_jail()
 
-print("Running digital law server in version: \(version) ✨🚀")
+print("Running digital law server in version: \(getVersion()) ✨🚀")
 
 let app = try await Application.make(.detect())
 let lvm = looe.LogicKit.LogicVM()

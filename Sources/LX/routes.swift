@@ -41,7 +41,7 @@ func routes(withApp app: Application, andLogicVM lvm: looe.LogicKit.LogicVM) thr
     }
 
     app.get("version") { req async throws -> String in
-        return "version"  // TODO: fix this error
+        return "\(getVersion())"  // TODO: fix this error
     }
 
     app.get("🫖") { req async throws -> String in

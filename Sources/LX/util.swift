@@ -1,4 +1,5 @@
 import Assets
+import BuildInformation
 
 @Sendable
 func isAlpha(_ str: String) -> Bool {
@@ -47,4 +48,10 @@ func fetchFromWebAppData(withName path: String) -> String? {
     } else {
         return nil
     }
+}
+
+@Sendable
+func getVersion() -> String {
+    let cxxVersion = BuildInformation.getCurrentVersionAsString()
+    return String(cxxVersion)
 }

@@ -5,5 +5,3 @@
 find_package(Boost REQUIRED COMPONENTS numeric_conversion)
 find_package(GTest REQUIRED)
 find_package(LibArchive REQUIRED)
-find_package(OpenSSL REQUIRED)
-find_package(Curses REQUIRED)

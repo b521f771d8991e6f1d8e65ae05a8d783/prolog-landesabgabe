@@ -6,7 +6,6 @@
     ],
     "git.autofetch": "all",
     "cmake.automaticReconfigure": false,
-    "git.enableCommitSigning": true,
     "files.exclude": {
         "**/.DS_Store": false,
         "**/.git": false,

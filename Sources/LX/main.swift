@@ -126,17 +126,23 @@ func routes(withApp app: Application, andLogicVM lvm: looe.LogicKit.LogicVM) thr
         throw Abort(.imATeapot)
     }
 
-    //app.get("queryModel") { req async throws -> String in
-    //    guard let query: String = req.query[String.self, at: "query"] else {
-    //        throw Abort(.badRequest)
-    //    }
-    //
-    //    guard let result: String = lvm.process(query: query) else {
-    //        throw Abort(.internalServerError, reason: "error while executing query")
-    //    }
-    //
-    //    return result
-    //}
+    app.get("queryModel") { req async throws -> String in
+        guard let query: String = req.query[String.self, at: "query"] else {
+            throw Abort(.badRequest, reason: "request requires the parameter query")
+        }
+
+        guard let lawName: String = req.query[String.self, at: "law"] else {
+            throw Abort(.badRequest, reason: "request requires the parameter law")
+        }
+
+        print("Processing query '\(query)' on law '\(lawName)'")
+
+        guard let legalText = fetchLaw(withName: lawName) else {
+            throw Abort(.badRequest, reason: "Law \(lawName) not found.")
+        }
+
+        return ""
+    }
 
     // the following methods should NOT be protected by KeyCloak
 

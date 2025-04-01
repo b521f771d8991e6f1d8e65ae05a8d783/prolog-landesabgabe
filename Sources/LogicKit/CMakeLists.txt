@@ -6,14 +6,11 @@ add_library(LogicKit
 target_include_directories(LogicKit
 PUBLIC
   include
-  ${DEPENDENCY_INCLUDE_DIRS}
 )
 target_link_libraries(LogicKit PUBLIC
-  ${DEPENDENCY_LIBRARIES_DIRS}
 PRIVATE
   Boost::headers
   BuildInformation
-  ZLIB::ZLIB
   LibArchive::LibArchive
   Assets
 )

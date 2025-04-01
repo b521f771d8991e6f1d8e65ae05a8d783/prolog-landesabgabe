@@ -5,15 +5,6 @@ find_program(tar tar)
 find_program(rm rm)
 find_program(mkdir mkdir)
 
-set(swi_prolog_home_store_path "${CMAKE_CURRENT_BINARY_DIR}/swipl-prolog-home.tar")
-add_custom_target(swi_prolog_home_tar
-WORKING_DIRECTORY
-  "${CMAKE_BINARY_DIR}/root/lib"
-COMMAND
-  ${rm} -f ${swi_prolog_home_store_path} && ${tar} "cfh" ${swi_prolog_home_store_path} swipl
-)
-add_dependencies(swi_prolog_home_tar swi-prolog)
-
 set(lxui_tar_path "${CMAKE_CURRENT_BINARY_DIR}/lxui.tar")
 add_custom_target(lxui_tar
 WORKING_DIRECTORY
@@ -39,7 +30,6 @@ COMMAND
   ${rm} ${assets_tar_path} -rf tmp_dir
   && ${mkdir} tmp_dir
   && cd tmp_dir
-  && ${tar} "xf" ${swi_prolog_home_store_path}
   && ${tar} "xf" ${lxui_tar_path}
   && ${tar} "xf" ${corpus_tar_path}
   && ${tar} "cfh" ${assets_tar_path} .
@@ -47,7 +37,6 @@ COMMAND
   && ${rm} -rf tmp_dir
 )
 add_dependencies(assets_tar 
-    swi_prolog_home_tar
     lxui_tar
     corpus_tar
 )

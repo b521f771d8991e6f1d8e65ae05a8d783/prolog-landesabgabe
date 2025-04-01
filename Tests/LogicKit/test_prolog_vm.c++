@@ -20,8 +20,10 @@ TEST(PrologVM, testStartUp)
 
 TEST(PrologVM, testPrologQueryTrue)
 {
-  // const prolog_query prologQuery("true");
-  // const std::vector<prolog_query::arg_type> result = run_query(prologQuery);
+  const prolog_query true_query("true");
+  ASSERT_EQ(0, true_query.get_arity());
+  ASSERT_EQ("true", true_query.get_predicate_name());
+  const prolog_result result = run_query(true_query);
 }
 
 TEST(PrologVM, testPrologQueryFalse)

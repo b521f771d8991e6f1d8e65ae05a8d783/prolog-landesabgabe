@@ -71,7 +71,7 @@ predicate_t
 construct_predicate_from_query(const prolog_query &query, term_t a0)
 {
   const predicate_t p
-    = PL_predicate(query.get_predicate_name_cstr(), query.get_arity(), NULL);
+    = PL_predicate(query.get_predicate_name_c_str(), query.get_arity(), NULL);
 
   for(size_t counter = 0; counter < query.get_parameters().size(); counter++)
     {
@@ -89,23 +89,36 @@ construct_predicate_from_query(const prolog_query &query, term_t a0)
   return p;
 }
 
-std::vector<prolog_query::arg_type>
+prolog_result
+run_predicate(const prolog_query &query)
+{
+  prolog_result ret({});
+
+  if(query.get_arity() > 0)
+    {
+      std::cerr << "Run predicate expects a predicate" << std::endl;
+    }
+  return ret;
+}
+
+prolog_result
 run_query(const prolog_query &query)
 {
   const term_t a0 = PL_new_term_refs(query.get_arity());
   const predicate_t p = construct_predicate_from_query(query, a0);
   const qid_t qid = PL_open_query(NULL, PL_Q_PASS_EXCEPTION, p, a0);
 
-  std::vector<prolog_query::arg_type> arguments;
+  std::vector<prolog_query::arg_type> results;
 
-  while(PL_next_solution(qid) != FALSE)
+  int current_ = FALSE;
+  while((current_ = PL_next_solution(qid)) != FALSE)
     {
-      // we found a solution, save it in the PrologQuery
+      std::cout << current_ << std::endl;
     }
 
   PL_close_query(qid);
 
-  return arguments;
+  return results;
 }
 
 void
@@ -114,7 +127,7 @@ stop_prolog_VM(void)
   if(PL_is_initialised(nullptr, nullptr))
     {
       std::cerr << "shutting down SWI Prolog" << std::endl;
-      PL_halt(0);
+      PL_cleanup(0);
     }
 }
 

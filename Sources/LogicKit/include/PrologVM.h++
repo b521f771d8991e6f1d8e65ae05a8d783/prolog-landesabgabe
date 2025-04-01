@@ -47,7 +47,7 @@ public:
   }
 
   inline const char *
-  get_predicate_name_cstr(void) const
+  get_predicate_name_c_str(void) const
   {
     return this->predicateName.c_str();
   }
@@ -62,7 +62,7 @@ public:
 class prolog_result
 {
 public:
-  using result = bool;
+  using result = prolog_query::arg_type;
 
 private:
   std::vector<result> results;
@@ -83,10 +83,17 @@ public:
   }
 };
 
+class prolog_vm
+{
+  // TODO
+};
+
 extern void start_prolog_VM(const std::string &argv0,
                             const std::filesystem::path &assets);
 extern bool is_initialised(void);
 extern void stop_prolog_VM(void);
+extern prolog_result run_predicate(const prolog_query &query);
+extern prolog_result run_query(const prolog_query &query);
 
 }
 

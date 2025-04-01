@@ -1,5 +1,4 @@
 {
-    "name": "Backend",
     "dockerComposeFile": [
         "docker-compose.yml",
         "../../Sources/Docker/docker-compose.yml"

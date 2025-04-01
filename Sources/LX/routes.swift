@@ -1,7 +1,7 @@
 import LogicKit
 import Vapor
 
-func routes(withApp app: Application, andLogicVM lvm: looe.LogicKit.LogicVM) throws {
+private func routesProtected(onApp app: Application) throws {
     // the following methods should be protected by a keycloak access token
 
     app.get("fetch-law") { req async throws -> String in
@@ -52,11 +52,11 @@ func routes(withApp app: Application, andLogicVM lvm: looe.LogicKit.LogicVM) thr
 
     app.get("queryModel") { req async throws -> String in
         guard let query: String = req.query[String.self, at: "query"] else {
-            throw Abort(.badRequest, reason: "request requires the parameter query")
+            throw Abort(.badRequest, reason: "request requires the parameter 'query'")
         }
 
         guard let lawName: String = req.query[String.self, at: "law"] else {
-            throw Abort(.badRequest, reason: "request requires the parameter law")
+            throw Abort(.badRequest, reason: "request requires the parameter 'law'")
         }
 
         print("Processing query '\(query)' on law '\(lawName)'")
@@ -65,9 +65,15 @@ func routes(withApp app: Application, andLogicVM lvm: looe.LogicKit.LogicVM) thr
             throw Abort(.badRequest, reason: "Law \(lawName) not found.")
         }
 
+        if !looe.LogicKit.is_initialised() {
+            throw Abort(.internalServerError, reason: "LogicKit was not initialized correctly")
+        }
+
         return ""
     }
+}
 
+private func routesUnprotected(onApp app: Application) throws {
     // the following methods should NOT be protected by KeyCloak
 
     @Sendable
@@ -98,4 +104,9 @@ func routes(withApp app: Application, andLogicVM lvm: looe.LogicKit.LogicVM) thr
             status: .ok, headers: ["Content-Type": guessMimeType(fromPath: name) ?? "text/plain"],
             body: .init(stringLiteral: result))
     }
+}
+
+func routes(onApp app: Application) throws {
+    try routesUnprotected(onApp: app)
+    try routesProtected(onApp: app)
 }

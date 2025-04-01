@@ -54,7 +54,7 @@ add_dependencies(assets_tar
 
 add_library(Assets STATIC assets.c assets.c++)
 add_dependencies(Assets assets_tar)
-target_include_directories(Assets PUBLIC Include)
+target_include_directories(Assets PUBLIC include)
 target_link_libraries(Assets PUBLIC
   LibArchive::LibArchive
 )

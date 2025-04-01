@@ -1,14 +1,14 @@
 #include <iostream>
 #include <string>
-#include <utility>
 #include <vector>
 #include <variant>
+#include <memory>
+#include <functional>
 
 #include <algorithm>
 
 #include <boost/numeric/conversion/cast.hpp>
 
-#include <LogicKit.h++>
 #include <PrologVM.h++>
 
 #include <SWI-Prolog.h>
@@ -41,10 +41,7 @@ start_prolog_VM(const std::string &argv0)
 {
   if(!is_initialised())
     {
-      init_prolog_home();
-
-      args = std::vector<std::string>(
-        { argv0, std::string("--home=") + swiplHomeRunPath });
+      args = std::vector<std::string>({ argv0, "--home=." });
 
       cArgs = std::vector<char *>(map<char *>(
         args, +[](std::string &i) -> char * { return &i[0]; }));

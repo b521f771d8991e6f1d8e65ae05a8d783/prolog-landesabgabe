@@ -4,3 +4,6 @@
 [submodule "Dependencies/vcpkg"]
 	path = Dependencies/vcpkg
 	url = https://github.com/microsoft/vcpkg
+[submodule "Dependencies/swish"]
+	path = Dependencies/swish
+	url = https://github.com/SWI-Prolog/swish

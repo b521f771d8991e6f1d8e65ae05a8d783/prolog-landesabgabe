@@ -102,6 +102,14 @@ private func routesUnprotected(onApp app: Application) throws {
     }
 }
 
+/// Configures the application's routes.
+///
+/// This function is responsible for setting up the various routes
+/// that the application will respond to. Routes define the endpoints
+/// and their associated handlers.
+///
+/// - Parameter app: The `Application` instance to configure routes on.
+/// - Throws: An error if route configuration fails.
 func routes(onApp app: Application) throws {
     try routesUnprotected(onApp: app)
     try routesProtected(onApp: app)

@@ -4,6 +4,12 @@ let workerPortString = ProcessInfo.processInfo.environment["WORKER_LISTEN_PORT"]
 let workerPort = Int(workerPortString) ?? 1337
 let workerHostname = ProcessInfo.processInfo.environment["WORKER_LISTEN_ON"] ?? "0.0.0.0"
 
+/// Configures the given application instance.
+///
+/// This function is responsible for setting up the application's
+/// configuration, middleware, routes, and other necessary components.
+///
+/// - Parameter a: The `Application` instance to configure.
 func configure(app a: Application) {
     let corsConfiguration = CORSMiddleware.Configuration(
         allowedOrigin: .any([

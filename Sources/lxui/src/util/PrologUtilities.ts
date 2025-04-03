@@ -22,8 +22,6 @@ export function isPrologFalse(a: any[]): boolean {
  */
 export function getPrologBinding<T>(a: any[], key: string): T[] {
     console.log("Reading", key, "from", a);
-    // TODO find out why there are undefined values in the a array
-    const arrayFiltered = a.filter((x) => x !== undefined);
-    const anyRet: any[] = arrayFiltered.map((x) => x[key]);
+    const anyRet: any[] = a.map((x) => x[key]);
     return anyRet.map((x) => x as T);
 }

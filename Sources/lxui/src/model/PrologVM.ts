@@ -41,7 +41,7 @@ export class PrologVM {
         const segmentsWithoutLast: string[] = segments.slice(0, segments.length - 1); // the last one is the file itself
         let current: string = "";
 
-        for(const i of segmentsWithoutLast) {
+        for (const i of segmentsWithoutLast) {
             current = `${current}/${i}`;
             console.log("Creating folder: ", i);
             this.swipl.FS.mkdir(current);
@@ -102,7 +102,7 @@ export class PrologVM {
     }
 
     removeAllFactBases() {
-        for(const i of this.factBase) {
+        for (const i of this.factBase) {
             assert(this.hasFactBase(i.name));
             this.removeFactBase(i.name);
         }
@@ -114,7 +114,7 @@ export class PrologVM {
 
     healthCheckOK(): boolean {
         return this.healthCheck().every((x: [string, boolean]) => {
-            if(x[1] === false) {
+            if (x[1] === false) {
                 console.error(`Fact base ${x[0]} is faulty`);
             }
 
@@ -123,7 +123,7 @@ export class PrologVM {
     }
 
     executeQuery(query: string, input?: Record<string, unknown>, healthCheck: boolean = true): SWIPL.Query {
-        if(healthCheck) {
+        if (healthCheck) {
             this.healthCheckOK();
         }
 
@@ -133,12 +133,13 @@ export class PrologVM {
     execute(queryString: string, input?: Record<string, unknown>, healthCheck: boolean = true): any[] {
         let ret: any[] = [];
         let query = this.executeQuery(queryString, input, healthCheck);
-        let current: any;
+        let current: any = query.next();
 
-        do {
-            current = query.next()
+        while ('value' in current) {
             ret.push(current.value);
-        } while('done' in current && !current.done);
+            current = query.next();
+        }
+        console.assert('done' in current && current.done);
 
         return ret;
     }
@@ -178,7 +179,7 @@ export class PrologVM {
     }
 
     lookupPersonByID(personID: string): LandesabgabePerson | undefined {
-        return this.getFacts().flatMap((x) => 
+        return this.getFacts().flatMap((x) =>
             x.sachverhalt!.persons.filter((p) => p.personId === personID))[0];
     }
 }

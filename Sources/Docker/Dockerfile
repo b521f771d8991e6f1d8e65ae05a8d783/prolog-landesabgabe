@@ -25,11 +25,8 @@ ARG BUILD_VARIANT=debug
 
 # TODO: build it to a static binary
 
-RUN mkdir /workspace
-
-COPY . /workspace
 WORKDIR /workspace
-
+COPY . .
 RUN VARIANT=${BUILD_VARIANT} TARGET=${BUILD_TARGET} make all
 RUN strip .build/debug/LX
 
@@ -37,9 +34,9 @@ RUN strip .build/debug/LX
 FROM build1-environment AS production
 
 WORKDIR /app
-COPY --from=build /workspace/.build/debug/LX /app
-COPY --from=build /workspace/.env* /app
+COPY --from=build /workspace/.build/debug/LX .
+COPY --from=build /workspace/.env* .
 
-CMD /usr/bin/env dotenvx run -f .env -- /app/LX
+CMD ["/usr/bin/env", "dotenvx", "run", "-f", ".env", "--", "/app/LX"]
 EXPOSE 1337
 HEALTHCHECK CMD curl --fail http://localhost:1337/version || exit 1

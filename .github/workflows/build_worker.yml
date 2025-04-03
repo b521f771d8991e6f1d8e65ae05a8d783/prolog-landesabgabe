@@ -17,7 +17,7 @@ on:
 
 jobs:
   build:
-    runs-on: [ KRAKAU ]
+    runs-on: fast
     steps:
     # @see https://stackoverflow.com/a/72959712/8179249
     - name: Extract branch name
@@ -59,7 +59,6 @@ jobs:
       with:
         push: ${{ github.event_name != 'pull_request' }}
         file: ./Sources/Docker/Dockerfile
-        target: production
         context: .
         platforms: linux/amd64
         tags: |

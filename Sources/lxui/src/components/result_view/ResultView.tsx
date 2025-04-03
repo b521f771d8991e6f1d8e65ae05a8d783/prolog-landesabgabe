@@ -1,12 +1,12 @@
 import { Paper, Title, Text, Divider, Button, List, Center } from "@mantine/core";
-import { CodeView } from "./CodeView";
+import { CodeView } from "../CodeView";
 import Terminal, { ColorMode } from 'react-terminal-ui';
 import { useState } from "react";
 import { PrologVM } from "@/model/prolog/PrologVM";
 import { v7 } from "uuid";
 import { LandesabgabePerson, LandesabgabeSachverhalt } from "@/model/prolog/PrologTemplates";
 import { PrologFile } from "@/model/prolog/PrologFileSystem";
-import { getPrologBinding, isPrologFalse } from "@/model/prolog/PrologUtilities";
+import { isPrologFalse } from "@/model/prolog/PrologUtilities";
 
 interface ResultViewProp {
     code: string,
@@ -53,9 +53,7 @@ function PersonDetail({ sachverhalt, person, prologVM }: {
     const objektResultList = getGesteinIdFromPersonId(prologVM, sachverhalt, person);
     const höheResultList = getAmountOfMoneyOwedFromGesteinId(prologVM, objektResultList);
 
-    return <>
-        <List.Item key={v7()}>{person.vorname} {person.nachname} schuldet {(höheResultList[0] as number).toFixed(2)}€</List.Item>
-    </>;
+    return <List.Item key={v7()}>{person.vorname} {person.nachname} schuldet {(höheResultList[0] as number).toFixed(2)}€</List.Item>;
 }
 
 function PrologResults({ prologVM }: { prologVM: PrologVM }) {

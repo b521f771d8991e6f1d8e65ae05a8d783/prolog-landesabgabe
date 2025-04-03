@@ -5,9 +5,9 @@ import { PrologVM } from '../model/prolog/PrologVM';
 
 import 'highlight.js/styles/github.css';
 
-import { PrologFilesAccordion } from '@/components/PrologFilesAccordion';
-import { ResultView } from '@/components/ResultView';
-import { SachverhaltEditorForm } from '@/components/SachverhaltEditorForm';
+import { PrologFilesAccordion } from '@/components/knowledge_basis/PrologFilesAccordion';
+import { ResultView } from '@/components/result_view/ResultView';
+import { SachverhaltEditorForm } from '@/components/sachverhalts_editor/SachverhaltEditorForm';
 import { StatisticsView } from '@/components/StatisticsView';
 import { VersionString } from '@/components/VersionString';
 import { useGetWebServerString } from '@/util/BackendQueryProvider';

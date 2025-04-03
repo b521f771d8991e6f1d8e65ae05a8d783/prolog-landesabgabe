@@ -17,8 +17,8 @@ import {
 } from '@mantine/core';
 import { PrologFile, PrologFileType } from '@/model/prolog/PrologFileSystem';
 import { useGetWebServerJSON } from '@/util/BackendQueryProvider';
-import { CodeView } from './CodeView';
-import GenericWebServerRequest from './GenericWebServerRequest';
+import { CodeView } from '../CodeView';
+import GenericWebServerRequest from '../../util/GenericWebServerRequest';
 
 interface PrologFilesAccordionProps {
   factBase: PrologFile[];

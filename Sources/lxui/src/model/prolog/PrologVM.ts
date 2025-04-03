@@ -230,6 +230,12 @@ export class PrologVM {
         return this.getFactBase().filter((x) => x.prologFileType === PrologFileType.FACT);
     }
 
+    /**
+     * Retrieves an array of `LandesabgabeSachverhalt` objects by mapping the facts
+     * returned from `getFacts()` to their corresponding `sachverhalt` property.
+     *
+     * @returns {LandesabgabeSachverhalt[]} An array of `LandesabgabeSachverhalt` objects.
+     */
     getSachverhalte(): LandesabgabeSachverhalt[] {
         return this.getFacts().map((f) => f.sachverhalt!);
     }

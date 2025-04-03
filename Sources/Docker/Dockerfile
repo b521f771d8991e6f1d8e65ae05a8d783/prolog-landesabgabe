@@ -1,4 +1,4 @@
-FROM swift:6.0.3-bookworm AS build1-environment
+FROM swift:bookworm AS build1-environment
 
 # TOOD replace this with nixos/nix once nix has swift 6 support
 # FROM nixos/nix
@@ -30,7 +30,7 @@ RUN mkdir /workspace
 COPY . /workspace
 WORKDIR /workspace
 
-RUN TARGET=${BUILD_TARGET} VARIANT=${BUILD_VARIANT} make all
+RUN make all
 RUN strip .build/debug/LX
 
 # TODO switch to FROM scratch once we can build it statically

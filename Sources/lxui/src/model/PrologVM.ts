@@ -2,6 +2,7 @@ import SWIPL from "swipl-wasm";
 import { PrologFile, PrologFileType } from "./PrologFileSystem";
 import { v4 as uuid } from 'uuid';
 import { LandesabgabePerson, LandesabgabeSachverhalt } from "./PrologTemplates";
+import { getPrologBinding } from "@/util/PrologUtilities";
 
 // AppState is dead, long live the AppState
 export class PrologVM {
@@ -130,6 +131,14 @@ export class PrologVM {
         return this.swipl.prolog.query(query, input);
     }
 
+    /**
+     * Executes a Prolog query and returns the results as an array.
+     *
+     * @param queryString - The Prolog query to execute as a string.
+     * @param input - An optional record of input variables to bind to the query.
+     * @param healthCheck - A boolean flag to enable or disable health checks before execution. Defaults to `true`.
+     * @returns An array of results obtained from executing the query.
+     */
     execute(queryString: string, input?: Record<string, unknown>, healthCheck: boolean = true): any[] {
         let ret: any[] = [];
         let query = this.executeQuery(queryString, input, healthCheck);
@@ -142,6 +151,11 @@ export class PrologVM {
         console.assert('done' in current && current.done);
 
         return ret;
+    }
+
+    executeQueryAndEvaluate<T>(query: string, key: string) {
+        const result = this.execute(query);
+        return getPrologBinding<T>(result, key);
     }
 
     static getUniqueFilename() {

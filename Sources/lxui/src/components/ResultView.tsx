@@ -38,27 +38,23 @@ function PersonDetail({ sachverhalt, person, prologVM }: {
     person: LandesabgabePerson,
     prologVM: PrologVM
 }) {
-    console.log(prologVM.getFacts().map((x) => x.evaluatedProlog));
+    function getGesteinIdFromPersonId(prologVM: PrologVM, sachverhalt: LandesabgabeSachverhalt, person: LandesabgabePerson) {
+        const objektResult = prologVM.executeQueryAndEvaluate<string>(`objekt(${sachverhalt.sacherhaltId}, ${person.personId}, bergbau(gewinnen, obertags, mineralische_rohstoffe), Y)`, "Y");
+        return objektResult;
+    }
 
     function getAmountOfMoneyOwedFromGesteinId(prologVM: PrologVM, objektResultList: unknown[]) {
-        const höheResult = prologVM.execute(`abgabe_hoehe(labgg, ${objektResultList[0]}, Y)`);
-        const höheResultList = getPrologBinding(höheResult, "Y");
-        console.assert(höheResultList.length == 1);
-        return höheResultList;
+        const höheResult = prologVM.executeQueryAndEvaluate<number>(`abgabe_hoehe(labgg, ${objektResultList[0]}, Y)`, "Y");
+        console.assert(höheResult.length == 1);
+        return höheResult;
     }
 
-    function getGesteinIdFromPersonId(prologVM: PrologVM, sachverhalt: LandesabgabeSachverhalt, person: LandesabgabePerson) {
-        const objektResult = prologVM.execute(`objekt(${sachverhalt.sacherhaltId}, ${person.personId}, bergbau(gewinnen, obertags, mineralische_rohstoffe), Y)`);
-        const objektResultList = getPrologBinding(objektResult, "Y");
-        console.assert(objektResultList.length == 1);
-        return objektResultList;
-    }
-
+    console.log(prologVM.getFacts().map((x) => x.evaluatedProlog));
     const objektResultList = getGesteinIdFromPersonId(prologVM, sachverhalt, person);
     const höheResultList = getAmountOfMoneyOwedFromGesteinId(prologVM, objektResultList);
 
     return <>
-        <List.Item key={v7()}>{person.vorname} {person.nachname} schuldet {höheResultList[0] as number}€</List.Item>
+        <List.Item key={v7()}>{person.vorname} {person.nachname} schuldet {(höheResultList[0] as number).toFixed(2)}€</List.Item>
     </>;
 }
 

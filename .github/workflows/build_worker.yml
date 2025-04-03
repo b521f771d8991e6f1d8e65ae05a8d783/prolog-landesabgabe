@@ -61,6 +61,8 @@ jobs:
         file: ./Sources/Docker/Dockerfile
         context: .
         platforms: linux/amd64
+        cache-from: type=registry,ref=user/app:latest
+        cache-to: type=inline
         tags: |
           ${{ steps.backend-meta.outputs.tags }}
           containers.github.scch.at/land-ooe/lx-worker:${{ steps.fetch_branch.outputs.branch }}-latest

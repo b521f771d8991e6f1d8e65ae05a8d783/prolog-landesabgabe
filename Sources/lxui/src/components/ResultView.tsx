@@ -38,6 +38,8 @@ function PersonDetail({ sachverhalt, person, prologVM }: {
     person: LandesabgabePerson,
     prologVM: PrologVM
 }) {
+    console.log(prologVM.getFacts().map((x) => x.evaluatedProlog));
+
     function getAmountOfMoneyOwedFromGesteinId(prologVM: PrologVM, objektResultList: unknown[]) {
         const höheResult = prologVM.execute(`abgabe_hoehe(labgg, ${objektResultList[0]}, Y)`);
         const höheResultList = getPrologBinding(höheResult, "Y");
@@ -68,6 +70,7 @@ function PrologResults({ prologVM }: { prologVM: PrologVM }) {
 
         return isPrologFalse(queryResult) ? undefined
             : <PersonDetail
+                key={v7()}
                 sachverhalt={sachverhalt}
                 person={person}
                 prologVM={prologVM} />;

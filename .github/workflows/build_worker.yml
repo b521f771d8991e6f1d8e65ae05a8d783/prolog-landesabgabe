@@ -17,7 +17,7 @@ on:
 
 jobs:
   build:
-    runs-on: [ KRAKAU ]
+    runs-on: fast
     steps:
     # @see https://stackoverflow.com/a/72959712/8179249
     - name: Extract branch name
@@ -55,12 +55,14 @@ jobs:
             type=ref,event=branch,suffix=-{{ date -s }}
             type=ref,event=tag,suffix=-{{ date -s }}
     - name: Build and push backend image
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
         push: ${{ github.event_name != 'pull_request' }}
         file: ./Sources/Docker/Dockerfile
         context: .
         platforms: linux/amd64
+        cache-from: type=registry,ref=user/app:latest
+        cache-to: type=inline
         tags: |
           ${{ steps.backend-meta.outputs.tags }}
           containers.github.scch.at/land-ooe/lx-worker:${{ steps.fetch_branch.outputs.branch }}-latest

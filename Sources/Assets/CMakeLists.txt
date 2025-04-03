@@ -4,6 +4,7 @@
 find_program(tar tar)
 find_program(rm rm)
 find_program(mkdir mkdir)
+find_program(ld ld)
 
 set(lxui_tar_path "${CMAKE_CURRENT_BINARY_DIR}/lxui.tar")
 add_custom_target(lxui_tar
@@ -23,7 +24,8 @@ COMMAND
 
 # Repack it
 set(assets_tar_path "${CMAKE_CURRENT_BINARY_DIR}/assets.tar")
-add_custom_target(assets_tar
+set(assets_tar_o_path ${assets_tar_path}.o)
+add_custom_target(assets_tar_o
 WORKING_DIRECTORY
   "${CMAKE_CURRENT_BINARY_DIR}"
 COMMAND
@@ -35,20 +37,24 @@ COMMAND
   && ${tar} "cfh" ${assets_tar_path} .
   && cd ..
   && ${rm} -rf tmp_dir
+  && ${ld} -r -b binary -o ${assets_tar_path}.o ${assets_tar_path}
+BYPRODUCTS 
+  ${assets_tar_o_path}
+  ${assets_tar_path}
 )
-add_dependencies(assets_tar 
+add_dependencies(assets_tar_o 
     lxui_tar
     corpus_tar
 )
 
-add_library(Assets STATIC assets.c assets.c++)
-add_dependencies(Assets assets_tar)
+add_library(Assets STATIC 
+  assets.c++ 
+  ${assets_tar_o_path}
+)
+add_dependencies(Assets assets_tar_o)
 target_include_directories(Assets PUBLIC include)
 target_link_libraries(Assets PUBLIC
   LibArchive::LibArchive
-)
-target_compile_definitions(Assets PRIVATE
-  ASSETS_TAR_PATH="${assets_tar_path}"
 )
 
 add_executable(test_assets

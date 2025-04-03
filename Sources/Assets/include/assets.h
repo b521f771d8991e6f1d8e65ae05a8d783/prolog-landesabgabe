@@ -9,9 +9,8 @@ extern "C"
 {
 #endif
 
-  extern const char assets_tar[];
-
-  extern const size_t assets_tar_size;
+  extern const void *assets_tar;
+  extern const size_t *assets_tar_size;
 
 #ifdef __cplusplus
 }

@@ -13,9 +13,12 @@ else
 	CARGO_RELEASE_FLAG :=
 endif
 
+.PHONY: git-init
+git-init:
+	git submodule update --init --recursive
+
 .PHONY: init
 init:
-	git submodule update --init --recursive
 	npm install --workspaces
 
 .PHONY: all

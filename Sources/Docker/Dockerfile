@@ -32,7 +32,9 @@ RUN strip .build/${BUILD_VARIANT}/LX
 
 # TODO switch to FROM scratch once we can build it statically
 FROM build1-environment AS production
-ARG BUILD_VARIANT
+
+ARG BUILD_TARGET=x86_64-unknown-linux-gnu
+ARG BUILD_VARIANT=debug
 
 WORKDIR /app
 COPY --from=build /workspace/.build/${BUILD_VARIANT}/LX .

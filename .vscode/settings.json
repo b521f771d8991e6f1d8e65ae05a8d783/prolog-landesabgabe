@@ -1,12 +1,11 @@
 {
-    "cmake.configureOnOpen": false,
+    "cmake.configureOnOpen": true,
     "latex-workshop.latex.outDir": "%TMPDIR%",
     "editor.rulers": [
         80
     ],
     "git.autofetch": "all",
     "cmake.automaticReconfigure": false,
-    "git.enableCommitSigning": true,
     "files.exclude": {
         "**/.DS_Store": false,
         "**/.git": false,
@@ -19,7 +18,7 @@
         "endforeach"
     ],
     "clangd.arguments": [
-        "--compile-commands-dir=/workspace/out/build/debug-x86-64-unknown-linux-gnu"
+        "--compile-commands-dir=out/build/debug-x86_64-unknown-linux-gnu"
     ],
     "C_Cpp.intelliSenseEngine": "disabled",
     "prettier.configPath": "/workspace/Sources/lxui/.prettierrc",

@@ -29,7 +29,7 @@ extern void extract_archive_to_directory(const std::filesystem::path &rootDir,
 
 extern std::filesystem::path init_program_root(const std::filesystem::path &root
                                                = std::tmpnam(nullptr));
-extern void init_program_root_and_setup_jail(void);
+extern bool init_program_root_and_setup_jail(void);
 extern void move_to_program_root(void);
 
 extern std::vector<std::filesystem::path> list_all();

@@ -38,20 +38,9 @@ let package = Package(
                 .unsafeFlags(
                     [
                         // cmake dependencies
-                        "-I\(cmakeOutputDir)/Sources/LogicKit",
-                        "-I\(cmakeOutputDir)/BuildInformation",
-                        "-I\(cmakeOutputDir)/Sources/Assets",
                         "-I\(cmakeOutputDir)",
-                        "-L\(cmakeOutputDir)/Sources/LogicKit",
-                        "-L\(cmakeOutputDir)/BuildInformation",
-                        "-L\(cmakeOutputDir)/Sources/Assets",
-                        "-L\(cmakeOutputDir)",
-                        "-F\(rootPath)/Sources/LogicKit/include",
                         "-I\(rootPath)/Sources/LogicKit/include",
-                        "-L\(rootPath)/Sources/LogicKit/include",
-                        "-F\(rootPath)/Sources/Assets/Include",
-                        "-I\(rootPath)/Sources/Assets/Include",
-                        "-L\(rootPath)/Sources/Assets/Include",
+                        "-I\(rootPath)/Sources/Assets/include",
                     ]),
             ],
             linkerSettings: [
@@ -61,11 +50,8 @@ let package = Package(
                         "-L\(cmakeOutputDir)/Sources/Assets",
                         "-lAssets",
                         "-lLogicKit",
-                        "-L\(cmakeOutputDir)/swi-prolog-prefix/src/swi-prolog-build/src",
-                        "-lswipl_static",
                         "-L\(cmakeOutputDir)/vcpkg_installed/x64-linux/lib",
                         "-larchive",
-                        "-lncurses",
                     ])
             ]),
     ],

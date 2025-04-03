@@ -3,7 +3,7 @@ services:
   worker:
     build:
       context: ../..
-      dockerfile: Dockerfile
+      dockerfile: Sources/Docker/Dockerfile
       target: ${WORKER_TARGET_STAGE}
     tty: true
     ports:

@@ -248,7 +248,7 @@ move_to_program_root(void)
     }
 }
 
-void
+bool
 init_program_root_and_setup_jail(void)
 {
   init_program_root();
@@ -261,6 +261,8 @@ init_program_root_and_setup_jail(void)
   //         std::clog << "Tried to chroot, returned" << err << std::endl;
   //       }
   //   }
+
+  return true;
 }
 
 }

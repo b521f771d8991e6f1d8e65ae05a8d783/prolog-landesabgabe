@@ -1,6 +1,3 @@
-[submodule "Dependencies/swi-prolog"]
-	path = Dependencies/swi-prolog
-	url = https://github.com/SWI-Prolog/swipl
 [submodule "Dependencies/vcpkg"]
 	path = Dependencies/vcpkg
 	url = https://github.com/microsoft/vcpkg

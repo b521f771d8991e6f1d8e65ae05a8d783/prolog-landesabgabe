@@ -28,13 +28,14 @@ ARG BUILD_VARIANT=debug
 WORKDIR /workspace
 COPY . .
 RUN VARIANT=${BUILD_VARIANT} TARGET=${BUILD_TARGET} make all
-RUN strip .build/debug/LX
+RUN strip .build/${BUILD_VARIANT}/LX
 
 # TODO switch to FROM scratch once we can build it statically
 FROM build1-environment AS production
+ARG BUILD_VARIANT
 
 WORKDIR /app
-COPY --from=build /workspace/.build/debug/LX .
+COPY --from=build /workspace/.build/${BUILD_VARIANT}/LX .
 COPY --from=build /workspace/.env* .
 
 CMD ["/usr/bin/env", "dotenvx", "run", "-f", ".env", "--", "/app/LX"]

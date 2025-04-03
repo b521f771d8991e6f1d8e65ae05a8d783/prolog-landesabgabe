@@ -9,7 +9,7 @@ RUN apt update && apt upgrade -y && apt install -y curl libnode-dev && curl -sfS
 FROM build1-environment AS build2-environment
 
 RUN apt install -y git zsh \
-    ninja-build gdb clang-19 clangd-19 clang-format-19 clang-tidy-19 zip unzip swi-prolog \
+    ninja-build gdb zip unzip swi-prolog \
     npm make wget cmake locate
 # curl is included in build1-environment
 
@@ -30,7 +30,7 @@ RUN mkdir /workspace
 COPY . /workspace
 WORKDIR /workspace
 
-RUN make all
+RUN VARIANT=${BUILD_VARIANT} TARGET=${BUILD_TARGET} make all
 RUN strip .build/debug/LX
 
 # TODO switch to FROM scratch once we can build it statically

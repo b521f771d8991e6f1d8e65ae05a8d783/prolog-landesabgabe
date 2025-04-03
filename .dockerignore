@@ -5,5 +5,5 @@
 /.github
 /.build
 /out
-/generated
 /target
+node_modules

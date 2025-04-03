@@ -22,10 +22,5 @@ set(CMAKE_Swift_COMPILER_TARGET ${CMAKE_C_COMPILER_TARGET})
 set(EXTERNAL_PROJECT_OPTIONS
     -fPIC
 )
-add_compile_options(
-    $<$<COMPILE_LANGUAGE:Swift>:-cxx-interoperability-mode=default>
-    $<$<COMPILE_LANGUAGE:Swift>:-Xcc>
-    $<$<COMPILE_LANGUAGE:Swift>:-std=c++20>
-)
 
 include(${CMAKE_CURRENT_LIST_DIR}/../../Dependencies/vcpkg/scripts/buildsystems/vcpkg.cmake)

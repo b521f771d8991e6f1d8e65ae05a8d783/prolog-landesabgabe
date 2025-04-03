@@ -82,11 +82,28 @@ extract_archive_to_directory(const std::filesystem::path &rootDir,
 
 static std::optional<std::filesystem::path> program_root = std::nullopt;
 
+// TODO improve this and remove the need for the Sources/Assets by some native
+// swift functionality
+extern "C" char
+  _binary__workspace_out_build_debug_x86_64_unknown_linux_gnu_Sources_Assets_assets_tar_start
+    [];
+extern "C" char
+  _binary__workspace_out_build_debug_x86_64_unknown_linux_gnu_Sources_Assets_assets_tar_end
+    [];
+const size_t asset_tar_size
+  = _binary__workspace_out_build_debug_x86_64_unknown_linux_gnu_Sources_Assets_assets_tar_end
+    - _binary__workspace_out_build_debug_x86_64_unknown_linux_gnu_Sources_Assets_assets_tar_start;
+
 extern std::filesystem::path
 init_program_root(const std::filesystem::path &root)
 {
   std::filesystem::path root_dir(root);
-  extract_archive_to_directory(root_dir, assets_tar, assets_tar_size);
+  std::cout << "Size is " << asset_tar_size << std::endl;
+
+  extract_archive_to_directory(
+    root_dir,
+    _binary__workspace_out_build_debug_x86_64_unknown_linux_gnu_Sources_Assets_assets_tar_start,
+    asset_tar_size);
   program_root = root;
   return root;
 }

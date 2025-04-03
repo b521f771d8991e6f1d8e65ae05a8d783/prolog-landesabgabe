@@ -34,7 +34,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
   set(Wextra "$<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-Wextra>")
   set(Wpedantic "$<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-Wpedantic>")
   set(Werror "$<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-Werror>")
-  set(CStandard "$<$<COMPILE_LANGUAGE:C,OBJC>:--std=c23>") # somehow this does not work right now using plain cmake, TODO remove this nonsense
 else()
   message("This program should be compiled with clang or gcc")
 endif()
@@ -57,7 +56,6 @@ foreach(TARGET ${TARGETS} ${TEST_TARGETS})
     ${Wextra}
     ${Werror}
     ${Wpedantic}
-    ${CStandard}
   )
 
   set_target_properties(${TARGET} PROPERTIES

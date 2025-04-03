@@ -1,12 +1,12 @@
 FROM swift:6.0.3-bookworm AS build1-environment
 
-RUN apt update && apt upgrade -y && apt install -y curl libnode-dev && curl -sfS https://dotenvx.sh | sh
-
-FROM build1-environment AS build2-environment
-
 # TOOD replace this with nixos/nix once nix has swift 6 support
 # FROM nixos/nix
 # https://github.com/NixOS/nixpkgs/issues/343210#issuecomment-2424134735
+
+RUN apt update && apt upgrade -y && apt install -y curl libnode-dev && curl -sfS https://dotenvx.sh | sh
+
+FROM build1-environment AS build2-environment
 
 RUN apt install -y git zsh \
     ninja-build gdb clang-19 clangd-19 clang-format-19 clang-tidy-19 zip unzip swi-prolog \

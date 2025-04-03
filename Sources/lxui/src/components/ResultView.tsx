@@ -6,6 +6,7 @@ import { PrologVM } from "@/model/PrologVM";
 import { v7 } from "uuid";
 import { LandesabgabePerson, LandesabgabeSachverhalt } from "@/model/PrologTemplates";
 import { PrologFile } from "@/model/PrologFileSystem";
+import { getPrologBinding, isPrologFalse } from "@/util/PrologUtilities";
 
 interface ResultViewProp {
     code: string,
@@ -32,29 +33,27 @@ export function ResultView({ code, width, prologVM }: ResultViewProp) {
     </Paper>;
 }
 
-function isPrologFalse(a: any[]): boolean {
-    const filtered = a.filter((v): v is any => !!v);
-    return filtered.length === 0;
-}
-
-function getPrologBinding<T>(a: any[], key: string): T[] {
-    const anyRet: any[] = a.map((x) => x[key]);
-    return anyRet.map((x) => x as T);
-}
-
 function PersonDetail({ sachverhalt, person, prologVM }: {
     sachverhalt: LandesabgabeSachverhalt,
     person: LandesabgabePerson,
     prologVM: PrologVM
 }) {
-    const objektResult = prologVM.execute(`objekt(${sachverhalt.sacherhaltId}, ${person.personId}, bergbau(gewinnen, obertags, mineralische_rohstoffe), Y)`);
-    const objektResultList = getPrologBinding(objektResult, "Y");
-    console.assert(objektResultList.length == 1);
+    function getAmountOfMoneyOwedFromGesteinId(prologVM: PrologVM, objektResultList: unknown[]) {
+        const höheResult = prologVM.execute(`abgabe_hoehe(labgg, ${objektResultList[0]}, Y)`);
+        const höheResultList = getPrologBinding(höheResult, "Y");
+        console.assert(höheResultList.length == 1);
+        return höheResultList;
+    }
 
-    const höheResult = prologVM.execute(`abgabe_hoehe(labgg, ${objektResultList[0]}, Y)`);
-    const höheResultList = getPrologBinding(höheResult, "Y");
-    console.assert(höheResultList.length == 1);
-    console.log(höheResultList);
+    function getGesteinIdFromPersonId(prologVM: PrologVM, sachverhalt: LandesabgabeSachverhalt, person: LandesabgabePerson) {
+        const objektResult = prologVM.execute(`objekt(${sachverhalt.sacherhaltId}, ${person.personId}, bergbau(gewinnen, obertags, mineralische_rohstoffe), Y)`);
+        const objektResultList = getPrologBinding(objektResult, "Y");
+        console.assert(objektResultList.length == 1);
+        return objektResultList;
+    }
+
+    const objektResultList = getGesteinIdFromPersonId(prologVM, sachverhalt, person);
+    const höheResultList = getAmountOfMoneyOwedFromGesteinId(prologVM, objektResultList);
 
     return <>
         <List.Item key={v7()}>{person.vorname} {person.nachname} schuldet {höheResultList[0] as number}€</List.Item>

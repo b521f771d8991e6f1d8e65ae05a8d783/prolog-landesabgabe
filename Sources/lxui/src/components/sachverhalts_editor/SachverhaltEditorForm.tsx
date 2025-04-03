@@ -1,8 +1,8 @@
 import { Text, Button, Paper, Title } from "@mantine/core";
-import { PrologFile, PrologFileType } from "@/model/PrologFileSystem";
-import { PrologVM } from "@/model/PrologVM";
-import { FactFile } from "./FactFile";
-import { LandesabgabeSachverhalt } from "@/model/PrologTemplates";
+import { PrologFile, PrologFileType } from "@/model/prolog/PrologFileSystem";
+import { PrologVM } from "@/model/prolog/PrologVM";
+import { FactFile } from "@/components/FactFile";
+import { LandesabgabeSachverhalt } from "@/model/prolog/PrologTemplates";
 import { v7 } from "uuid";
 
 /*

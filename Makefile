@@ -41,7 +41,7 @@ clean-build: clean all
 .PHONY: frontend-dev
 frontend-dev: all
 	(dotenvx run -- swift run)&
-	(cd Sources/lxui/; npm run dev)
+	npm run dev --workspaces
 
 .PHONY: clean-build
 clean-build: clean all

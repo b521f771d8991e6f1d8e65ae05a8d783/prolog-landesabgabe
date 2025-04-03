@@ -1,8 +1,8 @@
-import { PrologFile } from "@/model/PrologFileSystem";
-import { LandesabgabePerson, LandesabgabeHandlung } from "@/model/PrologTemplates";
+import { PrologFile } from "@/model/prolog/PrologFileSystem";
+import { LandesabgabePerson, LandesabgabeHandlung } from "@/model/prolog/PrologTemplates";
 import { Title, Text, Flex, NumberInput, Input, Button, Center, Divider } from "@mantine/core";
 import { useState } from "react";
-import { PersonDetailForm } from "./PersonForm";
+import { PersonDetailForm } from "./sachverhalts_editor/PersonForm";
 import { v7 } from "uuid";
 
 export function FactFile({ prologFile, setPrologFile }: {

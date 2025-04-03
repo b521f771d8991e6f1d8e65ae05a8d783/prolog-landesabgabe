@@ -69,7 +69,7 @@ export class PrologFile {
         do {
             current = query.next()
             ret.push(current.value);
-        } while('done' in current && !current.done);
+        } while ('done' in current && !current.done);
 
         // Step 3: Clean up & Return
 

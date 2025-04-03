@@ -2,7 +2,7 @@ import SWIPL from "swipl-wasm";
 import { PrologFile, PrologFileType } from "./PrologFileSystem";
 import { v4 as uuid } from 'uuid';
 import { LandesabgabePerson, LandesabgabeSachverhalt } from "./PrologTemplates";
-import { getPrologBinding } from "@/util/PrologUtilities";
+import { getPrologBinding } from "@/model/prolog/PrologUtilities";
 
 // AppState is dead, long live the AppState
 export class PrologVM {
@@ -73,6 +73,15 @@ export class PrologVM {
         this.factBase.push(pf);
     }
 
+    /**
+     * Adds multiple Prolog fact bases to the virtual machine.
+     *
+     * This method iterates over an array of `PrologFile` objects and adds each
+     * one to the virtual machine's fact base using the `addFactBase` method.
+     *
+     * @param pfs - An array of `PrologFile` objects representing the fact bases
+     *              to be added.
+     */
     addFactBases(pfs: PrologFile[]) {
         for (const pf of pfs) {
             this.addFactBase(pf);
@@ -92,16 +101,38 @@ export class PrologVM {
         this.factBase = this.factBase.filter((pf: PrologFile) => pf.name !== filename);
     }
 
+    /**
+     * Removes a fact base associated with the given filename if it exists.
+     *
+     * This method first checks if a fact base with the specified filename exists
+     * using `hasFactBase`. If it exists, it proceeds to remove it using `removeFactBase`.
+     *
+     * @param filename - The name of the file associated with the fact base to be removed.
+     */
     removeFactBaseIfExists(filename: string) {
         if (this.hasFactBase(filename)) {
             this.removeFactBase(filename);
         }
     }
 
+    /**
+     * Checks if a fact base with the specified filename exists in the current collection.
+     *
+     * @param filename - The name of the file to check for in the fact base.
+     * @returns `true` if a fact base with the given filename exists, otherwise `false`.
+     */
     hasFactBase(filename: string): boolean {
         return this.factBase.some((x: PrologFile) => x.name === filename);
     }
 
+    /**
+     * Removes all fact bases from the Prolog virtual machine.
+     * Iterates through the existing fact bases, ensuring each one exists
+     * before removing it. This operation clears the entire collection
+     * of fact bases managed by the virtual machine.
+     *
+     * @throws {Error} If a fact base is not found during the removal process.
+     */
     removeAllFactBases() {
         for (const i of this.factBase) {
             assert(this.hasFactBase(i.name));
@@ -109,10 +140,21 @@ export class PrologVM {
         }
     }
 
-    healthCheck(): [string, boolean][] {
+    private healthCheck(): [string, boolean][] {
         return this.factBase.map((x: PrologFile) => [x.name, this.hasFactBase(x.name)]);
     }
 
+    /**
+     * Checks the health status of the system by verifying all fact bases.
+     *
+     * This method iterates through the results of the `healthCheck` method,
+     * which returns an array of tuples containing the name of a fact base
+     * and its corresponding health status (boolean). If any fact base is
+     * found to be faulty (i.e., its health status is `false`), an error
+     * message is logged to the console indicating the faulty fact base.
+     *
+     * @returns {boolean} `true` if all fact bases are healthy, otherwise `false`.
+     */
     healthCheckOK(): boolean {
         return this.healthCheck().every((x: [string, boolean]) => {
             if (x[1] === false) {
@@ -123,7 +165,7 @@ export class PrologVM {
         });
     }
 
-    executeQuery(query: string, input?: Record<string, unknown>, healthCheck: boolean = true): SWIPL.Query {
+    private executeQuery(query: string, input?: Record<string, unknown>, healthCheck: boolean = true): SWIPL.Query {
         if (healthCheck) {
             this.healthCheckOK();
         }
@@ -153,6 +195,14 @@ export class PrologVM {
         return ret;
     }
 
+    /**
+     * Executes a Prolog query and evaluates the result by extracting a specific binding.
+     *
+     * @template T - The expected type of the extracted binding.
+     * @param query - The Prolog query to be executed.
+     * @param key - The key used to extract the desired binding from the query result.
+     * @returns The extracted binding of type `T` corresponding to the specified key.
+     */
     executeQueryAndEvaluate<T>(query: string, key: string) {
         const result = this.execute(query);
         return getPrologBinding<T>(result, key);
@@ -192,6 +242,12 @@ export class PrologVM {
         return this.getFactBase().filter((x) => x.prologFileType === PrologFileType.LAW);
     }
 
+    /**
+     * Looks up a person by their unique identifier (personID) within the facts of the PrologVM.
+     *
+     * @param personID - The unique identifier of the person to search for.
+     * @returns The `LandesabgabePerson` object if a matching person is found, or `undefined` if no match is found.
+     */
     lookupPersonByID(personID: string): LandesabgabePerson | undefined {
         return this.getFacts().flatMap((x) =>
             x.sachverhalt!.persons.filter((p) => p.personId === personID))[0];

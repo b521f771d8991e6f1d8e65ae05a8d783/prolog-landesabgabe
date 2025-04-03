@@ -2,11 +2,11 @@ import { Paper, Title, Text, Divider, Button, List, Center } from "@mantine/core
 import { CodeView } from "./CodeView";
 import Terminal, { ColorMode } from 'react-terminal-ui';
 import { useState } from "react";
-import { PrologVM } from "@/model/PrologVM";
+import { PrologVM } from "@/model/prolog/PrologVM";
 import { v7 } from "uuid";
-import { LandesabgabePerson, LandesabgabeSachverhalt } from "@/model/PrologTemplates";
-import { PrologFile } from "@/model/PrologFileSystem";
-import { getPrologBinding, isPrologFalse } from "@/util/PrologUtilities";
+import { LandesabgabePerson, LandesabgabeSachverhalt } from "@/model/prolog/PrologTemplates";
+import { PrologFile } from "@/model/prolog/PrologFileSystem";
+import { getPrologBinding, isPrologFalse } from "@/model/prolog/PrologUtilities";
 
 interface ResultViewProp {
     code: string,

@@ -15,7 +15,7 @@ import {
   Title,
   Loader
 } from '@mantine/core';
-import { PrologFile, PrologFileType } from '@/model/PrologFileSystem';
+import { PrologFile, PrologFileType } from '@/model/prolog/PrologFileSystem';
 import { useGetWebServerJSON } from '@/util/BackendQueryProvider';
 import { CodeView } from './CodeView';
 import GenericWebServerRequest from './GenericWebServerRequest';
@@ -245,16 +245,16 @@ function PrologFileView({ pf }: { pf: PrologFile }) {
     async function effect() {
       function extract(x: any): string | undefined {
         if (x && x[0] && x[0].X !== undefined) {
-            return String(x[0].X);
+          return String(x[0].X);
         } else {
-            return undefined; 
+          return undefined;
         }
-    }
+      }
       const l: string | undefined = extract(await pf.queryThisFile(`langtitel(${pf.name}, X).`));
       const k: string | undefined = extract(await pf.queryThisFile(`kurztitel(${pf.name}, X).`));
       const u: string | undefined = extract(await pf.queryThisFile(`link(${pf.name}, X).`));
       const t: string | undefined = extract(await pf.queryThisFile(`titel(${pf.name}, X).`));
-    
+
       setLangtitel(l);
       setKurztitel(k);
       setLink(u);
@@ -266,19 +266,19 @@ function PrologFileView({ pf }: { pf: PrologFile }) {
   }, [pf]);
 
   return <>
-      {loadingIndicator && <Center my={10}>
-        <Loader color="rgba(0, 0, 0, 1)" />
-      </Center>}
-      {!loadingIndicator && <details>
-        <summary>{titel ?? pf.name}</summary>
-        {kurztitel && <Text size="xs"><u>Kurztitel:</u> {kurztitel} {link && <Anchor href={link}>(Volltext-Link)</Anchor>}</Text>}
-        {langtitel && <Text size="xs"><u>Langtitel</u>: {langtitel}</Text>}
-        <CodeView
-          code={pf.evaluatedProlog}
-          language="code"
-          h={300}
-          fileName={pf.name.replaceAll('/', '-')}
-        />
-      </details>}
-    </>;
+    {loadingIndicator && <Center my={10}>
+      <Loader color="rgba(0, 0, 0, 1)" />
+    </Center>}
+    {!loadingIndicator && <details>
+      <summary>{titel ?? pf.name}</summary>
+      {kurztitel && <Text size="xs"><u>Kurztitel:</u> {kurztitel} {link && <Anchor href={link}>(Volltext-Link)</Anchor>}</Text>}
+      {langtitel && <Text size="xs"><u>Langtitel</u>: {langtitel}</Text>}
+      <CodeView
+        code={pf.evaluatedProlog}
+        language="code"
+        h={300}
+        fileName={pf.name.replaceAll('/', '-')}
+      />
+    </details>}
+  </>;
 }

@@ -1,8 +1,7 @@
 import '@mantine/core/styles.css';
 
-import { ReactKeycloakProvider, useKeycloak } from '@react-keycloak/web';
+import { useKeycloak } from '@react-keycloak/web';
 import { MantineProvider } from '@mantine/core';
-import { PrologVM } from './model/prolog/PrologVM';
 import { Router } from './Router';
 import { shadcnTheme } from './theme';
 
@@ -10,7 +9,6 @@ import './style.css';
 
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
-import defaultKeycloak from './config/KeycloakConfig';
 import { shadcnCssVariableResolver } from './cssVariableResolver';
 import { persister, queryClient } from './util/BackendQueryProvider';
 

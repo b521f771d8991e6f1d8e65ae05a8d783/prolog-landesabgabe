@@ -43,8 +43,11 @@ clean-build: clean all
 
 .PHONY: frontend-dev
 frontend-dev: all
-	(dotenvx run -- swift run)&
 	npm run dev --workspaces
+
+.PHONY: backend-dev
+backend-dev: all
+	dotenvx run -- swift run
 
 .PHONY: clean-build
 clean-build: clean all

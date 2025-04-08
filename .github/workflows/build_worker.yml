@@ -17,9 +17,7 @@ on:
 
 jobs:
   build:
-    runs-on:
-    - fast
-    - KRAKAU
+    runs-on: fast
     steps:
     # @see https://stackoverflow.com/a/72959712/8179249
     - name: Extract branch name

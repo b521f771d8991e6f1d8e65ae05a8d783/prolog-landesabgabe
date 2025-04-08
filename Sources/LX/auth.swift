@@ -3,6 +3,7 @@ import JWT
 import Vapor
 
 let lxJwtRsa256 = ProcessInfo.processInfo.environment["LX_JWT_RSA_256"]
+let lxJwtRole = ProcessInfo.processInfo.environment["LX_JWT_ROLE"]
 
 /// A structure representing the payload of a JWT (JSON Web Token) for Keycloak authentication.
 ///
@@ -19,19 +20,30 @@ struct KeycloakPayload: JWTPayload {
         case preferredUsername = "preferred_username"
         case givenName = "given_name"
         case familyName = "family_name"
+        case allowedOrigins = "allowed-origins"
+        case realmAccess = "realm_access"
     }
 
-    var name: String
-    var emailVerified: Bool
-    var preferredUsername: String
-    var givenName: String
-    var familyName: String
-    var expiration: ExpirationClaim
-    var subject: SubjectClaim
+    struct RealmAccess: Codable {
+        let roles: [String]
+    }
+
+    let name: String
+    let emailVerified: Bool
+    let preferredUsername: String
+    let givenName: String
+    let familyName: String
+    let expiration: ExpirationClaim
+    let subject: SubjectClaim
+    let allowedOrigins: [String]
+    let realmAccess: RealmAccess
 
     func verify(using algorithm: some JWTAlgorithm) async throws {
-        // TODO check role
         try self.expiration.verifyNotExpired()
+
+        if lxJwtRole != nil && !realmAccess.roles.contains(lxJwtRole!) {
+            throw Abort(.unauthorized, reason: "No role/incorrect role")
+        }
     }
 }
 
@@ -41,7 +53,7 @@ struct KeycloakPayload: JWTPayload {
 /// - Note: This function is asynchronous and should be awaited when called.
 func setUpAuthentication(onApp _: Application) async throws {
     if let rsaPublicKey = lxJwtRsa256 {
-        print(rsaPublicKey)
+        NSLog("Configured Authentication via RSA 256 (insecure)")
         let key = try Insecure.RSA.PublicKey(pem: rsaPublicKey)
         await app.jwt.keys.add(
             rsa: key,
@@ -59,7 +71,7 @@ func protectRoute<T>(
     _ handler: @escaping (Request) async throws -> T
 ) -> (Request) async throws -> T {
     return { req in
-        let payload = try await req.jwt.verify(as: KeycloakPayload.self)
+        try await req.jwt.verify(as: KeycloakPayload.self)
         return try await handler(req)
     }
 }

@@ -1,4 +1,3 @@
-import JWT
 import LogicKit
 import Vapor
 

@@ -39,18 +39,6 @@ private func routesProtected(onApp app: Application) throws {
         })
 
     app.get(
-        "status",
-        use: protectRoute { req async throws -> String in
-            return "OK"
-        })
-
-    app.get(
-        "version",
-        use: protectRoute { req async throws -> String in
-            return "\(getVersion())"  // TODO: fix this error
-        })
-
-    app.get(
         "🫖",
         use: protectRoute { req async throws -> String in
             // TODO: magical function that converts this computer into a teapot
@@ -93,6 +81,14 @@ private func routesUnprotected(onApp app: Application) throws {
             headers: ["Content-Type": "text/html"],
             body: .init(stringLiteral: result)
         )
+    }
+
+    app.get("status") { req async throws -> String in
+        return "OK"
+    }
+
+    app.get("version") { req async throws -> String in
+        return "\(getVersion())"
     }
 
     app.get("index.html", use: fetchIndexHTML)

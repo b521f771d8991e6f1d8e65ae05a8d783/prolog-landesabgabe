@@ -43,4 +43,4 @@ COPY --from=build /artifacts/* .
 
 CMD ["/app/LX"]
 EXPOSE 1337
-HEALTHCHECK CMD curl --fail http://localhost:1337/version || exit 1
+HEALTHCHECK CMD curl --fail http://localhost:1337/status || exit 1

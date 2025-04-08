@@ -106,8 +106,8 @@ export const queryClient = new QueryClient({
 });
 
 function getBaseURL() {
-  if (import.meta.env.VITE_SERVER_URL) {
-    return import.meta.env.VITE_SERVER_URL + "/";
+  if (import.meta.env.VITE_LX_SERVER_URL) {
+    return import.meta.env.VITE_LX_SERVER_URL + "/";
   } else {
     return window.location.origin; // TODO check if this is cross-platform compatible
   }

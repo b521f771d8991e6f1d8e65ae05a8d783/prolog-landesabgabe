@@ -1,8 +1,7 @@
 {
-    "name": "Backend",
     "dockerComposeFile": [
         "docker-compose.yml",
-        "../../Infrastructure/Docker/docker-compose.yml"
+        "../../Sources/Docker/docker-compose.yml"
     ],
     "service": "worker",
     "customizations": {
@@ -21,9 +20,14 @@
                 "james-yu.latex-workshop",
                 "vscodevim.vim",
                 "arthurwang.vsc-prolog",
-                "rust-lang.rust-analyzer"
+                "rust-lang.rust-analyzer",
+                "ms-vscode.makefile-tools"
             ]
         }
     },
-    "workspaceFolder": "/workspace"
+    "workspaceFolder": "/workspace",
+    "mounts": [
+        "type=bind,source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/root/.ssh,readonly",
+        //"type=bind,source=${localEnv:HOME}${localEnv:USERPROFILE}/.gnupg,target=/root/.gnupg,readonly"
+    ]
 }

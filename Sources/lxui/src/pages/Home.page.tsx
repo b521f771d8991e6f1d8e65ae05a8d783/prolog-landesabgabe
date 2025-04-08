@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Box, Button, Divider, Flex, LoadingOverlay, Paper, Text, Title } from '@mantine/core';
-import { PrologFile, PrologFileType } from '@/model/PrologFileSystem';
-import { PrologVM } from '../model/PrologVM';
+import { PrologFile, PrologFileType } from '@/model/prolog/PrologFileSystem';
+import { PrologVM } from '../model/prolog/PrologVM';
 
 import 'highlight.js/styles/github.css';
 
-import { PrologFilesAccordion } from '@/components/PrologFilesAccordion';
-import { ResultView } from '@/components/ResultView';
-import { SachverhaltEditorForm } from '@/components/SachverhaltEditorForm';
+import { PrologFilesAccordion } from '@/components/knowledge_basis/PrologFilesAccordion';
+import { ResultView } from '@/components/result_view/ResultView';
+import { SachverhaltEditorForm } from '@/components/sachverhalts_editor/SachverhaltEditorForm';
 import { StatisticsView } from '@/components/StatisticsView';
 import { VersionString } from '@/components/VersionString';
 import { useGetWebServerString } from '@/util/BackendQueryProvider';
@@ -60,7 +60,7 @@ export function HomePage() {
   const [statisticViewOpened, setStatisticViewOpened] = useState<boolean>(false);
   const kurztitel = 'labgg'; // TODO @Alexander change to array loaded from .env and don't forget to change kurztitel from string to array
   const { data, error, isLoading, isError, isSuccess } =
-    useGetWebServerString('fetch-law?kurztitel=' + kurztitel); 
+    useGetWebServerString('fetch-law?kurztitel=' + kurztitel);
   //    useGetWebServerJSON<PrologFile[]>('fetch-law?kurztitel=' + JSON.stringify(kurztitel)) // kurztitel must be an Array!
 
   useEffect(() => {
@@ -186,7 +186,7 @@ function AppView({ prologVM }: { prologVM: PrologVM }) {
   }
 
   function addToFactBase(newFile: PrologFile) {
-      setFactFiles([...factBase, newFile]);
+    setFactFiles([...factBase, newFile]);
   }
 
   const addedFactFiles = factBase.filter((x) => x.prologFileType === PrologFileType.FACT);

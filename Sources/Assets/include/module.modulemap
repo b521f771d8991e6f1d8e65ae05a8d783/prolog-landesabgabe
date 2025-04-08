@@ -1,7 +1,7 @@
-module LogicKit {
+module Assets {
     requires cplusplus20
     
-    header "prolog_vm.h++"
+    header "assets.h"
 
     export *
 }

@@ -2,7 +2,7 @@ import '@mantine/core/styles.css';
 
 import { ReactKeycloakProvider, useKeycloak } from '@react-keycloak/web';
 import { MantineProvider } from '@mantine/core';
-import { PrologVM } from './model/PrologVM';
+import { PrologVM } from './model/prolog/PrologVM';
 import { Router } from './Router';
 import { shadcnTheme } from './theme';
 

@@ -2,6 +2,8 @@
 
 import PackageDescription
 
+let rootPath = "/workspace/"
+
 #if DEBUG
     let buildType = "debug"
 #else
@@ -9,7 +11,8 @@ import PackageDescription
     let buildType = "debug"
 #endif
 
-let rustBridgingHeader = "Build/FFI/rust-bridging-header.h"
+let target = "x86_64-unknown-linux-gnu"
+let cmakeOutputDir = "\(rootPath)/out/build/\(buildType)-\(target)"
 
 let package = Package(
     name: "LX",
@@ -19,29 +22,40 @@ let package = Package(
             targets: ["LX"])
     ],
     dependencies: [
-        .package(url: "https://github.com/vapor/vapor", from: "4.112.0")
+        .package(url: "https://github.com/vapor/vapor", from: "4.112.0"),
+        .package(url: "https://github.com/vapor/jwt.git", from: "5.1.2"),
     ],
     targets: [
+        .target(
+            name: "ActKit"
+        ),
         .executableTarget(
             name: "LX",
             dependencies: [
-                .product(name: "Vapor", package: "Vapor")
+                .product(name: "Vapor", package: "Vapor"),
+                .product(name: "JWT", package: "jwt"),
             ],
             swiftSettings: [
                 .interoperabilityMode(.Cxx),
-                .unsafeFlags([
-                    "generated/SwiftBridgeCore.swift", "generated/LX-rs/LX-rs.swift",
-                    "-import-objc-header", rustBridgingHeader,
-                ]),
+                .unsafeFlags(
+                    [
+                        // cmake dependencies
+                        "-I\(cmakeOutputDir)",
+                        "-I\(rootPath)/Sources/LogicKit/include",
+                        "-I\(rootPath)/Sources/Assets/include",
+                    ]),
             ],
             linkerSettings: [
-                .unsafeFlags([
-                    "generated/SwiftBridgeCore.swift",
-                    "generated/LX-rs/LX-rs.swift",
-                    "-import-objc-header", rustBridgingHeader,
-                    "-Ltarget/\(buildType)", "-lcorpus",
-                ])
-            ])
+                .unsafeFlags(
+                    [
+                        "-L\(cmakeOutputDir)/Sources/LogicKit",
+                        "-L\(cmakeOutputDir)/Sources/Assets",
+                        "-lAssets",
+                        "-lLogicKit",
+                        "-L\(cmakeOutputDir)/vcpkg_installed/x64-linux/lib",
+                        "-larchive",
+                    ])
+            ]),
     ],
     cxxLanguageStandard: .cxx20
 )

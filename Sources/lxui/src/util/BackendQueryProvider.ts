@@ -105,44 +105,27 @@ export const queryClient = new QueryClient({
   },
 });
 
+function getBaseURL() {
+  return import.meta.env.VITE_SERVER_URL + "/";
+}
+
 export function useGetWebServerJSON<T>(urlSuffix: string): UseQueryResult<T, Error> {
+  const url = new URL("/" + urlSuffix, getBaseURL());
+
   return useQuery({
     queryKey: [urlSuffix],
-    queryFn: (): Promise<T> => get<T>(new URL(import.meta.env.VITE_SERVER_URL + urlSuffix)),
+    queryFn: (): Promise<T> => get<T>(url),
     enabled: true,
   });
 }
 
 export const useGetWebServerString = (urlSuffix: string): UseQueryResult<string, Error> => {
+  const url = new URL("/" + urlSuffix, getBaseURL());
+
   return useQuery({
     queryKey: [urlSuffix],
-    queryFn: (): Promise<string> => getString(new URL(import.meta.env.VITE_SERVER_URL + urlSuffix)),
+    queryFn: (): Promise<string> => getString(url),
     enabled: true,
   });
 };
 
-export const usePostNormTransformationTaskStartRequest = (
-  selection: string
-): UseQueryResult<TaskResult, Error> => {
-  return useQuery({
-    queryKey: ['postNormTransformationTaskStartRequest'],
-    queryFn: () =>
-      post<TaskResult>(
-        new URL(`${import.meta.env.VITE_PROTOTYPE_PIPELINE_URL}task/celery/start/`),
-        buildPrototypeRequestBody([selection], 'transformIntoNorm')
-      ),
-    enabled: false,
-  });
-};
-
-export const usePostTaskStatusRequest = (id: string): UseQueryResult<TaskResult, Error> => {
-  return useQuery({
-    queryKey: ['postCeleryTaskStatusRequest'],
-    queryFn: () =>
-      post<TaskResult>(
-        new URL(`${import.meta.env.VITE_PROTOTYPE_PIPELINE_URL}task/celery/status/` + id),
-        { task_id: id }
-      ),
-    enabled: false,
-  });
-};

@@ -2,12 +2,7 @@
     "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
     "dependencies": [
         "libarchive",
-        "zlib",
-        "boost-filesystem",
         "boost-numeric-conversion",
-        "nlohmann-json",
-        "tl-expected",
-        "gtest",
-        "ncurses"
+        "gtest"
     ]
 }

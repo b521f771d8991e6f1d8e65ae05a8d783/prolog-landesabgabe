@@ -6,10 +6,12 @@ on:
     branches:
       - stable
       - dev
+      - beta
   pull_request:
     branches:
       - stable
       - dev
+      - beta
   schedule:
     - cron: "0 13 * * 1"
 # you can build manually on dev, but we do not want to spam the worker

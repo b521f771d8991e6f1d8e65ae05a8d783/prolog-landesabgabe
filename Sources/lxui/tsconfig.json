@@ -4,7 +4,7 @@
       "@testing-library/jest-dom",
       "vitest/globals"
     ],
-    "target": "ES2020",
+    "target": "ES2022",
     "useDefineForClassFields": true,
     "lib": [
       "DOM",
@@ -17,7 +17,7 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "ES2020",
+    "module": "ES2022",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -35,5 +35,5 @@
   "include": [
     "src",
     "test-utils"
-  ]
+  ],
 }

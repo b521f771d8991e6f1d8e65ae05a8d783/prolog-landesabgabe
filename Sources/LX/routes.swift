@@ -1,11 +1,13 @@
 import LogicKit
 import Vapor
 
+let apiPrefix = ProcessInfo.processInfo.environment["LX_API_PREFIX"] ?? "api"
+
 private func routesProtected(onApp app: Application) throws {
     // the following methods should be protected by a keycloak access token
 
     app.get(
-        "fetch-law",
+        "\(apiPrefix)", "fetch-law",
         use: protectRoute { req async throws -> String in
             guard let kurztitel = req.query[String.self, at: "kurztitel"] else {
                 let corpus = fetchCorpus()
@@ -39,7 +41,7 @@ private func routesProtected(onApp app: Application) throws {
         })
 
     app.get(
-        "🫖",
+        "\(apiPrefix)", "🫖",
         use: protectRoute { req async throws -> String in
             // TODO: magical function that converts this computer into a teapot
             print("Attention! This server is being converted into a teapot 🪄")
@@ -47,7 +49,7 @@ private func routesProtected(onApp app: Application) throws {
         })
 
     app.get(
-        "queryModel",
+        "\(apiPrefix)", "queryModel",
         use: protectRoute { req async throws -> String in
             guard let query: String = req.query[String.self, at: "query"] else {
                 throw Abort(.badRequest, reason: "request requires the parameter 'query'")
@@ -83,11 +85,26 @@ private func routesUnprotected(onApp app: Application) throws {
         )
     }
 
-    app.get("status") { req async throws -> String in
+    app.get("\(apiPrefix)", "app-config.json") { req async throws -> Response in
+        let jsonString = """
+            {
+                "LX_KEYCLOAK_URL": "\(ProcessInfo.processInfo.environment["LX_KEYCLOAK_URL"]!)",
+                "LX_KEYCLOAK_CLIENT_ID": "\(ProcessInfo.processInfo.environment["LX_KEYCLOAK_CLIENT_ID"]!)",
+                "LX_KEYCLOAK_REALM": "\(ProcessInfo.processInfo.environment["LX_KEYCLOAK_REALM"]!)"
+            }
+            """
+        return Response(
+            status: .ok,
+            headers: ["Content-Type": "application/json"],
+            body: .init(stringLiteral: jsonString)
+        )
+    }
+
+    app.get("\(apiPrefix)", "status") { req async throws -> String in
         return "OK"
     }
 
-    app.get("version") { req async throws -> String in
+    app.get("\(apiPrefix)", "version") { req async throws -> String in
         return "\(getVersion())"
     }
 

@@ -105,16 +105,13 @@ export const queryClient = new QueryClient({
   },
 });
 
-function getBaseURL() {
-  if (import.meta.env.VITE_LX_SERVER_URL) {
-    return import.meta.env.VITE_LX_SERVER_URL + "/";
-  } else {
-    return window.location.origin; // TODO check if this is cross-platform compatible
-  }
+export function getBaseURL() {
+  return window.location.origin + `/api/`; // TODO check if this is cross-platform compatible
 }
 
 export function useGetWebServerJSON<T>(urlSuffix: string): UseQueryResult<T, Error> {
-  const url = new URL("/" + urlSuffix, getBaseURL());
+  const url = new URL(getBaseURL() + urlSuffix);
+  console.log("Downloading", url.toString());
 
   return useQuery({
     queryKey: [urlSuffix],
@@ -124,7 +121,8 @@ export function useGetWebServerJSON<T>(urlSuffix: string): UseQueryResult<T, Err
 }
 
 export const useGetWebServerString = (urlSuffix: string): UseQueryResult<string, Error> => {
-  const url = new URL("/" + urlSuffix, getBaseURL());
+  const url = new URL(getBaseURL() + urlSuffix);
+  console.log("Downloading", url.toString());
 
   return useQuery({
     queryKey: [urlSuffix],

@@ -45,11 +45,11 @@ clean-build: clean all
 
 .PHONY: frontend-dev
 frontend-dev: low-level-dependencies
-	dotenvx run -- npm run dev --workspaces
+	npm run dev --workspaces
 
 .PHONY: backend-dev
 backend-dev: low-level-dependencies
-	dotenvx run -- swift run
+	dotenvx run -f .env.development -- swift run
 
 .PHONY: clean-build
 clean-build: clean all

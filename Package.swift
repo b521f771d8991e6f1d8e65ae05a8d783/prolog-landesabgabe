@@ -22,9 +22,8 @@ let package = Package(
             targets: ["LX"])
     ],
     dependencies: [
-        .package(url: "https://github.com/vapor/vapor", from: "4.0.0"),
+        .package(url: "https://github.com/vapor/vapor", from: "4.114.0"),
         .package(url: "https://github.com/vapor/jwt.git", from: "5.1.0"),
-        .package(url: "https://github.com/swiftwasm/WasmKit.git", from: "0.1.0"),
     ],
     targets: [
         .target(
@@ -35,7 +34,6 @@ let package = Package(
             dependencies: [
                 .product(name: "Vapor", package: "Vapor"),
                 .product(name: "JWT", package: "jwt"),
-                .product(name: "WasmKit", package: "WasmKit"),
             ],
             swiftSettings: [
                 .interoperabilityMode(.Cxx),
@@ -59,5 +57,6 @@ let package = Package(
                     ])
             ]),
     ],
+    cLanguageStandard: .c11,
     cxxLanguageStandard: .cxx20
 )

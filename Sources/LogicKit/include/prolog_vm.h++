@@ -1,8 +1,7 @@
 #ifndef PROLOGVM_H
 #define PROLOGVM_H
 
-#include <vector>
-#include <string>
+#include <wasmedge/wasmedge.h>
 
 namespace looe::logic_kit
 {
@@ -10,10 +9,12 @@ namespace looe::logic_kit
 class logic_vm
 {
 private:
-  std::vector<std::string> errors;
+  WasmEdge_ConfigureContext *context;
+  WasmEdge_VMContext *vm_cxt;
 
 public:
-  logic_vm();
+  logic_vm(void);
+  ~logic_vm(void);
 };
 
 }

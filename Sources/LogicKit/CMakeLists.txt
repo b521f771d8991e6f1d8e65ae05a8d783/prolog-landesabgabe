@@ -6,7 +6,6 @@ add_library(LogicKit
 target_include_directories(LogicKit
 SYSTEM PUBLIC
   include
-  /usr/include/node
 )
 target_link_libraries(LogicKit PUBLIC
 PRIVATE

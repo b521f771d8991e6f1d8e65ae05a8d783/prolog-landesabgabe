@@ -1,7 +1,7 @@
 #! /usr/bin/env make
 .DEFAULT_GOAL := all
 
-SHELL = /usr/bin/zsh
+SHELL = /usr/bin/env zsh
 VARIANT ?= debug
 # or release - do not put a space after debug
 TARGET ?= x86_64-unknown-linux-gnu

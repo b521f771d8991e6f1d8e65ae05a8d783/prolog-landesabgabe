@@ -4,15 +4,14 @@ FROM swift:bookworm AS build1-environment
 # FROM nixos/nix
 # https://github.com/NixOS/nixpkgs/issues/343210#issuecomment-2424134735
 
-RUN apt update && apt upgrade -y && apt install -y curl libnode-dev 
+RUN apt update && apt upgrade -y
 
 FROM build1-environment AS build2-environment
 
-RUN curl -sfS https://dotenvx.sh | sh
+RUN apt install -y nix
+RUN echo "export PATH=$PATH:/root/.nix-profile/bin" >> /root/.bashrc
 
-RUN apt install -y git zsh \
-    ninja-build gdb zip unzip swi-prolog \
-    npm make wget cmake locate
+RUN nix --extra-experimental-features nix-command --extra-experimental-features flakes profile install nixpkgs#nodejs_23 nixpkgs#cmake nixpkgs#gnumake nixpkgs#wget nixpkgs#swi-prolog nixpkgs#zsh nixpkgs#zip nixpkgs#gdb nixpkgs#swi-prolog nixpkgs#git nixpkgs#ninja nixpkgs#dotenvx
 # curl is included in build1-environment
 
 FROM build2-environment AS development

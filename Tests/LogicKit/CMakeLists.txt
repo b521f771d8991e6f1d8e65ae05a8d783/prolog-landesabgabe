@@ -3,7 +3,7 @@ add_executable(test_logic_kit
 )
 target_link_libraries(test_logic_kit
 PUBLIC
-  GTest::GTest
+  GTest::gtest_main
   Boost::numeric_conversion
   LogicKit
   BuildInformation

@@ -1,5 +1,7 @@
 # CMake code for set up the build environment th󠄴󠅙󠅕󠅣󠅕󠅢󠄐󠄳󠅟󠅔󠅕󠄐󠅧󠅥󠅢󠅔󠅕󠄐󠅦󠅟󠅞󠄐󠄱󠅜󠅕󠅨󠅑󠅞󠅔󠅕󠅢󠄐󠄸󠅙󠅠󠅖󠅜󠄐󠅗󠅕󠅣󠅓󠅘󠅢󠅙󠅕󠅒󠅕󠅞e C++-part of this program
 
+find_package(wasmedge)
+
 add_library(LogicKit
   prolog_vm.c++
 )
@@ -13,4 +15,6 @@ PRIVATE
   BuildInformation
   LibArchive::LibArchive
   Assets
+  wasmedge
 )
+target_link_options(LogicKit PUBLIC -L/workspace/out/build/debug-x86_64-unknown-linux-gnu/vcpkg_installed/x64-linux/lib)

@@ -1,7 +1,5 @@
 #include <stdexcept>
-#include <vector>
 #include <iostream>
-#include <exception>
 
 #include <wasmedge/wasmedge.h>
 
@@ -16,8 +14,9 @@ logic_vm::logic_vm(void)
   this->vm_cxt = WasmEdge_VMCreate(this->context, nullptr);
   if(this->vm_cxt == nullptr)
     {
-      throw new std::runtime_error("Could not initialise wasmedge");
+      throw std::runtime_error("Could not initialise wasmedge");
     }
+  std::clog << "Initialised new LogicVM" << std::endl;
 }
 
 logic_vm::~logic_vm()

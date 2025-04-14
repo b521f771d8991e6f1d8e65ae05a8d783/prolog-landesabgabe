@@ -1,6 +1,3 @@
-#include <vector>
-#include <string>
-
 #include <assets.h>
 
 #include <prolog_vm.h++>
@@ -9,13 +6,8 @@
 
 using namespace looe::logic_kit;
 
-std::vector<std::string> arguments;
-
-int
-main(int argc, char **argv)
+TEST(test_logic_vm, test_startup)
 {
-  looe::lx::assets::init_program_root_and_setup_jail();
-  ::testing::InitGoogleTest(&argc, argv);
-  arguments = std::vector<std::string>(argv, argv + argc);
-  return RUN_ALL_TESTS();
+  logic_vm lvm;
+  std::cout << "Prolog VM has size of" << sizeof(lvm) << std::endl;
 }

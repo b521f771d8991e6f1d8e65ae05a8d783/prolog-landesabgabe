@@ -2,6 +2,7 @@ import Assets
 import Foundation
 import LogicKit
 import Vapor
+import WasmKit
 
 /// Initializes the program root and sets up a jail environment for the application.
 /// Prints the current version of the digital law server.

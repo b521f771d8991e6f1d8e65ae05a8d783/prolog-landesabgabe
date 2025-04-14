@@ -60,7 +60,7 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         push: ${{ github.event_name != 'pull_request' }}
-        file: ./Sources/Docker/Dockerfile
+        file: ./Sources/Docker/Backend.dockerfile
         context: .
         platforms: linux/amd64
         cache-from: type=registry,ref=user/app:latest

@@ -83,19 +83,7 @@ private func routesUnprotected(onApp app: Application) throws {
         )
     }
 
-    app.get("\(apiPrefix)", "app-config.json") { req async throws -> Response in
-        guard let config = AppConfig() else {
-            throw Abort(
-                .internalServerError, reason: "Could not construct AppConfig from environment")
-        }
-
-        let jsonData = try JSONEncoder().encode(config)
-        return Response(
-            status: .ok,
-            headers: ["Content-Type": "application/json"],
-            body: .init(data: jsonData)
-        )
-    }
+    AppConfig.register(onApp: app)
 
     app.get("\(apiPrefix)", "status") { req async throws -> String in
         return "OK"

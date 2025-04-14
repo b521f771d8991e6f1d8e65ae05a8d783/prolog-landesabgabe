@@ -1,8 +1,6 @@
 import LogicKit
 import Vapor
 
-let apiPrefix = ProcessInfo.processInfo.environment["LX_API_PREFIX"] ?? "api"
-
 private func routesProtected(onApp app: Application) throws {
     // the following methods should be protected by a keycloak access token
 
@@ -86,17 +84,16 @@ private func routesUnprotected(onApp app: Application) throws {
     }
 
     app.get("\(apiPrefix)", "app-config.json") { req async throws -> Response in
-        let jsonString = """
-            {
-                "LX_KEYCLOAK_URL": "\(ProcessInfo.processInfo.environment["LX_KEYCLOAK_URL"]!)",
-                "LX_KEYCLOAK_CLIENT_ID": "\(ProcessInfo.processInfo.environment["LX_KEYCLOAK_CLIENT_ID"]!)",
-                "LX_KEYCLOAK_REALM": "\(ProcessInfo.processInfo.environment["LX_KEYCLOAK_REALM"]!)"
-            }
-            """
+        guard let config = AppConfig() else {
+            throw Abort(
+                .internalServerError, reason: "Could not construct AppConfig from environment")
+        }
+
+        let jsonData = try JSONEncoder().encode(config)
         return Response(
             status: .ok,
             headers: ["Content-Type": "application/json"],
-            body: .init(stringLiteral: jsonString)
+            body: .init(data: jsonData)
         )
     }
 

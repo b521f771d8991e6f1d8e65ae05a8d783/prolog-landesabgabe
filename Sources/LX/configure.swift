@@ -1,9 +1,5 @@
 import Vapor
 
-let workerPortString = ProcessInfo.processInfo.environment["LX_WORKER_LISTEN_PORT"] ?? "1337"
-let workerPort = Int(workerPortString) ?? 1337
-let workerHostname = ProcessInfo.processInfo.environment["LX_WORKER_LISTEN_ON"] ?? "0.0.0.0"
-
 /// Configures the given application instance.
 ///
 /// This function is responsible for setting up the application's

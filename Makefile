@@ -13,13 +13,11 @@ else
 	CARGO_RELEASE_FLAG :=
 endif
 
-.PHONY: git-init
-git-init:
-	git submodule update --init --recursive
-
 .PHONY: init
 init:
 	npm install --workspaces
+	cargo fetch
+	git submodule update --init --recursive
 
 .PHONY: frontend
 frontend:
@@ -33,7 +31,7 @@ backend:
 	swift build --configuration ${VARIANT}
 
 .PHONY: all
-all: frontend backend
+all: init frontend backend
 
 .PHONY: run
 run: all

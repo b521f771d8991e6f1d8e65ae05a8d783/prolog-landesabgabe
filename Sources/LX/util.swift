@@ -6,10 +6,21 @@ func isAlpha(_ str: String) -> Bool {
     return str.range(of: "^[a-zA-Z]+$", options: .regularExpression) != nil
 }
 
+// TODO drop the Assets dependency, write this in pure swift
+@Sendable
+private func fetchLaws() -> [String] {
+    let resources = looe.lx.assets.list_strings("Corpus")
+    return resources.compactMap { resource in
+        let name = String(resource)
+            .replacingOccurrences(of: "Corpus/", with: "")
+            .replacingOccurrences(of: ".pl", with: "")
+        return name.starts(with: "stdlib/") ? nil : name
+    }
+}
+
 @Sendable
 func fetchCorpus() -> [String] {
-    return ["krog", "labgg"]
-    //return looe.lx.assets.list_strings("Corpus").map({ String($0) })
+    return fetchLaws()
 }
 
 @Sendable

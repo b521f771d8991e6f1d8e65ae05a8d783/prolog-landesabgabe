@@ -4,6 +4,5 @@
         "libarchive",
         "boost-numeric-conversion",
         "gtest",
-        "wasmedge"
     ]
 }

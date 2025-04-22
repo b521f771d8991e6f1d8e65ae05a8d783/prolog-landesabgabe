@@ -21,15 +21,18 @@ git-init:
 init:
 	npm install --workspaces
 
-.PHONY: low-level-dependencies
-low-level-dependencies: init
+.PHONY: frontend
+frontend:
 	npm run build --workspaces --${VARIANT}
+
+.PHONY: backend
+backend:
 	cmake -S . -B ./out/build/${VARIANT}-${TARGET} --preset=${VARIANT}-${TARGET}
 	cmake --build ./out/build/${VARIANT}-${TARGET}
+	swift build --configuration ${VARIANT}
 
 .PHONY: all
-all: low-level-dependencies
-	swift build --configuration ${VARIANT}
+all: frontend backend
 
 .PHONY: run
 run: all
@@ -44,11 +47,11 @@ clean:
 clean-build: clean all
 
 .PHONY: frontend-dev
-frontend-dev: low-level-dependencies
+frontend-dev: frontend
 	npm run dev --workspaces
 
 .PHONY: backend-dev
-backend-dev: low-level-dependencies
+backend-dev: backend
 	dotenvx run -f .env.development -- swift run
 
 .PHONY: clean-build

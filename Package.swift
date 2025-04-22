@@ -14,6 +14,12 @@ let rootPath = "/workspace/"
 let target = "x86_64-unknown-linux-gnu"
 let cmakeOutputDir = "\(rootPath)/out/build/\(buildType)-\(target)"
 
+let rustFlags: [String] = [
+    "\(rootPath)/Sources/generated/SwiftBridgeCore.swift",
+    "\(rootPath)/Sources/generated/LogicKit/LogicKit.swift",
+    "-import-objc-header", "\(rootPath)/Sources/rust-bridging-header.h",
+]
+
 let package = Package(
     name: "LX",
     products: [
@@ -38,10 +44,9 @@ let package = Package(
             swiftSettings: [
                 .interoperabilityMode(.Cxx),
                 .unsafeFlags(
-                    [
+                    rustFlags + [
                         // cmake dependencies
                         "-I\(cmakeOutputDir)",
-                        "-I\(rootPath)/Sources/LogicKit/include",
                         "-I\(rootPath)/Sources/Assets/include",
                     ]),
             ],
@@ -53,6 +58,8 @@ let package = Package(
                         "-lAssets",
                         "-L\(cmakeOutputDir)/vcpkg_installed/x64-linux/lib",
                         "-larchive",
+                        "-Ltarget/\(buildType)",
+                        "-lLogicKit",
                     ])
             ]),
     ],

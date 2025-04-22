@@ -1,4 +1,3 @@
-import LogicKit
 import Vapor
 
 private func routesProtected(onApp app: Application) throws {

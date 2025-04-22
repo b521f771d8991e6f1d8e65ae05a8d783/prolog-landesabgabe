@@ -1,11 +1,12 @@
-struct PrologVM {
+#![allow(non_snake_case)]
+
+pub struct PrologVM {
     js_runtime: deno_core::JsRuntime,
 }
 
 impl PrologVM {
     pub fn new() -> Self {
-        let main_module = deno_core::resolve_path(".", &std::env::current_dir().expect(""));
-        let mut js_runtime = deno_core::JsRuntime::new(deno_core::RuntimeOptions {
+        let js_runtime = deno_core::JsRuntime::new(deno_core::RuntimeOptions {
             module_loader: Some(std::rc::Rc::new(deno_core::FsModuleLoader)),
             ..Default::default()
         });

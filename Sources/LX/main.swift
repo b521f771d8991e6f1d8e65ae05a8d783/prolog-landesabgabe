@@ -1,6 +1,5 @@
 import Assets
 import Foundation
-import LogicKit
 import Vapor
 
 /// Initializes the program root and sets up a jail environment for the application.

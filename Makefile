@@ -40,7 +40,8 @@ run: all
 .PHONY: clean
 clean:
 	swift package clean
-	rm -rf out .build
+	cargo clean
+	rm -rf out .build target Sources/generated
 
 .PHONY: clean-build
 clean-build: clean all

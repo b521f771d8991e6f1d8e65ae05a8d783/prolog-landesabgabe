@@ -6,6 +6,7 @@ edition = "2024"
 [dependencies]
 deno_core = "0.343.0"
 swift-bridge = "0.1.57"
+tokio = "1.44.2"
 
 [build-dependencies]
 swift-bridge-build = "0.1"

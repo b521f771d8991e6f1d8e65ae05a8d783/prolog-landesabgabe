@@ -52,28 +52,33 @@ impl PrologVM {
         self.js_runtime.execute_script("script.js", script)
     }
 
-    pub fn execute_js(&mut self, script: String) -> Result<(), PrologVMError> {
+    pub fn execute_js(&mut self, script: String) -> () {
         let result: Result<
             deno_core::v8::Global<deno_core::v8::Value>,
             deno_core::error::CoreError,
         > = executor::block_on(self.execute(script));
 
-        return match result {
+        match result {
             Ok(value) => Ok(()),
             Err(error) => Err(PrologVMError::DenoError("".to_string())),
         };
+    }
+
+    pub fn execute_prolog(&mut self, prolog_expression: String) -> () {
+        // TODO implement this
+        self.execute_js(prolog_expression);
     }
 }
 
 #[swift_bridge::bridge]
 mod ffi {
     extern "Rust" {
-        type PrologVMError;
         type PrologVM;
 
         #[swift_bridge(init)]
         fn new() -> PrologVM;
-        fn execute_js(self: &mut PrologVM, script: String) -> Result<(), PrologVMError>;
+        fn execute_js(self: &mut PrologVM, script: String) -> ();
+        fn execute_prolog(self: &mut PrologVM, script: String) -> ();
     }
 }
 

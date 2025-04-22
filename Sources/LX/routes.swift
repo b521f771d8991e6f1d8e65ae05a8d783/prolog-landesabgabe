@@ -48,12 +48,16 @@ private func routesProtected(onApp app: Application) throws {
     app.get(
         "\(apiPrefix)", "queryModel",
         use: protectRoute { req async throws -> String in
-            guard let query: String = req.query[String.self, at: "query"] else {
-                throw Abort(.badRequest, reason: "request requires the parameter 'query'")
-            }
-
             guard let lawName: String = req.query[String.self, at: "law"] else {
                 throw Abort(.badRequest, reason: "request requires the parameter 'law'")
+            }
+
+            let query = req.query[String.self, at: "query"]
+            let javascript = req.query[String.self, at: "js"]
+
+            if query == nil && javascript == nil {
+                throw Abort(
+                    .badRequest, reason: "request requires the parameter 'query' or 'javascript'")
             }
 
             print("Processing query '\(query)' on law '\(lawName)'")
@@ -62,7 +66,17 @@ private func routesProtected(onApp app: Application) throws {
                 throw Abort(.badRequest, reason: "Law \(lawName) not found.")
             }
 
-            return ""
+            let pvm = PrologVM()
+
+            if let javascript = javascript {
+                try pvm.execute_js(javascript)
+            }
+
+            if let query = query {
+                try pvm.execute_prolog(query)
+            }
+
+            throw Abort(.internalServerError, reason: "unexpected ending of method")
         })
 }
 

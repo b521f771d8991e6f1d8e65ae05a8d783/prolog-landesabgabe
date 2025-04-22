@@ -4,7 +4,7 @@
 SHELL = /usr/bin/env zsh
 VARIANT ?= debug
 # or release - do not put a space after debug
-TARGET ?= x86_64-unknown-linux-gnu
+INSTALL_DIR ?= /usr/local/bin
 
 # some tools require special treatment 🦄
 ifeq ($(VARIANT),release)
@@ -12,6 +12,8 @@ ifeq ($(VARIANT),release)
 else
 	CARGO_RELEASE_FLAG :=
 endif
+
+ARTIFACT := .build/{TARGET}/LX
 
 .PHONY: init
 init:
@@ -25,13 +27,16 @@ frontend:
 
 .PHONY: backend
 backend:
-	cmake -S . -B ./out/build/${VARIANT}-${TARGET} --preset=${VARIANT}-${TARGET}
-	cmake --build ./out/build/${VARIANT}-${TARGET}
-	cargo build
+	cmake -S . -B ./out/build/${VARIANT} --preset=${VARIANT}
+	cmake --build ./out/build/${VARIANT}
+	cargo build ${CARGO_RELEASE_FLAG}
 	swift build --configuration ${VARIANT}
 
+.PHONY: ${ARTIFACT}
+${ARTIFACT}: frontend backend
+
 .PHONY: all
-all: init frontend backend
+all: ${ARTIFACT}
 
 .PHONY: run
 run: all
@@ -53,3 +58,7 @@ frontend-dev: frontend
 .PHONY: backend-dev
 backend-dev: backend
 	dotenvx run -f .env.development -- swift run
+
+.PHONY: install
+install: all
+	cp ${ARTIFACT} ${INSTALL_DIR}

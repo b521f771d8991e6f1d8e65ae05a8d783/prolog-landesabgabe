@@ -11,12 +11,13 @@ let rootPath = "/workspace/"
     let buildType = "debug"
 #endif
 
-let target = "x86_64-unknown-linux-gnu"
-let cmakeOutputDir = "\(rootPath)/out/build/\(buildType)-\(target)"
+let cmakeOutputDir = "\(rootPath)/out/build/\(buildType)"
 
 let rustFlags: [String] = [
     "\(rootPath)/Sources/generated/SwiftBridgeCore.swift",
-    "\(rootPath)/Sources/generated/LogicKit/LogicKit.swift",
+    "\(rootPath)/Sources/generated/logic-kit/logic-kit.swift",
+    "\(rootPath)/Sources/generated/build-information/build-information.swift",
+    "\(rootPath)/Sources/generated/assets/assets.swift",
     "-import-objc-header", "\(rootPath)/Sources/rust-bridging-header.h",
 ]
 
@@ -46,21 +47,23 @@ let package = Package(
                 .unsafeFlags(
                     rustFlags + [
                         // cmake dependencies
-                        "-I\(cmakeOutputDir)",
-                        "-I\(rootPath)/Sources/Assets/include",
+                        "-I\(cmakeOutputDir)"
+                        //"-I\(rootPath)/Sources/Assets/include",
                     ]),
             ],
             linkerSettings: [
-                .linkedLibrary("archive"),
-                .linkedLibrary("Assets"),
-                .linkedLibrary("LogicKit"),
+                .linkedLibrary("assets"),
+                .linkedLibrary("logic_kit"),
+                .linkedLibrary("build_information"),
                 .unsafeFlags(
-                    [
-                        "-L\(cmakeOutputDir)/Sources/LogicKit",
-                        "-L\(cmakeOutputDir)/Sources/Assets",
+                    rustFlags + [
+                        //"-L\(cmakeOutputDir)/Sources/LogicKit",
+                        //"-L\(cmakeOutputDir)/Sources/Assets",
                         "-L\(cmakeOutputDir)/vcpkg_installed/x64-linux/lib",
                         "-Ltarget/\(buildType)",
-                        "-larchive",
+                        "-lbuild_information",
+                        "-llogic_kit",
+                        "-lassets",
                     ]),
             ]),
     ],

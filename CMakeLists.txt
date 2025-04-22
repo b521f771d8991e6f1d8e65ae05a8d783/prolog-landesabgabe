@@ -2,18 +2,16 @@ cmake_minimum_required(VERSION 3.25)
 project(LX LANGUAGES OBJCXX CXX OBJC C)
 
 include(CTest)
-include(Build/BuildInformation/BuildInformation.cmake)
 
 # configuration for our targets
 
-add_subdirectory(Sources/Assets)
+#add_subdirectory(Sources/Assets)
 
 # configuration for our tests
 #add_subdirectory(Tests/XYZ)
 
 # configuration for all targets
 set(TARGETS
-  Assets
 )
 
 set(TEST_TARGETS

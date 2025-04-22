@@ -1,14 +1,12 @@
 [package]
-name = "logic-kit"
+name = "build-information"
 version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-deno_core = "0.343.0"
-futures = "0.3.31"
+serde = { version = "1.0.219", features = ["derive"]}
+wasm-bindgen = "0.2.100"
 swift-bridge = { version = "0.1.57", features = ["async"] }
-tokio = "1.44.2"
-wasm-bindgen = { version = "0.2.100", wasm-opt = true }
 
 [build-dependencies]
 swift-bridge-build = { version = "0.1" }

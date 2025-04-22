@@ -1,6 +1,9 @@
 # ${CMAKE_COMMAND} -E # cmake has no support for the -h option needed
 # to dereference symlink
 
+find_package(GTest REQUIRED)
+find_package(LibArchive REQUIRED)
+
 find_program(tar tar)
 find_program(rm rm)
 find_program(mkdir mkdir)

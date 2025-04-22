@@ -29,6 +29,7 @@ frontend:
 backend:
 	cmake -S . -B ./out/build/${VARIANT}-${TARGET} --preset=${VARIANT}-${TARGET}
 	cmake --build ./out/build/${VARIANT}-${TARGET}
+	cargo build
 	swift build --configuration ${VARIANT}
 
 .PHONY: all

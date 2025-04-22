@@ -51,7 +51,6 @@ let package = Package(
                         "-L\(cmakeOutputDir)/Sources/LogicKit",
                         "-L\(cmakeOutputDir)/Sources/Assets",
                         "-lAssets",
-                        "-lLogicKit",
                         "-L\(cmakeOutputDir)/vcpkg_installed/x64-linux/lib",
                         "-larchive",
                     ])

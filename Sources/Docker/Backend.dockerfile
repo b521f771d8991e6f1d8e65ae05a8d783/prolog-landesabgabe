@@ -8,8 +8,22 @@ RUN apt update && apt upgrade -y && apt install -y nix
 
 ENV PATH="$PATH:/root/.nix-profile/bin"
 
-RUN nix --extra-experimental-features nix-command --extra-experimental-features flakes profile install nixpkgs#nodejs_23 nixpkgs#cmake nixpkgs#gnumake nixpkgs#wget nixpkgs#swi-prolog nixpkgs#zsh nixpkgs#zip nixpkgs#gdb nixpkgs#swi-prolog nixpkgs#git nixpkgs#ninja nixpkgs#dotenvx
-# curl is included in build1-environment
+RUN nix --extra-experimental-features 'nix-command flakes' profile install \
+    nixpkgs#nodejs_23 \
+    nixpkgs#cmake \
+    nixpkgs#gnumake \
+    nixpkgs#wget \
+    nixpkgs#swi-prolog \
+    nixpkgs#zsh \
+    nixpkgs#zip \
+    nixpkgs#gdb \
+    nixpkgs#swi-prolog \
+    nixpkgs#git \
+    nixpkgs#ninja \
+    nixpkgs#dotenvx \
+    nixpkgs#cargo \
+    nixpkgs#rustc \
+    nixpkgs#rustfmt
 
 WORKDIR /
 RUN git config --global --add safe.directory /workspace

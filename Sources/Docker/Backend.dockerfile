@@ -37,7 +37,8 @@ ARG BUILD_VARIANT=debug
 
 WORKDIR /workspace
 COPY . .
-RUN VARIANT=${BUILD_VARIANT} TARGET=${BUILD_TARGET} make all
+RUN TARGET=${BUILD_TARGET} make init
+RUN TARGET=${BUILD_TARGET} make all
 RUN strip .build/${BUILD_VARIANT}/LX
 
 WORKDIR /artifacts

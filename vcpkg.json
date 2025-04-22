@@ -3,6 +3,6 @@
     "dependencies": [
         "libarchive",
         "boost-numeric-conversion",
-        "gtest",
+        "gtest"
     ]
 }

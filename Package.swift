@@ -51,16 +51,17 @@ let package = Package(
                     ]),
             ],
             linkerSettings: [
+                .linkedLibrary("archive"),
+                .linkedLibrary("Assets"),
+                .linkedLibrary("LogicKit"),
                 .unsafeFlags(
                     [
                         "-L\(cmakeOutputDir)/Sources/LogicKit",
                         "-L\(cmakeOutputDir)/Sources/Assets",
-                        "-lAssets",
                         "-L\(cmakeOutputDir)/vcpkg_installed/x64-linux/lib",
-                        "-larchive",
                         "-Ltarget/\(buildType)",
-                        "-lLogicKit",
-                    ])
+                        "-larchive",
+                    ]),
             ]),
     ],
     cLanguageStandard: .c11,

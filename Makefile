@@ -41,7 +41,7 @@ run: all
 clean:
 	swift package clean
 	cargo clean
-	rm -rf out .build target Sources/generated
+	rm -rf out .build target Sources/generated *.o *.swiftdeps* *.d
 
 .PHONY: clean-build
 clean-build: clean all
@@ -53,6 +53,3 @@ frontend-dev: frontend
 .PHONY: backend-dev
 backend-dev: backend
 	dotenvx run -f .env.development -- swift run
-
-.PHONY: clean-build
-clean-build: clean all

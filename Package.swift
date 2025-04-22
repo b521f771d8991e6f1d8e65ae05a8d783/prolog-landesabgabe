@@ -11,8 +11,15 @@ let rootPath = "/workspace/"
     let buildType = "debug"
 #endif
 
-let target = "x86_64-unknown-linux-gnu"
-let cmakeOutputDir = "\(rootPath)/out/build/\(buildType)-\(target)"
+let cmakeOutputDir = "\(rootPath)/out/build/\(buildType)"
+
+let rustFlags: [String] = [
+    "\(rootPath)/Sources/generated/SwiftBridgeCore.swift",
+    "\(rootPath)/Sources/generated/logic-kit/logic-kit.swift",
+    "\(rootPath)/Sources/generated/build-information/build-information.swift",
+    "\(rootPath)/Sources/generated/assets/assets.swift",
+    "-import-objc-header", "\(rootPath)/Sources/rust-bridging-header.h",
+]
 
 let package = Package(
     name: "LX",
@@ -22,8 +29,8 @@ let package = Package(
             targets: ["LX"])
     ],
     dependencies: [
-        .package(url: "https://github.com/vapor/vapor", from: "4.112.0"),
-        .package(url: "https://github.com/vapor/jwt.git", from: "5.1.2"),
+        .package(url: "https://github.com/vapor/vapor", from: "4.114.0"),
+        .package(url: "https://github.com/vapor/jwt.git", from: "5.1.0"),
     ],
     targets: [
         .target(
@@ -38,24 +45,25 @@ let package = Package(
             swiftSettings: [
                 .interoperabilityMode(.Cxx),
                 .unsafeFlags(
-                    [
+                    rustFlags + [
                         // cmake dependencies
-                        "-I\(cmakeOutputDir)",
-                        "-I\(rootPath)/Sources/LogicKit/include",
-                        "-I\(rootPath)/Sources/Assets/include",
+                        "-I\(cmakeOutputDir)"
+                        //"-I\(rootPath)/Sources/Assets/include",
                     ]),
             ],
             linkerSettings: [
+                .linkedLibrary("assets"),
+                .linkedLibrary("logic_kit"),
+                .linkedLibrary("build_information"),
                 .unsafeFlags(
-                    [
-                        "-L\(cmakeOutputDir)/Sources/LogicKit",
-                        "-L\(cmakeOutputDir)/Sources/Assets",
-                        "-lAssets",
-                        "-lLogicKit",
+                    rustFlags + [
+                        //"-L\(cmakeOutputDir)/Sources/LogicKit",
+                        //"-L\(cmakeOutputDir)/Sources/Assets",
                         "-L\(cmakeOutputDir)/vcpkg_installed/x64-linux/lib",
-                        "-larchive",
-                    ])
+                        "-Ltarget/\(buildType)",
+                    ]),
             ]),
     ],
+    cLanguageStandard: .c11,
     cxxLanguageStandard: .cxx20
 )

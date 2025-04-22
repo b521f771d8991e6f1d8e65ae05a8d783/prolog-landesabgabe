@@ -29,7 +29,7 @@
             ]
         },
         {
-            "type": "lldb",
+            "type": "swift",
             "request": "launch",
             "args": [],
             "cwd": "${workspaceFolder:workspace}",
@@ -38,7 +38,7 @@
             "preLaunchTask": "swift: Build Debug LX"
         },
         {
-            "type": "lldb",
+            "type": "swift",
             "request": "launch",
             "args": [],
             "cwd": "${workspaceFolder:workspace}",

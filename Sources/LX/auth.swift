@@ -2,9 +2,6 @@ import Foundation
 import JWT
 import Vapor
 
-let lxJwtRsa256 = ProcessInfo.processInfo.environment["LX_JWT_RSA_256"]
-let lxJwtRole = ProcessInfo.processInfo.environment["LX_JWT_ROLE"]
-
 /// A structure representing the payload of a JWT (JSON Web Token) for Keycloak authentication.
 ///
 /// This structure conforms to the `JWTPayload` protocol, which defines the requirements for

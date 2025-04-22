@@ -1,3 +1,6 @@
+## Reminders
+- Do not forget to init the submodules after cloning, "make git-init" is your friend
+
 ## Internals
 
 ### Frontend

@@ -1,10 +1,10 @@
 #! /usr/bin/env make
 .DEFAULT_GOAL := all
 
-SHELL = /usr/bin/zsh
+SHELL = /usr/bin/env zsh
 VARIANT ?= debug
 # or release - do not put a space after debug
-TARGET ?= x86_64-unknown-linux-gnu
+INSTALL_DIR ?= /usr/local/bin
 
 # some tools require special treatment 🦄
 ifeq ($(VARIANT),release)
@@ -13,23 +13,30 @@ else
 	CARGO_RELEASE_FLAG :=
 endif
 
-.PHONY: git-init
-git-init:
-	git submodule update --init --recursive
+ARTIFACT := .build/{TARGET}/LX
 
 .PHONY: init
 init:
 	npm install --workspaces
+	cargo fetch
+	git submodule update --init --recursive
 
-.PHONY: low-level-dependencies
-low-level-dependencies: init
+.PHONY: frontend
+frontend:
 	npm run build --workspaces --${VARIANT}
-	cmake -S . -B ./out/build/${VARIANT}-${TARGET} --preset=${VARIANT}-${TARGET}
-	cmake --build ./out/build/${VARIANT}-${TARGET}
+
+.PHONY: backend
+backend:
+	cmake -S . -B ./out/build/${VARIANT} --preset=${VARIANT}
+	cmake --build ./out/build/${VARIANT}
+	cargo build ${CARGO_RELEASE_FLAG}
+	swift build --configuration ${VARIANT}
+
+.PHONY: ${ARTIFACT}
+${ARTIFACT}: frontend backend
 
 .PHONY: all
-all: low-level-dependencies
-	swift build --configuration ${VARIANT}
+all: ${ARTIFACT}
 
 .PHONY: run
 run: all
@@ -38,18 +45,20 @@ run: all
 .PHONY: clean
 clean:
 	swift package clean
-	rm -rf out .build
+	cargo clean
+	rm -rf out .build target Sources/generated *.o *.swiftdeps* *.d
 
 .PHONY: clean-build
 clean-build: clean all
 
 .PHONY: frontend-dev
-frontend-dev: low-level-dependencies
+frontend-dev: frontend
 	npm run dev --workspaces
 
 .PHONY: backend-dev
-backend-dev: low-level-dependencies
+backend-dev: backend
 	dotenvx run -f .env.development -- swift run
 
-.PHONY: clean-build
-clean-build: clean all
+.PHONY: install
+install: all
+	cp ${ARTIFACT} ${INSTALL_DIR}

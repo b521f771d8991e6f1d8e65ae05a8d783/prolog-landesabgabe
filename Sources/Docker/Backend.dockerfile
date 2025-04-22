@@ -1,26 +1,34 @@
-FROM swift:bookworm AS build1-environment
+FROM swift:bookworm AS development
 
 # TOOD replace this with nixos/nix once nix has swift 6 support
 # FROM nixos/nix
 # https://github.com/NixOS/nixpkgs/issues/343210#issuecomment-2424134735
 
-RUN apt update && apt upgrade -y && apt install -y curl libnode-dev 
+RUN apt update && apt upgrade -y && apt install -y nix
 
-FROM build1-environment AS build2-environment
+ENV PATH="$PATH:/root/.nix-profile/bin"
 
-RUN curl -sfS https://dotenvx.sh | sh
-
-RUN apt install -y git zsh \
-    ninja-build gdb zip unzip swi-prolog \
-    npm make wget cmake locate
-# curl is included in build1-environment
-
-FROM build2-environment AS development
+RUN nix --extra-experimental-features 'nix-command flakes' profile install \
+    nixpkgs#nodejs_23 \
+    nixpkgs#cmake \
+    nixpkgs#gnumake \
+    nixpkgs#wget \
+    nixpkgs#swi-prolog \
+    nixpkgs#zsh \
+    nixpkgs#zip \
+    nixpkgs#gdb \
+    nixpkgs#swi-prolog \
+    nixpkgs#git \
+    nixpkgs#ninja \
+    nixpkgs#dotenvx \
+    nixpkgs#cargo \
+    nixpkgs#rustc \
+    nixpkgs#rustfmt
 
 WORKDIR /
 RUN git config --global --add safe.directory /workspace
 
-FROM build2-environment AS build
+FROM development AS build
 
 ARG BUILD_TARGET=x86_64-unknown-linux-gnu
 ARG BUILD_VARIANT=debug
@@ -29,14 +37,15 @@ ARG BUILD_VARIANT=debug
 
 WORKDIR /workspace
 COPY . .
-RUN VARIANT=${BUILD_VARIANT} TARGET=${BUILD_TARGET} make all
+RUN TARGET=${BUILD_TARGET} make init
+RUN TARGET=${BUILD_TARGET} make all
 RUN strip .build/${BUILD_VARIANT}/LX
 
 WORKDIR /artifacts
 RUN cp /workspace/.build/${BUILD_VARIANT}/LX .
 
 # TODO switch to FROM scratch once we can build it statically
-FROM build1-environment AS production
+FROM swift:bookworm AS production
 
 WORKDIR /app
 COPY --from=build /artifacts/* .

@@ -1,5 +1,4 @@
-name: Build Docker Image
-run-name: build on branch ${{ github.ref_name }} triggered by @${{ github.actor}}
+name: Build Docker Image 🐋
 on:
   workflow_dispatch:
   push:

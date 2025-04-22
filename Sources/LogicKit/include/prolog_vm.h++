@@ -8,8 +8,9 @@ namespace looe::logic_kit
 class logic_vm
 {
 private:
-
 public:
+~logic_vm();
+logic_vm();
 };
 
 }

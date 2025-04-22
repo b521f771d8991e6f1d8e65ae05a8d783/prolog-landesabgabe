@@ -1,5 +1,12 @@
+use futures::executor;
+
 pub struct PrologVM {
     js_runtime: deno_core::JsRuntime,
+}
+
+#[derive(Debug, Eq, PartialEq)]
+pub enum PrologVMError {
+    DenoError(String),
 }
 
 impl PrologVM {
@@ -44,15 +51,29 @@ impl PrologVM {
     ) -> Result<deno_core::v8::Global<deno_core::v8::Value>, deno_core::error::CoreError> {
         self.js_runtime.execute_script("script.js", script)
     }
+
+    pub fn execute_js(&mut self, script: String) -> Result<(), PrologVMError> {
+        let result: Result<
+            deno_core::v8::Global<deno_core::v8::Value>,
+            deno_core::error::CoreError,
+        > = executor::block_on(self.execute(script));
+
+        return match result {
+            Ok(value) => Ok(()),
+            Err(error) => Err(PrologVMError::DenoError("".to_string())),
+        };
+    }
 }
 
 #[swift_bridge::bridge]
 mod ffi {
     extern "Rust" {
+        type PrologVMError;
         type PrologVM;
 
         #[swift_bridge(init)]
         fn new() -> PrologVM;
+        fn execute_js(self: &mut PrologVM, script: String) -> Result<(), PrologVMError>;
     }
 }
 
@@ -70,5 +91,14 @@ mod tests {
         let value = value.to_integer(scope).unwrap().value();
         assert_eq!(value, 4);
         Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_execute_js() {
+        let mut vm = PrologVM::new();
+        assert_eq!(
+            vm.execute_js("console.log('Well, boys, this works!' 🍒);".to_string()),
+            Ok(())
+        );
     }
 }

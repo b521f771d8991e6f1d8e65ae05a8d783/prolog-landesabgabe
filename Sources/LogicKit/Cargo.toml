@@ -5,11 +5,13 @@ edition = "2024"
 
 [dependencies]
 deno_core = "0.343.0"
-swift-bridge = "0.1.57"
+futures = "0.3.31"
+swift-bridge = { version = "0.1.57", features = ["async"] }
 tokio = "1.44.2"
+wasm-bindgen = { version = "0.2.100", wasm-opt = true }
 
 [build-dependencies]
-swift-bridge-build = "0.1"
+swift-bridge-build = { version = "0.1" }
 
 [lib]
-crate-type = ["staticlib"]
+crate-type = ["staticlib", "rlib"]

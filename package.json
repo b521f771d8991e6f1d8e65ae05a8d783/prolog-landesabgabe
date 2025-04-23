@@ -1,3 +1,6 @@
 {
-    "workspaces": ["Sources/lxui"]
-  }
+  "workspaces": [
+    "Sources/lxui",
+    "Sources/LogicKit"
+  ]
+}

@@ -94,4 +94,9 @@ mod tests {
             ()
         );
     }
+
+    #[tokio::test]
+    async fn test_load_module() {
+        let mut vm = PrologVM::new();
+    }
 }

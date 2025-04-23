@@ -1,0 +1,14 @@
+{
+  "name": "logic-kit",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "test": "vitest",
+    "build": "tsc -b",
+    "start": "node dist"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.1",
+    "typescript": "^5.8.3"
+  }
+}

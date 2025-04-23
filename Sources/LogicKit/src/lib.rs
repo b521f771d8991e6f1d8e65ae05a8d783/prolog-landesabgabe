@@ -1,3 +1,4 @@
+pub mod assets;
 pub mod prolog_vm;
 
 use prolog_vm::*;

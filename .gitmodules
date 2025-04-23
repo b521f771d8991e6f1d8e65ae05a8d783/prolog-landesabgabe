@@ -1,6 +1,3 @@
 [submodule "Dependencies/vcpkg"]
 	path = Dependencies/vcpkg
 	url = https://github.com/microsoft/vcpkg
-[submodule "Dependencies/rusty-commons"]
-	path = Dependencies/rusty-commons
-	url = git@github.scch.at:Land-OOE/rusty-commons.git

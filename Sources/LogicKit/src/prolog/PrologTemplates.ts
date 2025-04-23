@@ -91,7 +91,8 @@ export class LandesabgabeSachverhalt {
                 :- discontiguous objekt/4.
                 :- discontiguous verwertet_am/2.
                 :- discontiguous gefoerdert/3.
-        ` //+ this.personsWithAssociatedHandlung.keys().reduce((x, y) => this.reduceSachverhaltToProlog(x, y), "");
+        `// + this.personsWithAssociatedHandlung.keys().reduce((x, y) => this.reduceSachverhaltToProlog(x, y), "");
+        //TODO!!!!!
     }
 }
 

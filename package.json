@@ -1,6 +1,6 @@
 {
   "workspaces": [
-    "Sources/lxui",
+    "Sources/WebUI",
     "Sources/LogicKit"
   ]
 }

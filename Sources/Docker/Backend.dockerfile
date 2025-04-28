@@ -29,7 +29,6 @@ WORKDIR /workspace
 COPY . .
 RUN TARGET=${BUILD_TARGET} make init
 RUN TARGET=${BUILD_TARGET} make all
-RUN strip .build/${BUILD_VARIANT}/LX
 
 WORKDIR /artifacts
 RUN cp /workspace/.build/${BUILD_VARIANT}/LX .

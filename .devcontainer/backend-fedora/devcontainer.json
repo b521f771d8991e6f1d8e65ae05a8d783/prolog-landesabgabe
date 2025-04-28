@@ -1,0 +1,7 @@
+{
+    "build": {
+        "dockerfile": "../../Sources/Docker/Backend-Fedora.dockerfile",
+        "context": "../..",
+        "target": "development"
+    }
+}

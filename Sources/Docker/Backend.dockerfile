@@ -4,22 +4,12 @@ FROM swift:bookworm AS development
 # FROM nixos/nix
 # https://github.com/NixOS/nixpkgs/issues/343210#issuecomment-2424134735
 
-RUN apt update && apt upgrade -y && apt install -y nix
+RUN apt update && apt upgrade -y && apt install -y nix cmake wget zsh zip gdb git ninja-build swi-prolog build-essential gnustep-core-devel gnustep-core-doc gobjc gobjc++
 
 ENV PATH="$PATH:/root/.nix-profile/bin"
 
 RUN nix --extra-experimental-features 'nix-command flakes' profile install \
     nixpkgs#nodejs_23 \
-    nixpkgs#cmake \
-    nixpkgs#gnumake \
-    nixpkgs#wget \
-    nixpkgs#swi-prolog \
-    nixpkgs#zsh \
-    nixpkgs#zip \
-    nixpkgs#gdb \
-    nixpkgs#swi-prolog \
-    nixpkgs#git \
-    nixpkgs#ninja \
     nixpkgs#dotenvx \
     nixpkgs#cargo \
     nixpkgs#rustc \

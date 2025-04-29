@@ -30,7 +30,7 @@ backend:
 	cmake -S . -B ./out/build/${VARIANT} --preset=${VARIANT}
 	cmake --build ./out/build/${VARIANT}
 	cargo build ${CARGO_RELEASE_FLAG}
-	swift build --configuration ${VARIANT}
+	CC=clang CXX=clang++ swift build --configuration ${VARIANT}
 
 .PHONY: ${ARTIFACT}
 ${ARTIFACT}: frontend backend

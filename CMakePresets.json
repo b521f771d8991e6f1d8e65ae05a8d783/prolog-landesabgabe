@@ -16,7 +16,7 @@
             "cacheVariables": {
                 "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/Dependencies/vcpkg/scripts/buildsystems/vcpkg.cmake",
                 "CMAKE_BUILD_TYPE": "Release",
-                "CMAKE_EXPORT_COMPILE_COMMANDS": false
+                "CMAKE_EXPORT_COMPILE_COMMANDS": true
             }
         }
     ]

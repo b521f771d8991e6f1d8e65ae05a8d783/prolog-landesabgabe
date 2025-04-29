@@ -1,0 +1,7 @@
+{
+    "build": {
+        "dockerfile": "../../Sources/Docker/Backend-RHEL.dockerfile",
+        "context": "../..",
+        "target": "development"
+    }
+}

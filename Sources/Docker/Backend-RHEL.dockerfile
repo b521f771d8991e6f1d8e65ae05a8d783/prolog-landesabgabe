@@ -1,11 +1,12 @@
-FROM fedora:latest AS runtime-environment
-RUN sudo dnf update -y && dnf upgrade -y && dnf install -y swiftlang zlib-devel
+FROM swift:rhel-ubi9-slim AS runtime-environment
+#RUN sudo dnf update -y && dnf upgrade -y && dnf install -y swiftlang zlib-devel
 
 FROM runtime-environment AS development
 
-RUN dnf install -y npm rust cargo cmake git ninja gcc gcc-c++ gcc-objc gcc-objc++ gdb gnustep-base-devel wget zsh zip
+RUN dnf install -y npm rust cargo cmake git ninja-build gcc gcc-c++ gdb wget zsh zip
+# gcc-c++ gcc-objc gcc-objc++ gnustep-base-devel 
 # somehow needed for vscode
-RUN dnf install -y awk
+#RUN dnf install -y awk
 
 FROM development AS build
 ARG BUILD_VARIANT=debug

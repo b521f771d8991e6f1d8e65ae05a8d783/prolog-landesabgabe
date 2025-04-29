@@ -1,6 +1,6 @@
 {
     "build": {
-        "dockerfile": "../../Sources/Docker/Backend-Fedora.dockerfile",
+        "dockerfile": "../../Sources/Docker/Backend-Ubuntu.dockerfile",
         "context": "../..",
         "target": "development"
     }

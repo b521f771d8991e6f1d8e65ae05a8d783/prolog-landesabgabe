@@ -2,7 +2,8 @@
 
 import PackageDescription
 
-let rootPath = "/workspace/"
+var rootPath = #filePath
+rootPath.replace("/Package.swift", with: "")
 
 #if DEBUG
     let buildType = "debug"

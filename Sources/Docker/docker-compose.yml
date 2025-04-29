@@ -10,7 +10,6 @@ services:
       - "1337:1337"
     volumes:
       - ../..:/workspace
-    env_file: ".env"
 networks:
   default:
     name: "traefik_proxy_sprachguru_prod_local"

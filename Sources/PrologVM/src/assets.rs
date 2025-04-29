@@ -1,6 +1,6 @@
 #[derive(rust_embed::Embed)]
-#[folder = "dist"]
-pub struct LogicKit;
+#[folder = "../LogicKit/dist"]
+pub struct PrologVMAssets;
 
 #[cfg(test)]
 mod test {
@@ -8,7 +8,7 @@ mod test {
 
     #[test]
     fn test_logic_kit_embedding() {
-        assert!(LogicKit::get("index.js").is_some());
+        assert!(PrologVMAssets::get("index.js").is_some());
     }
 
     #[tokio::test]
@@ -21,7 +21,7 @@ mod test {
         let mut js_runtime = deno_core::JsRuntime::new(options);
         let specifier =
             deno_core::resolve_url_or_path("file:///main.js", std::path::Path::new(".")).unwrap();
-        let file = LogicKit::get("index.js").expect("could not load");
+        let file = PrologVMAssets::get("index.js").expect("could not load");
         let file_data = file.data.clone();
         let code = String::from_utf8(file_data.to_vec()).expect("could not convert to utf-8");
 

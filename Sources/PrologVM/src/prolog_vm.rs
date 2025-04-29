@@ -1,7 +1,7 @@
 use deno_core::url::Url;
 use futures::executor;
 
-use crate::assets::LogicKit;
+use crate::assets::PrologVMAssets;
 
 pub struct PrologVM {
     js_runtime: deno_core::JsRuntime,
@@ -33,7 +33,7 @@ impl PrologVM {
         let mut pvm = Self::new();
         let specifier =
             deno_core::resolve_url_or_path("file:///main.js", std::path::Path::new(".")).unwrap();
-        let file = LogicKit::get("index.js").expect("could not load");
+        let file = PrologVMAssets::get("index.js").expect("could not load");
         let file_data = file.data.clone();
         let code = String::from_utf8(file_data.to_vec()).expect("could not convert to utf-8");
         pvm.load_module_from_code(specifier, code).await;

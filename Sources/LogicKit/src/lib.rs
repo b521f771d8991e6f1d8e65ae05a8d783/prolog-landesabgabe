@@ -1,18 +1,14 @@
-pub mod assets;
-#[cfg(not(feature = "wasm_runtime"))]
-pub mod prolog_vm;
+pub fn add(left: u64, right: u64) -> u64 {
+    left + right
+}
 
-#[cfg(not(feature = "wasm_runtime"))]
-use prolog_vm::*;
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-#[swift_bridge::bridge]
-mod ffi {
-    extern "Rust" {
-        type PrologVM;
-
-        #[swift_bridge(init)]
-        fn new() -> PrologVM;
-        fn execute_js(self: &mut PrologVM, script: String) -> ();
-        fn execute_prolog(self: &mut PrologVM, script: String) -> ();
+    #[test]
+    fn it_works() {
+        let result = add(2, 2);
+        assert_eq!(result, 4);
     }
 }

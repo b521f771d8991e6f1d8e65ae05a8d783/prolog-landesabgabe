@@ -58,7 +58,7 @@ let package = Package(
                 .linkedLibrary("build_information"),
                 .unsafeFlags(
                     rustFlags + [
-                        //"-L\(cmakeOutputDir)/Sources/LogicKit",
+                        //"-L\(cmakeOutputDir)/Sources/PrologVM",
                         //"-L\(cmakeOutputDir)/Sources/Assets",
                         "-L\(cmakeOutputDir)/vcpkg_installed/x64-linux/lib",
                         "-Ltarget/\(buildType)",

@@ -4,7 +4,7 @@
   "main": "index.ts",
   "scripts": {
     "test": "vitest",
-    "build": "vite build --emptyOutDir",
+    "build": "wasm-pack build --out-dir ../../npm-pkgs/LogicKit . && vite build --emptyOutDir",
     "start": "node dist"
   },
   "devDependencies": {

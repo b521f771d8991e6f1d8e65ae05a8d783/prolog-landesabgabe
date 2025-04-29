@@ -6,7 +6,7 @@
     ],
     "git.autofetch": "all",
     "cmake.automaticReconfigure": false,
-    "explorer.excludeGitIgnore": true,
+    //"explorer.excludeGitIgnore": true,
     "cSpell.words": [
         "endforeach"
     ],

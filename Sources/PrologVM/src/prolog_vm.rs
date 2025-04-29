@@ -33,7 +33,7 @@ impl PrologVM {
         let mut pvm = Self::new();
 
         let specifier =
-            deno_core::resolve_url_or_path("file:///index.js", std::path::Path::new("."))
+            deno_core::resolve_url_or_path("file:///main.js", std::path::Path::new("."))
                 .expect("Could not resolve URL");
         let file = PrologVMAssets::get("index.js")
             .expect("could not load")

@@ -13,7 +13,7 @@ else
 	CARGO_RELEASE_FLAG :=
 endif
 
-ARTIFACT := .build/{TARGET}/LX
+ARTIFACT := .build/${TARGET}/LX
 
 .PHONY: init
 init:
@@ -37,6 +37,12 @@ ${ARTIFACT}: frontend backend
 
 .PHONY: all
 all: ${ARTIFACT}
+
+.PHONY: test
+test: all
+	cargo test
+	npm run test --workspaces
+	swift test
 
 .PHONY: run
 run: all

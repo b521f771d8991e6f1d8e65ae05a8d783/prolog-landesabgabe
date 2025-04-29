@@ -1,4 +1,4 @@
-FROM swift:rhel-ubi9-slim AS runtime-environment
+FROM swift:rhel-ubi9 AS runtime-environment
 #RUN sudo dnf update -y && dnf upgrade -y && dnf install -y swiftlang zlib-devel
 
 FROM runtime-environment AS development

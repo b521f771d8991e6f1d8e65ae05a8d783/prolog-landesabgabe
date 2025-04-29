@@ -24,3 +24,4 @@ dist
 /*.o
 /*.swiftdeps*
 # /.git do not put .git in here, it will break reading out BuildInformation inside the devcontainer
+/npm-pkgs

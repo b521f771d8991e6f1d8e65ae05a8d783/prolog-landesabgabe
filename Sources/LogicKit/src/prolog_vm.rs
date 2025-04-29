@@ -1,4 +1,7 @@
+use deno_core::url::Url;
 use futures::executor;
+
+use crate::assets::LogicKit;
 
 pub struct PrologVM {
     js_runtime: deno_core::JsRuntime,
@@ -26,6 +29,17 @@ impl PrologVM {
         return Self::from_options(options);
     }
 
+    pub async fn new_with_modules() -> Self {
+        let mut pvm = Self::new();
+        let specifier =
+            deno_core::resolve_url_or_path("file:///main.js", std::path::Path::new(".")).unwrap();
+        let file = LogicKit::get("index.js").expect("could not load");
+        let file_data = file.data.clone();
+        let code = String::from_utf8(file_data.to_vec()).expect("could not convert to utf-8");
+        pvm.load_module_from_code(specifier, code).await;
+        return pvm;
+    }
+
     pub async fn load_module_from_file(
         &mut self,
         file_path: &str,
@@ -34,6 +48,20 @@ impl PrologVM {
             .expect("Error converting path to URL");
         let mod_id = self.js_runtime.load_main_es_module(&main_module).await?;
         return Ok(mod_id);
+    }
+
+    pub async fn load_module_from_code(
+        &mut self,
+        specifier: Url,
+        code: String,
+    ) -> Result<(), deno_core::error::CoreError> {
+        let module_id = self
+            .js_runtime
+            .load_main_es_module_from_code(&specifier, code)
+            .await
+            .expect("Could not load module from code");
+
+        return self.js_runtime.mod_evaluate(module_id).await;
     }
 
     pub async fn evaluate_module(

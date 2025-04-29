@@ -1,13 +1,9 @@
-use rust_embed::EmbeddedFile;
-
 #[derive(rust_embed::Embed)]
 #[folder = "dist"]
-struct LogicKit;
+pub struct LogicKit;
 
 #[cfg(test)]
 mod test {
-    use deno_core::ascii_str;
-
     use super::*;
 
     #[test]

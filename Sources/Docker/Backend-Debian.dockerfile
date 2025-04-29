@@ -6,7 +6,7 @@ FROM swift:bookworm AS development
 
 RUN apt update && apt upgrade -y && apt install -y nix cmake wget zsh zip gdb git ninja-build swi-prolog build-essential gnustep-core-devel gnustep-core-doc gobjc gobjc++
 
-ENV PATH="$PATH:/root/.nix-profile/bin"
+ENV PATH="$PATH:/root/.nix-profile/bin:/root/.cargo/bin"
 ENV CC=gcc
 ENV CXX=g++
 ENV OBJC=gcc
@@ -18,6 +18,8 @@ RUN nix --extra-experimental-features 'nix-command flakes' profile install \
     nixpkgs#cargo \
     nixpkgs#rustc \
     nixpkgs#rustfmt
+
+RUN cargo install wasm-pack
 
 WORKDIR /
 RUN git config --global --add safe.directory /workspace

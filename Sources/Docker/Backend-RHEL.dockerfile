@@ -8,6 +8,14 @@ RUN dnf install -y npm rust cargo cmake git ninja-build gcc gcc-c++ gdb wget zsh
 # somehow needed for vscode
 #RUN dnf install -y awk
 
+RUN cargo install wasm-pack
+
+ENV PATH="$PATH:/root/.nix-profile/bin:/root/.cargo/bin"
+ENV CC=gcc
+ENV CXX=g++
+ENV OBJC=gcc
+ENV OBJCXX=g++
+
 FROM development AS build
 ARG BUILD_VARIANT=debug
 

@@ -1,6 +1,8 @@
 pub mod assets;
+#[cfg(not(feature = "wasm_runtime"))]
 pub mod prolog_vm;
 
+#[cfg(not(feature = "wasm_runtime"))]
 use prolog_vm::*;
 
 #[swift_bridge::bridge]

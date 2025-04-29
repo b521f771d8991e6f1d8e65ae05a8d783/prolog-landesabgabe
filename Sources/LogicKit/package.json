@@ -4,14 +4,17 @@
   "main": "index.ts",
   "scripts": {
     "test": "vitest",
-    "build": "tsc -b",
+    "build": "vite build --emptyOutDir",
     "start": "node dist"
   },
   "devDependencies": {
     "@types/node": "^22.14.1",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vite": "^6.3.3",
+    "vite-plugin-wasm": "^3.4.1"
   },
   "dependencies": {
+    "scryer": "^0.7.0",
     "swipl-wasm": "^5.0.7",
     "uuid": "^11.1.0"
   }

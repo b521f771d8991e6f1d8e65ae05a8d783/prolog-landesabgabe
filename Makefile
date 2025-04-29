@@ -17,9 +17,9 @@ ARTIFACT := .build/${TARGET}/LX
 
 .PHONY: init
 init:
+	git submodule update --init --recursive
 	npm install --workspaces
 	cargo fetch
-	git submodule update --init --recursive
 
 .PHONY: frontend
 frontend:

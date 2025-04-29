@@ -11,6 +11,7 @@ ENV CC=gcc
 ENV CXX=g++
 ENV OBJC=gcc
 ENV OBJCXX=g++
+
 RUN nix --extra-experimental-features 'nix-command flakes' profile install \
     nixpkgs#nodejs_23 \
     nixpkgs#dotenvx \

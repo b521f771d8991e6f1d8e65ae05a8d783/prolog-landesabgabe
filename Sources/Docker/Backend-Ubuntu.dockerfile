@@ -7,6 +7,11 @@ FROM swift:noble AS development
 RUN apt update && apt upgrade -y && apt install -y nix npm cmake wget zsh zip gdb git ninja-build swi-prolog build-essential gnustep-core-devel gnustep-core-doc gobjc gobjc++
 
 ENV PATH="$PATH:/root/.nix-profile/bin"
+ENV CC=gcc
+ENV CXX=g++
+ENV OBJC=gcc
+ENV OBJCXX=g++
+
 RUN nix --extra-experimental-features 'nix-command flakes' profile install \
     nixpkgs#dotenvx \
     nixpkgs#cargo \

@@ -1,10 +1,12 @@
+use rust_embed::EmbeddedFile;
+
 #[derive(rust_embed::Embed)]
 #[folder = "dist"]
 struct LogicKit;
 
 #[cfg(test)]
 mod test {
-    use futures::future::err;
+    use deno_core::ascii_str;
 
     use super::*;
 
@@ -14,7 +16,7 @@ mod test {
     }
 
     #[tokio::test]
-    async fn test_loading_into_deno() {
+    async fn test_load_deno_module_from_code() {
         let options = deno_core::RuntimeOptions {
             module_loader: Some(std::rc::Rc::new(deno_core::FsModuleLoader)),
             ..Default::default()
@@ -23,9 +25,9 @@ mod test {
         let mut js_runtime = deno_core::JsRuntime::new(options);
         let specifier =
             deno_core::resolve_url_or_path("file:///main.js", std::path::Path::new(".")).unwrap();
-        let code = r#"
-            console.log("Hello from Deno!");
-        "#;
+        let file = LogicKit::get("index.js").expect("could not load");
+        let file_data = file.data.clone();
+        let code = String::from_utf8(file_data.to_vec()).expect("could not convert to utf-8");
 
         let module_id = js_runtime
             .load_main_es_module_from_code(&specifier, code)

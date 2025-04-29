@@ -18,7 +18,9 @@
                 "james-yu.latex-workshop",
                 "arthurwang.vsc-prolog",
                 "rust-lang.rust-analyzer",
-                "ms-vscode.makefile-tools"
+                "ms-vscode.makefile-tools",
+                "esbenp.prettier-vscode",
+                "dbaeumer.vscode-eslint"
             ]
         }
     },

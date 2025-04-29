@@ -7,8 +7,7 @@ vcpkg_installed
 /generated
 *.env.keys
 **/.idea
-node_modules/
-jspm_packages/
+node_modules
 *.tsbuildinfo
 .npm
 .eslintcache
@@ -24,3 +23,4 @@ dist
 /*.d
 /*.o
 /*.swiftdeps*
+# /.git do not put .git in here, it will break reading out BuildInformation inside the devcontainer

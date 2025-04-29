@@ -16,7 +16,7 @@ let cmakeOutputDir = "\(rootPath)/out/build/\(buildType)"
 
 let rustFlags: [String] = [
     "\(rootPath)/Sources/generated/SwiftBridgeCore.swift",
-    "\(rootPath)/Sources/generated/logic-kit/logic-kit.swift",
+    "\(rootPath)/Sources/generated/prolog-vm/prolog-vm.swift",
     "\(rootPath)/Sources/generated/build-information/build-information.swift",
     "\(rootPath)/Sources/generated/assets/assets.swift",
     "-import-objc-header", "\(rootPath)/Sources/rust-bridging-header.h",
@@ -54,7 +54,7 @@ let package = Package(
             ],
             linkerSettings: [
                 .linkedLibrary("assets"),
-                .linkedLibrary("logic_kit"),
+                .linkedLibrary("prolog_vm"),
                 .linkedLibrary("build_information"),
                 .unsafeFlags(
                     rustFlags + [

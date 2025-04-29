@@ -1,6 +1,5 @@
 use std::path::PathBuf;
 
-#[cfg(feature = "wasm_runtime")]
 fn main() {
     let out_dir = PathBuf::from("../generated");
 
@@ -11,9 +10,4 @@ fn main() {
 
     swift_bridge_build::parse_bridges(bridges)
         .write_all_concatenated(out_dir, env!("CARGO_PKG_NAME"));
-}
-
-#[cfg(not(feature = "wasm_runtime"))]
-fn main() {
-    // do nothing
 }

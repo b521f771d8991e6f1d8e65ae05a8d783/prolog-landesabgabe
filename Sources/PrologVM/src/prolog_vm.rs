@@ -31,12 +31,20 @@ impl PrologVM {
 
     pub async fn new_with_modules() -> Self {
         let mut pvm = Self::new();
+
         let specifier =
-            deno_core::resolve_url_or_path("file:///main.js", std::path::Path::new(".")).unwrap();
-        let file = PrologVMAssets::get("index.js").expect("could not load");
-        let file_data = file.data.clone();
-        let code = String::from_utf8(file_data.to_vec()).expect("could not convert to utf-8");
-        pvm.load_module_from_code(specifier, code).await;
+            deno_core::resolve_url_or_path("file:///index.js", std::path::Path::new("."))
+                .expect("Could not resolve URL");
+        let file = PrologVMAssets::get("index.js")
+            .expect("could not load")
+            .data
+            .clone();
+        let code = String::from_utf8(file.to_vec()).expect("could not convert to utf-8");
+
+        if let Err(err) = pvm.load_module_from_code(specifier, code).await {
+            eprintln!("Error loading module from code: {:?}", err);
+        }
+
         return pvm;
     }
 

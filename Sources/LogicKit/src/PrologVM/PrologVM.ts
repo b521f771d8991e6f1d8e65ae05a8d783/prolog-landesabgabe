@@ -109,6 +109,42 @@ export abstract class PrologVM {
     }
 }
 
+export async function executePrologFileInPrologVM<T extends PrologVM = SwiPrologVM>(prologFile: PrologFile, queryString: string, input?: Record<string, unknown>) {
+    // Step 1: Initialise a new PrologVM
+    // we do not do this inside the PrologVM, because that would mess up the global environment, instead, we want to create our own temporary files
+    const temporaryFileName = `/tmp/tmp.pl`;
+    
+    const swipl = await SWIPL({
+        arguments: ["-q"]
+    });
+    swipl.FS.writeFile(temporaryFileName, prologFile.evaluatedProlog);
+
+    const queryLoad: SWIPL.Query = swipl.prolog.query("load_files(File)", {
+        "File": temporaryFileName
+    });
+    console.log(queryLoad.once());
+
+    // Step 2: Execute the Query
+    let ret: any[] = [];
+    let query = swipl.prolog.query(queryString, input);
+    let current: any;
+
+    do {
+        current = query.next()
+        ret.push(current.value);
+    } while ('done' in current && !current.done);
+
+    // Step 3: Clean up & Return
+
+    const queryUnload: SWIPL.Query = swipl.prolog.query("unload_file(File)", {
+        "File": temporaryFileName
+    });
+    console.log(queryUnload.once())
+
+    swipl.FS.unlink(temporaryFileName);
+    return ret;
+}
+
 export class SwiPrologVM extends PrologVM {
     private swipl: SWIPL.SWIPLModule;
     private factBase: PrologFile[];

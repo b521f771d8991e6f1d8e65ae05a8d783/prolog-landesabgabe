@@ -22,6 +22,7 @@ import {
 import { useGetWebServerJSON } from "@/util/BackendQueryProvider";
 import { CodeView } from "../CodeView";
 import GenericWebServerRequest from "../../util/GenericWebServerRequest";
+import { executePrologFileInPrologVM } from "../../../../LogicKit/src/PrologVM/PrologVM";
 
 interface PrologFilesAccordionProps {
 	factBase: PrologFile[];
@@ -56,7 +57,7 @@ export function PrologFilesAccordion({
 			)}
 
 			<Center>
-				<Button leftSection={"⚒️"} disabled>
+				<Button leftSection={"⚒️"} mt={"xs"} disabled>
 					Fakten manuell hinzufügen
 				</Button>
 			</Center>
@@ -116,6 +117,7 @@ function LawView({ title, laws, addToFactBase }: LawViewProps) {
 					align="center"
 					direction="row"
 					wrap="wrap"
+					mt={"xs"}
 				>
 					<Button leftSection={"⚖️"} onClick={addLawFromLibraryClicked}>
 						Gesetz aus Bibliothek hinzufügen
@@ -267,16 +269,16 @@ function PrologFileView({ pf }: { pf: PrologFile }) {
 				}
 			}
 			const l: string | undefined = extract(
-				await pf.queryThisFile(`langtitel(${pf.name}, X).`),
+				await executePrologFileInPrologVM(pf, `langtitel(${pf.name}, X).`),
 			);
 			const k: string | undefined = extract(
-				await pf.queryThisFile(`kurztitel(${pf.name}, X).`),
+				await executePrologFileInPrologVM(pf, `kurztitel(${pf.name}, X).`),
 			);
 			const u: string | undefined = extract(
-				await pf.queryThisFile(`link(${pf.name}, X).`),
+				await executePrologFileInPrologVM(pf, `link(${pf.name}, X).`),
 			);
 			const t: string | undefined = extract(
-				await pf.queryThisFile(`titel(${pf.name}, X).`),
+				await executePrologFileInPrologVM(pf, `titel(${pf.name}, X).`),
 			);
 
 			setLangtitel(l);

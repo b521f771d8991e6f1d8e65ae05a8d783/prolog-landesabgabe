@@ -4,6 +4,10 @@ import { v4 as uuid } from 'uuid';
 import { LandesabgabePerson, LandesabgabeSachverhalt } from "./PrologTemplates";
 import { getPrologBinding } from "./PrologUtilities";
 
+export enum PrologVMImplementation {
+    SCRYER, SWIProlog
+}
+
 // AppState is dead, long live the AppState
 export class PrologVM {
     private swipl: SWIPL.SWIPLModule;

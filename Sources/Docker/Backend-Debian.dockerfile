@@ -6,6 +6,8 @@ FROM swift:bookworm AS development
 
 RUN apt update && apt upgrade -y && apt install -y nix cmake wget zsh zip gdb git ninja-build swi-prolog build-essential gnustep-core-devel gnustep-core-doc gobjc gobjc++
 
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
+
 ENV PATH="$PATH:/root/.nix-profile/bin:/root/.cargo/bin"
 ENV CC=gcc
 ENV CXX=g++
@@ -14,10 +16,7 @@ ENV OBJCXX=g++
 
 RUN nix --extra-experimental-features 'nix-command flakes' profile install \
     nixpkgs#nodejs_23 \
-    nixpkgs#dotenvx \
-    nixpkgs#cargo \
-    nixpkgs#rustc \
-    nixpkgs#rustfmt
+    nixpkgs#dotenvx
 
 RUN cargo install wasm-pack
 

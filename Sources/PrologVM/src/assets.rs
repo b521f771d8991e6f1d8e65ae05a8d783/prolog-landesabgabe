@@ -2,13 +2,18 @@
 #[folder = "../LogicKit/dist"]
 pub struct PrologVMAssets;
 
+pub fn get_index_js() -> std::option::Option<String> {
+    PrologVMAssets::get("index.js")
+        .map(|file| String::from_utf8(file.data.to_vec()).expect("could not convert to utf-8"))
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
 
     #[test]
     fn test_logic_kit_embedding() {
-        assert!(PrologVMAssets::get("index.js").is_some());
+        assert!(get_index_js().is_some());
     }
 
     #[tokio::test]

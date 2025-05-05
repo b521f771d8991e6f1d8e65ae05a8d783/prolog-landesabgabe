@@ -1,5 +1,69 @@
 import Foundation
+import FoundationNetworking
 import Vapor
+
+// https://innovation-studio.landooe.fivesquare.dev/auth/realms/LAND_OOE_SPRACHGURU
+struct RealmConfig: Codable {
+    // {"realm":"LAND_OOE_SPRACHGURU","public_key":"awsfwefwefwef","token-service":"https://innovation-studio.landooe.fivesquare.dev/auth/realms/LAND_OOE_SPRACHGURU/protocol/openid-connect","account-service":"https://innovation-studio.landooe.fivesquare.dev/auth/realms/LAND_OOE_SPRACHGURU/account","tokens-not-before":0}
+    let realm: String
+    let publicKey: String
+    let tokenService: String
+    let accountService: String
+    let tokensNotBefore: Int
+
+    /// Initializes a RealmConfig by fetching and decoding JSON from the given URL.
+    /// Returns nil if the data cannot be loaded or decoded.
+    /// - Parameter url: The URL pointing to the JSON configuration.
+    init(from url: URL) async throws {
+        NSLog("Downloading realm config from: \(url)")
+        let (data, _) = try await URLSession.shared.data(from: url)
+        let decoder = JSONDecoder()
+        self = try decoder.decode(RealmConfig.self, from: data)
+    }
+
+    init(fromKeyCloakUrl keycloakServer: URL, keycloakRealm: String) async throws {
+        // Construct the URL for the realm config JSON
+        let realmConfigUrl =
+            keycloakServer
+            .appendingPathComponent("realms")
+            .appendingPathComponent(keycloakRealm)
+        try await self.init(from: realmConfigUrl)
+    }
+
+    /// Returns the public key as a PEM-formatted string.
+    func getAsPEM() -> String {
+        let lineLength = 64
+        let header = "-----BEGIN PUBLIC KEY-----"
+        let footer = "-----END PUBLIC KEY-----"
+
+        // Remove any whitespace or newlines from the base64 string
+        let base64Key = publicKey.replacingOccurrences(
+            of: "\\s+", with: "", options: .regularExpression)
+
+        // Split the base64 string into lines of 64 characters
+        let lines = stride(from: 0, to: base64Key.count, by: lineLength).map {
+            startIndex -> String in
+            let start = base64Key.index(base64Key.startIndex, offsetBy: startIndex)
+            let end =
+                base64Key.index(
+                    start,
+                    offsetBy: min(
+                        lineLength, base64Key.distance(from: start, to: base64Key.endIndex)),
+                    limitedBy: base64Key.endIndex) ?? base64Key.endIndex
+            return String(base64Key[start..<end])
+        }
+
+        return ([header] + lines + [footer]).joined(separator: "\n")
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case realm
+        case publicKey = "public_key"
+        case tokenService = "token-service"
+        case accountService = "account-service"
+        case tokensNotBefore = "tokens-not-before"
+    }
+}
 
 /// A structure that represents the application configuration.
 /// Conforms to the `Codable` protocol to support encoding and decoding.

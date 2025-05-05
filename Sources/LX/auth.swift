@@ -49,12 +49,20 @@ struct KeycloakPayload: JWTPayload {
 /// - Parameter _: The application instance on which authentication will be configured.
 /// - Note: This function is asynchronous and should be awaited when called.
 func setUpAuthentication(onApp _: Application) async throws {
-    if let rsaPublicKey = lxJwtRsa256 {
+    if let url = URL(string: lxKeycloakUrl!) {
+        let realmConfig = try await RealmConfig(
+            fromKeyCloakUrl: url, keycloakRealm: lxKeycloakRealm!)
+        await app.jwt.keys.add(
+            rsa: try Insecure.RSA.PublicKey(pem: realmConfig.getAsPEM()),
+            digestAlgorithm: .sha256)
+    } else if let rsaPublicKey = lxJwtRsa256 {
         NSLog("Configured Authentication via RSA 256 (insecure)")
         let key = try Insecure.RSA.PublicKey(pem: rsaPublicKey)
         await app.jwt.keys.add(
             rsa: key,
             digestAlgorithm: .sha256)
+    } else {
+        print("No authentication method found, not setting up any")
     }
 }
 

@@ -13,7 +13,7 @@ import {
 	PrologFile,
 	PrologFileType,
 } from "../../../LogicKit/src/PrologVM/PrologFileSystem";
-import { PrologVM } from "../../../LogicKit/src/PrologVM/PrologVM";
+import { SwiPrologVM } from "../../../LogicKit/src/PrologVM/PrologVM";
 
 import "highlight.js/styles/github.css";
 
@@ -53,7 +53,7 @@ function setTitle(title: string) {
  * Represents the home page component of the application.
  *
  * @param {Object} props - The properties object.
- * @param {PrologVM} props.prologVM - The application state managed by Prolog VM.
+ * @param {SwiPrologVM} props.prologVM - The application state managed by Prolog VM.
  *
  * @returns {JSX.Element} The rendered home page component.
  *
@@ -68,7 +68,7 @@ function setTitle(title: string) {
  * to reset the application state and reload the page.
  */
 export function HomePage() {
-	const [pvm, setPVM] = useState<PrologVM | null>(null);
+	const [pvm, setPVM] = useState<SwiPrologVM | null>(null);
 	const [statisticViewOpened, setStatisticViewOpened] = useState<boolean>(false);
 	const kurztitel = "labgg"; // TODO @Alexander change to array loaded from .env and don't forget to change kurztitel from string to array
 	const { data, error, isLoading, isError, isSuccess } = useGetWebServerString(
@@ -79,7 +79,7 @@ export function HomePage() {
 	useEffect(() => {
 		if (isSuccess) {
 			if (pvm === null) {
-				PrologVM.initFromAppState(data!).then((pvm) => setPVM(() => pvm));
+				SwiPrologVM.initFromAppState(data!).then((pvm) => setPVM(() => pvm));
 			}
 		}
 
@@ -203,7 +203,7 @@ export function HomePage() {
  *  - creating the Prolog from the output
  *  - re-creating the page from the prolog VM on page reload
  */
-function AppView({ prologVM }: { prologVM: PrologVM }) {
+function AppView({ prologVM }: { prologVM: SwiPrologVM }) {
 	const [factBase, setFactFiles] = useState<PrologFile[]>(
 		prologVM.getFactBase(),
 	);

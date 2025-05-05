@@ -3,7 +3,7 @@ import {
 	PrologFile,
 	PrologFileType,
 } from "../../../../LogicKit/src/PrologVM/PrologFileSystem";
-import { PrologVM } from "../../../../LogicKit/src/PrologVM/PrologVM";
+import { SwiPrologVM } from "../../../../LogicKit/src/PrologVM/PrologVM";
 import { FactFile } from "@/components/FactFile";
 import { LandesabgabeSachverhalt } from "../../../../LogicKit/src/PrologVM/PrologTemplates";
 import { v7 } from "uuid";
@@ -27,7 +27,7 @@ export function SachverhaltEditorForm({
 
 	function addFactFile(
 		ff: PrologFile = new PrologFile(
-			PrologVM.getUniqueFilename(),
+			SwiPrologVM.getUniqueFilename(),
 			"",
 			new LandesabgabeSachverhalt(),
 			PrologFileType.FACT,

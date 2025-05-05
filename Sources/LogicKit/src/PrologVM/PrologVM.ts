@@ -4,39 +4,134 @@ import { v4 as uuid } from 'uuid';
 import { LandesabgabePerson, LandesabgabeSachverhalt } from "./PrologTemplates";
 import { getPrologBinding } from "./PrologUtilities";
 
-export enum PrologVMImplementation {
-    Scryer, SwiProlog
-}
 
-// AppState is dead, long live the AppState
-export class PrologVM {
-    private swipl: SWIPL.SWIPLModule;
-    private factBase: PrologFile[];
+export abstract class PrologVM {
+    abstract execute(queryString: string, input?: Record<string, unknown>): any[];
 
-    private constructor(swipl: SWIPL.SWIPLModule, factBase: PrologFile[] = [], prologVMImpl = PrologVMImplementation.SwiProlog) {
-        switch(prologVMImpl) {
-            case PrologVMImplementation.SwiProlog: {
-                this.swipl = swipl;
-                this.factBase = factBase;
-            }
-            default: {
-                throw "Unknown VM type";
-            }
+    /**
+     * Executes a Prolog query and evaluates the result by extracting a specific binding.
+     *
+     * @template T - The expected type of the extracted binding.
+     * @param query - The Prolog query to be executed.
+     * @param key - The key used to extract the desired binding from the query result.
+     * @returns The extracted binding of type `T` corresponding to the specified key.
+     */
+    executeQueryAndEvaluate<T>(query: string, key: string): T[] {
+        const result = this.execute(query);
+        return getPrologBinding<T>(result, key);
+    }
+
+    abstract getFactBase(): PrologFile[];
+    abstract healthCheckOK(): boolean;
+    abstract addFactBase(pf: PrologFile): void;
+    abstract addFactBase(pf: PrologFile): void;
+    abstract removeFactBase(filename: string): void;
+    abstract hasFactBase(filename: string): boolean;
+
+    /**
+     * Adds multiple Prolog fact bases to the virtual machine.
+     *
+     * This method iterates over an array of `PrologFile` objects and adds each
+     * one to the virtual machine's fact base using the `addFactBase` method.
+     *
+     * @param pfs - An array of `PrologFile` objects representing the fact bases
+     *              to be added.
+     */
+    addFactBases(pfs: PrologFile[]) {
+        for (const pf of pfs) {
+            this.addFactBase(pf);
         }
     }
 
-    private static async initPrologVM(): Promise<PrologVM> {
-        return new PrologVM(await PrologVM.initializePrologModule());
+    /**
+     * Removes a fact base associated with the given filename if it exists.
+     *
+     * This method first checks if a fact base with the specified filename exists
+     * using `hasFactBase`. If it exists, it proceeds to remove it using `removeFactBase`.
+     *
+     * @param filename - The name of the file associated with the fact base to be removed.
+     */
+    removeFactBaseIfExists(filename: string) {
+        if (this.hasFactBase(filename)) {
+            this.removeFactBase(filename);
+        }
     }
 
-    static async initFromArray(rechtsbestand: PrologFile[]): Promise<PrologVM> {
+    /**
+     * Removes all fact bases from the Prolog virtual machine.
+     * Iterates through the existing fact bases, ensuring each one exists
+     * before removing it. This operation clears the entire collection
+     * of fact bases managed by the virtual machine.
+     *
+     * @throws {Error} If a fact base is not found during the removal process.
+     */
+    removeAllFactBases() {
+        for (const i of this.getFactBase()) {
+            console.assert(this.hasFactBase(i.name));
+            this.removeFactBase(i.name);
+        }
+    }
+
+    /**
+     * 
+     * @returns an array of prolog files that includes only facts
+     */
+    getFacts(): PrologFile[] {
+        return this.getFactBase().filter((x) => x.prologFileType === PrologFileType.FACT);
+    }
+
+    /**
+     * Retrieves an array of `LandesabgabeSachverhalt` objects by mapping the facts
+     * returned from `getFacts()` to their corresponding `sachverhalt` property.
+     *
+     * @returns {LandesabgabeSachverhalt[]} An array of `LandesabgabeSachverhalt` objects.
+     */
+    getSachverhalte(): LandesabgabeSachverhalt[] {
+        return this.getFacts().map((f) => f.sachverhalt!);
+    }
+
+    /**
+     * 
+     * @returns an array of prolog files that includes only laws
+     */
+    getLaws(): PrologFile[] {
+        return this.getFactBase().filter((x) => x.prologFileType === PrologFileType.LAW);
+    }
+
+    /**
+     * Looks up a person by their unique identifier (personID) within the facts of the PrologVM.
+     *
+     * @param personID - The unique identifier of the person to search for.
+     * @returns The `LandesabgabePerson` object if a matching person is found, or `undefined` if no match is found.
+     */
+    lookupPersonByID(personID: string): LandesabgabePerson | undefined {
+        return this.getFacts().flatMap((x) =>
+            x.sachverhalt!.persons.filter((p) => p.personId === personID))[0];
+    }
+}
+
+export class SwiPrologVM extends PrologVM {
+    private swipl: SWIPL.SWIPLModule;
+    private factBase: PrologFile[];
+
+    private constructor(swipl: SWIPL.SWIPLModule, factBase: PrologFile[] = []) {
+        super();
+        this.swipl = swipl;
+        this.factBase = factBase;
+    }
+
+    private static async initPrologVM(): Promise<SwiPrologVM> {
+        return new SwiPrologVM(await SwiPrologVM.initializePrologModule());
+    }
+
+    static async initFromArray(rechtsbestand: PrologFile[]): Promise<SwiPrologVM> {
         const pfs: PrologFile[] = rechtsbestand.filter((x) => x instanceof PrologFile);
-        const swipl = await PrologVM.initPrologVM();
+        const swipl = await SwiPrologVM.initPrologVM();
         swipl.addFactBases(pfs);
         return swipl;
     }
 
-    static async initFromAppState(rechtsbestand: string): Promise<PrologVM> {
+    static async initFromAppState(rechtsbestand: string): Promise<SwiPrologVM> {
         const pf = new PrologFile('labgg', rechtsbestand, undefined, PrologFileType.LAW);
         return await this.initFromArray([pf]);
     }
@@ -84,21 +179,6 @@ export class PrologVM {
         this.factBase.push(pf);
     }
 
-    /**
-     * Adds multiple Prolog fact bases to the virtual machine.
-     *
-     * This method iterates over an array of `PrologFile` objects and adds each
-     * one to the virtual machine's fact base using the `addFactBase` method.
-     *
-     * @param pfs - An array of `PrologFile` objects representing the fact bases
-     *              to be added.
-     */
-    addFactBases(pfs: PrologFile[]) {
-        for (const pf of pfs) {
-            this.addFactBase(pf);
-        }
-    }
-
     /*
     * cleans up the fact base, both from the state and from the prolog file system
     */
@@ -113,20 +193,6 @@ export class PrologVM {
     }
 
     /**
-     * Removes a fact base associated with the given filename if it exists.
-     *
-     * This method first checks if a fact base with the specified filename exists
-     * using `hasFactBase`. If it exists, it proceeds to remove it using `removeFactBase`.
-     *
-     * @param filename - The name of the file associated with the fact base to be removed.
-     */
-    removeFactBaseIfExists(filename: string) {
-        if (this.hasFactBase(filename)) {
-            this.removeFactBase(filename);
-        }
-    }
-
-    /**
      * Checks if a fact base with the specified filename exists in the current collection.
      *
      * @param filename - The name of the file to check for in the fact base.
@@ -134,21 +200,6 @@ export class PrologVM {
      */
     hasFactBase(filename: string): boolean {
         return this.factBase.some((x: PrologFile) => x.name === filename);
-    }
-
-    /**
-     * Removes all fact bases from the Prolog virtual machine.
-     * Iterates through the existing fact bases, ensuring each one exists
-     * before removing it. This operation clears the entire collection
-     * of fact bases managed by the virtual machine.
-     *
-     * @throws {Error} If a fact base is not found during the removal process.
-     */
-    removeAllFactBases() {
-        for (const i of this.factBase) {
-            console.assert(this.hasFactBase(i.name));
-            this.removeFactBase(i.name);
-        }
     }
 
     private healthCheck(): [string, boolean][] {
@@ -206,24 +257,9 @@ export class PrologVM {
         return ret;
     }
 
-    /**
-     * Executes a Prolog query and evaluates the result by extracting a specific binding.
-     *
-     * @template T - The expected type of the extracted binding.
-     * @param query - The Prolog query to be executed.
-     * @param key - The key used to extract the desired binding from the query result.
-     * @returns The extracted binding of type `T` corresponding to the specified key.
-     */
-    executeQueryAndEvaluate<T>(query: string, key: string) {
-        const result = this.execute(query);
-        return getPrologBinding<T>(result, key);
-    }
-
     static getUniqueFilename() {
         return `input_${uuid().replaceAll('-', '_')}.pl`;
     }
-
-    // TODO move this out of this file, does not fit well here
 
     /**
      * 
@@ -231,42 +267,5 @@ export class PrologVM {
      */
     getFactBase(): PrologFile[] {
         return this.factBase;
-    }
-
-    /**
-     * 
-     * @returns an array of prolog files that includes only facts
-     */
-    getFacts(): PrologFile[] {
-        return this.getFactBase().filter((x) => x.prologFileType === PrologFileType.FACT);
-    }
-
-    /**
-     * Retrieves an array of `LandesabgabeSachverhalt` objects by mapping the facts
-     * returned from `getFacts()` to their corresponding `sachverhalt` property.
-     *
-     * @returns {LandesabgabeSachverhalt[]} An array of `LandesabgabeSachverhalt` objects.
-     */
-    getSachverhalte(): LandesabgabeSachverhalt[] {
-        return this.getFacts().map((f) => f.sachverhalt!);
-    }
-
-    /**
-     * 
-     * @returns an array of prolog files that includes only laws
-     */
-    getLaws(): PrologFile[] {
-        return this.getFactBase().filter((x) => x.prologFileType === PrologFileType.LAW);
-    }
-
-    /**
-     * Looks up a person by their unique identifier (personID) within the facts of the PrologVM.
-     *
-     * @param personID - The unique identifier of the person to search for.
-     * @returns The `LandesabgabePerson` object if a matching person is found, or `undefined` if no match is found.
-     */
-    lookupPersonByID(personID: string): LandesabgabePerson | undefined {
-        return this.getFacts().flatMap((x) =>
-            x.sachverhalt!.persons.filter((p) => p.personId === personID))[0];
     }
 }

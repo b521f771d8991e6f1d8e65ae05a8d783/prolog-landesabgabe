@@ -10,7 +10,10 @@ import {
 import { CodeView } from "../CodeView";
 import Terminal, { ColorMode } from "react-terminal-ui";
 import { useState } from "react";
-import { PrologVM } from "../../../../LogicKit/src/PrologVM/PrologVM";
+import {
+	PrologVM,
+	SwiPrologVM,
+} from "../../../../LogicKit/src/PrologVM/PrologVM";
 import { v7 } from "uuid";
 import {
 	LandesabgabePerson,
@@ -19,13 +22,15 @@ import {
 import { PrologFile } from "../../../../LogicKit/src/PrologVM/PrologFileSystem";
 import { isPrologFalse } from "../../../../LogicKit/src/PrologVM/PrologUtilities";
 
-interface ResultViewProp {
+export function ResultView({
+	code,
+	width,
+	prologVM,
+}: {
 	code: string;
 	width: number;
 	prologVM: PrologVM;
-}
-
-export function ResultView({ code, width, prologVM }: ResultViewProp) {
+}) {
 	return (
 		<Paper shadow="sm" p="xl" m="sm" w={width}>
 			<Title>Ergebnisse</Title>
@@ -238,15 +243,13 @@ function PrologTerminal({ prologVM }: { prologVM: PrologVM }) {
 	}
 }
 
-interface DisplayPrologQueryProps {
-	queryString: string;
-	prologVM: PrologVM;
-}
-
 function DisplayPrologQuery({
 	queryString,
 	prologVM,
-}: DisplayPrologQueryProps) {
+}: {
+	queryString: string;
+	prologVM: PrologVM;
+}) {
 	const query: any[] = prologVM.execute(queryString);
 	return <DisplayObjectAsJson object={query} />;
 }

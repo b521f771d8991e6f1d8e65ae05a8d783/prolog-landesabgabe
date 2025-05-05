@@ -1,10 +1,1 @@
-/.git
-/.vscode
-/Docs
-/README.md
-/.devcontainer
-/.github
-/.build
-/out
-/target
-node_modules
+.gitignore

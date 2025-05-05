@@ -6,14 +6,7 @@
     ],
     "git.autofetch": "all",
     "cmake.automaticReconfigure": false,
-    "files.exclude": {
-        "**/.DS_Store": false,
-        "**/.git": false,
-        "**/.hg": false,
-        "**/.svn": false,
-        "**/CVS": false,
-        "**/Thumbs.db": false
-    },
+    //"explorer.excludeGitIgnore": true,
     "cSpell.words": [
         "endforeach"
     ],
@@ -21,9 +14,16 @@
         "--compile-commands-dir=out/build/debug-x86_64-unknown-linux-gnu"
     ],
     "C_Cpp.intelliSenseEngine": "disabled",
-    "prettier.configPath": "/workspace/Sources/lxui/.prettierrc",
+    "prettier.configPath": "/workspace/.prettierrc",
     "eslint.workingDirectories": [
-        "/workspace/Sources/lxui/"
+        "/workspace"
+    ],
+    "eslint.validate": [
+      "javascript",
+      "javascriptreact",
+      "typescript",
+      "markdown",
+      "json"
     ],
     "makefile.configureOnOpen": true
 }

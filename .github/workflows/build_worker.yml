@@ -1,15 +1,16 @@
-name: Build Docker Image
-run-name: build on branch ${{ github.ref_name }} triggered by @${{ github.actor}}
+name: Build Docker Image 🐋
 on:
   workflow_dispatch:
   push:
     branches:
       - stable
       - dev
+      - beta
   pull_request:
     branches:
       - stable
       - dev
+      - beta
   schedule:
     - cron: "0 13 * * 1"
 # you can build manually on dev, but we do not want to spam the worker
@@ -58,7 +59,7 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         push: ${{ github.event_name != 'pull_request' }}
-        file: ./Sources/Docker/Dockerfile
+        file: ./Sources/Docker/Backend-Debian.dockerfile
         context: .
         platforms: linux/amd64
         cache-from: type=registry,ref=user/app:latest

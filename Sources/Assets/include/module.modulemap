@@ -1,7 +1,0 @@
-module Assets {
-    requires cplusplus20
-    
-    header "assets.h"
-
-    export *
-}

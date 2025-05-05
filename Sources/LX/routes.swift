@@ -1,7 +1,4 @@
-import LogicKit
 import Vapor
-
-let apiPrefix = ProcessInfo.processInfo.environment["LX_API_PREFIX"] ?? "api"
 
 private func routesProtected(onApp app: Application) throws {
     // the following methods should be protected by a keycloak access token
@@ -51,12 +48,16 @@ private func routesProtected(onApp app: Application) throws {
     app.get(
         "\(apiPrefix)", "queryModel",
         use: protectRoute { req async throws -> String in
-            guard let query: String = req.query[String.self, at: "query"] else {
-                throw Abort(.badRequest, reason: "request requires the parameter 'query'")
-            }
-
             guard let lawName: String = req.query[String.self, at: "law"] else {
                 throw Abort(.badRequest, reason: "request requires the parameter 'law'")
+            }
+
+            let query = req.query[String.self, at: "query"]
+            let javascript = req.query[String.self, at: "js"]
+
+            if query == nil && javascript == nil {
+                throw Abort(
+                    .badRequest, reason: "request requires the parameter 'query' or 'javascript'")
             }
 
             print("Processing query '\(query)' on law '\(lawName)'")
@@ -65,7 +66,17 @@ private func routesProtected(onApp app: Application) throws {
                 throw Abort(.badRequest, reason: "Law \(lawName) not found.")
             }
 
-            return ""
+            let pvm = PrologVM()
+
+            if let javascript = javascript {
+                try pvm.execute_js(javascript)
+            }
+
+            if let query = query {
+                try pvm.execute_prolog(query)
+            }
+
+            throw Abort(.internalServerError, reason: "unexpected ending of method")
         })
 }
 
@@ -85,20 +96,7 @@ private func routesUnprotected(onApp app: Application) throws {
         )
     }
 
-    app.get("\(apiPrefix)", "app-config.json") { req async throws -> Response in
-        let jsonString = """
-            {
-                "LX_KEYCLOAK_URL": "\(ProcessInfo.processInfo.environment["LX_KEYCLOAK_URL"]!)",
-                "LX_KEYCLOAK_CLIENT_ID": "\(ProcessInfo.processInfo.environment["LX_KEYCLOAK_CLIENT_ID"]!)",
-                "LX_KEYCLOAK_REALM": "\(ProcessInfo.processInfo.environment["LX_KEYCLOAK_REALM"]!)"
-            }
-            """
-        return Response(
-            status: .ok,
-            headers: ["Content-Type": "application/json"],
-            body: .init(stringLiteral: jsonString)
-        )
-    }
+    AppConfig.register(onApp: app)
 
     app.get("\(apiPrefix)", "status") { req async throws -> String in
         return "OK"

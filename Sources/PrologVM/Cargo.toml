@@ -1,0 +1,17 @@
+[package]
+name = "prolog-vm"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+deno_core = "0.343.0"
+swift-bridge = { version = "0.1.57", features = ["async"]}
+tokio = "1.44.2"
+futures =  "0.3.31"
+rust-embed = "8.7.0"
+
+[build-dependencies]
+swift-bridge-build = "0.1"
+
+[lib]
+crate-type = ["staticlib", "rlib"]

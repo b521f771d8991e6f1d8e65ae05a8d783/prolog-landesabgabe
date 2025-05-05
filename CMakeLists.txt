@@ -2,25 +2,19 @@ cmake_minimum_required(VERSION 3.25)
 project(LX LANGUAGES OBJCXX CXX OBJC C)
 
 include(CTest)
-include(Build/BuildInformation/BuildInformation.cmake)
-include(Dependencies/Dependencies.cmake)
 
 # configuration for our targets
 
-add_subdirectory(Sources/Assets)
-add_subdirectory(Sources/LogicKit)
+#add_subdirectory(Sources/Assets)
 
 # configuration for our tests
-add_subdirectory(Tests/LogicKit)
+#add_subdirectory(Tests/XYZ)
 
 # configuration for all targets
 set(TARGETS
-  Assets
-  LogicKit
 )
 
 set(TEST_TARGETS
-  #LogicKitTests
 )
 
 # add target configuration

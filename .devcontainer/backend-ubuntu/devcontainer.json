@@ -1,0 +1,7 @@
+{
+    "build": {
+        "dockerfile": "../../Sources/Docker/Backend-Ubuntu.dockerfile",
+        "context": "../..",
+        "target": "development"
+    }
+}

@@ -1,3 +1,6 @@
+## Reminders
+- Do not forget to init the submodules after cloning, "make init" is your friend
+
 ## Internals
 
 ### Frontend
@@ -5,7 +8,7 @@ The frontend is written in React and Typescript..
 
 ### Backend
 
-This is a Swift project that contains some parts written in C++ and Prolog.
+This is a Swift project that contains some parts written in C++, Rust and Prolog.
  * Typescript targets are managed by npm
  * Simple C and C++ targets are handled by CMake (vcpkg support)
  * Pure Swift targets are built by the Swift Package Manager, here you can use SPM

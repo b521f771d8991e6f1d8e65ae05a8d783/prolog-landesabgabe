@@ -2,7 +2,7 @@ import { PrologFile } from "../../../LogicKit/src/PrologVM/PrologFileSystem";
 import {
 	LandesabgabePerson,
 	LandesabgabeHandlung,
-} from "../../../LogicKit/src/PrologVM/PrologTemplates";
+} from "../../../Corpus/LabggDefinitions";
 import {
 	Title,
 	Text,
@@ -16,6 +16,10 @@ import {
 import { useState } from "react";
 import { PersonDetailForm } from "./sachverhalts_editor/PersonForm";
 import { v7 } from "uuid";
+import {
+	PrologHandlung,
+	PrologPerson,
+} from "../../../LogicKit/src/PrologVM/PrologTemplates";
 
 export function FactFile({
 	prologFile,
@@ -36,7 +40,7 @@ export function FactFile({
 		setPrologFile(prologFile);
 	}
 
-	function addToJoinTable(p: LandesabgabePerson, h: LandesabgabeHandlung) {
+	function addToJoinTable(p: PrologPerson, h: PrologHandlung) {
 		prologFile.sachverhalt!.addToJoinTable(p, h);
 		setPrologFile(prologFile);
 	}
@@ -45,7 +49,7 @@ export function FactFile({
 		addSovereignPerson(new LandesabgabePerson(vorname, nachname, alter));
 	}
 
-	function renderPersonDetailForm(x: LandesabgabePerson) {
+	function renderPersonDetailForm(x: PrologPerson) {
 		return (
 			<div key={v7()}>
 				<PersonDetailForm

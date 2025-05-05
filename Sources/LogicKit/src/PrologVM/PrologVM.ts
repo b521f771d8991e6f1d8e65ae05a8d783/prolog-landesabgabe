@@ -1,7 +1,7 @@
 import SWIPL from "swipl-wasm";
 import { PrologFile, PrologFileType } from "./PrologFileSystem";
 import { v4 as uuid } from 'uuid';
-import { LandesabgabePerson, LandesabgabeSachverhalt } from "./PrologTemplates";
+import { PrologPerson, PrologSachverhalt } from "./PrologTemplates";
 import { getPrologBinding } from "./PrologUtilities";
 
 export abstract class PrologVM {
@@ -85,7 +85,7 @@ export abstract class PrologVM {
      *
      * @returns {LandesabgabeSachverhalt[]} An array of `LandesabgabeSachverhalt` objects.
      */
-    getSachverhalte(): LandesabgabeSachverhalt[] {
+    getSachverhalte(): PrologSachverhalt[] {
         return this.getFacts().map((f) => f.sachverhalt!);
     }
 
@@ -103,9 +103,9 @@ export abstract class PrologVM {
      * @param personID - The unique identifier of the person to search for.
      * @returns The `LandesabgabePerson` object if a matching person is found, or `undefined` if no match is found.
      */
-    lookupPersonByID(personID: string): LandesabgabePerson | undefined {
+    lookupPersonByID(personID: string): PrologPerson | undefined {
         return this.getFacts().flatMap((x) =>
-            x.sachverhalt!.persons.filter((p) => p.personId === personID))[0];
+            x.sachverhalt!.persons.filter((p: PrologPerson) => p.personId === personID))[0];
     }
 }
 

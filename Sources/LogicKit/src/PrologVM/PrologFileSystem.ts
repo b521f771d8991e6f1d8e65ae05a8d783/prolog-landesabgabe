@@ -1,5 +1,4 @@
-import { LandesabgabeSachverhalt } from "./PrologTemplates";
-import SWIPL from "swipl-wasm";
+import { PrologSachverhalt } from "./PrologTemplates";
 
 export enum PrologFileType {
     LAW, FACT
@@ -9,11 +8,11 @@ export class PrologFile {
     private _prologFileType: PrologFileType;
     private _name: string;
     private _evaluatedProlog: string | undefined;
-    private _sachverhalt: LandesabgabeSachverhalt | undefined;
+    private _sachverhalt: PrologSachverhalt | undefined;
 
     constructor(name: string,
         evaluatedProlog: string | undefined,
-        sachverhalt: LandesabgabeSachverhalt | undefined,
+        sachverhalt: PrologSachverhalt | undefined,
         pft: PrologFileType = PrologFileType.FACT) {
         this._name = name;
         this._evaluatedProlog = evaluatedProlog;
@@ -41,7 +40,7 @@ export class PrologFile {
         return "";
     }
 
-    public get sachverhalt(): LandesabgabeSachverhalt | undefined {
+    public get sachverhalt(): PrologSachverhalt | undefined {
         return this._sachverhalt;
     }
 }

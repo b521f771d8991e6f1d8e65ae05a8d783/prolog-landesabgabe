@@ -5,7 +5,7 @@ import {
 } from "../../../../LogicKit/src/PrologVM/PrologFileSystem";
 import { SwiPrologVM } from "../../../../LogicKit/src/PrologVM/PrologVM";
 import { FactFile } from "@/components/FactFile";
-import { LandesabgabeSachverhalt } from "../../../../LogicKit/src/PrologVM/PrologTemplates";
+import { LandesabgabeSachverhalt } from "../../../../Corpus/LabggDefinitions";
 import { v7 } from "uuid";
 
 /*

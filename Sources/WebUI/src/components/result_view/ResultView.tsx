@@ -10,17 +10,18 @@ import {
 import { CodeView } from "../CodeView";
 import Terminal, { ColorMode } from "react-terminal-ui";
 import { useState } from "react";
-import {
-	PrologVM,
-	SwiPrologVM,
-} from "../../../../LogicKit/src/PrologVM/PrologVM";
+import { PrologVM } from "../../../../LogicKit/src/PrologVM/PrologVM";
 import { v7 } from "uuid";
 import {
 	LandesabgabePerson,
 	LandesabgabeSachverhalt,
-} from "../../../../LogicKit/src/PrologVM/PrologTemplates";
+} from "../../../../Corpus/LabggDefinitions";
 import { PrologFile } from "../../../../LogicKit/src/PrologVM/PrologFileSystem";
 import { isPrologFalse } from "../../../../LogicKit/src/PrologVM/PrologUtilities";
+import {
+	PrologPerson,
+	PrologSachverhalt,
+} from "../../../../LogicKit/src/PrologVM/PrologTemplates";
 
 export function ResultView({
 	code,
@@ -53,14 +54,14 @@ function PersonDetail({
 	person,
 	prologVM,
 }: {
-	sachverhalt: LandesabgabeSachverhalt;
-	person: LandesabgabePerson;
+	sachverhalt: PrologSachverhalt;
+	person: PrologPerson;
 	prologVM: PrologVM;
 }) {
 	function getGesteinIdFromPersonId(
 		prologVM: PrologVM,
-		sachverhalt: LandesabgabeSachverhalt,
-		person: LandesabgabePerson,
+		sachverhalt: PrologSachverhalt,
+		person: PrologPerson,
 	) {
 		const objektResult = prologVM.executeQueryAndEvaluate<string>(
 			`objekt(${sachverhalt.sacherhaltId}, ${person.personId}, bergbau(gewinnen, obertags, mineralische_rohstoffe), Y)`,
@@ -101,10 +102,7 @@ function PersonDetail({
 }
 
 function PrologResults({ prologVM }: { prologVM: PrologVM }) {
-	function processPerson(
-		sachverhalt: LandesabgabeSachverhalt,
-		personID: string,
-	) {
+	function processPerson(sachverhalt: PrologSachverhalt, personID: string) {
 		const query = `abgabepflichtig(labgg, ${sachverhalt.sacherhaltId}, ${personID}).`;
 		const queryResult = prologVM.execute(query);
 		const person = prologVM.lookupPersonByID(personID)!;

@@ -2,7 +2,7 @@ import {
 	LandesabgabeHandlung,
 	LandesabgabePerson,
 	LandesabgabeSachverhalt,
-} from "../../../../LogicKit/src/PrologVM/PrologTemplates";
+} from "../../../../Corpus/LabggDefinitions";
 import {
 	Text,
 	Paper,
@@ -15,18 +15,20 @@ import {
 import { DateInput } from "@mantine/dates";
 import { useState } from "react";
 import { v7 } from "uuid";
-
-interface PersonDetailFormProps {
-	person: LandesabgabePerson;
-	handlungen: LandesabgabeHandlung[];
-	addToJoinTable: (p: LandesabgabePerson, h: LandesabgabeHandlung) => void;
-}
+import {
+	PrologHandlung,
+	PrologPerson,
+} from "../../../../LogicKit/src/PrologVM/PrologTemplates";
 
 export function PersonDetailForm({
 	person,
 	handlungen,
 	addToJoinTable,
-}: PersonDetailFormProps) {
+}: {
+	person: PrologPerson;
+	handlungen: PrologHandlung[];
+	addToJoinTable: (p: PrologPerson, h: PrologHandlung) => void;
+}) {
 	const [date, setDate] = useState<Date>(new Date(Date.now()));
 	const [gefördert, setGefördert] = useState<number>(0);
 
@@ -55,7 +57,7 @@ export function PersonDetailForm({
 	);
 }
 
-function PersonDetail({ person }: { person: LandesabgabePerson }) {
+function PersonDetail({ person }: { person: PrologPerson }) {
 	return (
 		<>
 			<Text>Name: {person.nachname}</Text>
@@ -73,7 +75,7 @@ function DetailTable({
 	gefördert,
 	addButtonClicked,
 }: {
-	handlungen: LandesabgabeHandlung[];
+	handlungen: PrologHandlung[];
 	setDate: any;
 	setGefördert: any;
 	date: any;
@@ -103,7 +105,7 @@ function HandlungenTableBody({
 	gefördert,
 	addButtonClicked,
 }: {
-	handlungen: LandesabgabeHandlung[];
+	handlungen: PrologHandlung[];
 	setDate: any;
 	setGefördert: any;
 	date: any;
@@ -157,7 +159,7 @@ function TableHeader() {
 	);
 }
 
-function HandlungViewer({ handlung }: { handlung: LandesabgabeHandlung }) {
+function HandlungViewer({ handlung }: { handlung: PrologHandlung }) {
 	return (
 		<Table.Tr>
 			<Table.Td>

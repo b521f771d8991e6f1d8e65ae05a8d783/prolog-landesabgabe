@@ -4,7 +4,6 @@ import { v4 as uuid } from 'uuid';
 import { LandesabgabePerson, LandesabgabeSachverhalt } from "./PrologTemplates";
 import { getPrologBinding } from "./PrologUtilities";
 
-
 export abstract class PrologVM {
     abstract execute(queryString: string, input?: Record<string, unknown>): any[];
 

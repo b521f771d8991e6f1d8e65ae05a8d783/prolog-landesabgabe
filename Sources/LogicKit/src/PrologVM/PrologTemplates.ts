@@ -9,6 +9,18 @@ const GESTEIN_ID = "gestein";
 const PERSON_ID = "person";
 const SACHVERHALT_ID = "sachverhalt";
 
+const DISCONTIGUOUS_TAGS = [
+    "verbum/3",
+    "nachname/2",
+    "vorname/2",
+    "natuerliche_person/1",
+    "alter/2",
+    "subjekt/2",
+    "objekt/4",
+    "verwertet_am/2",
+    "gefoerdert/3"
+];
+
 export class LandesabgabeSachverhalt {
     private _sachverhalt_id: string;
     private _sovereignPersons: LandesabgabePerson[];
@@ -93,18 +105,7 @@ export class LandesabgabeSachverhalt {
     }
 
     serialize2Prolog(): string {
-        const discontiguousTags = [
-            "verbum/3",
-            "nachname/2",
-            "vorname/2",
-            "natuerliche_person/1",
-            "alter/2",
-            "subjekt/2",
-            "objekt/4",
-            "verwertet_am/2",
-            "gefoerdert/3"
-        ];
-        const prelude = `% Sachverhalt\n` + discontiguousTags.map(tag => `:- discontiguous ${tag}.`).join("\n");
+        const prelude = `% Sachverhalt\n` + DISCONTIGUOUS_TAGS.map(tag => `:- discontiguous ${tag}.`).join("\n");
         return prelude + this.handlungen2Prolog();
     }
 }

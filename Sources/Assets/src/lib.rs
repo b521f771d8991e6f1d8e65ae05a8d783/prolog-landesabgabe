@@ -18,13 +18,14 @@ pub fn list_corpus() -> Vec<String> {
             result.truncate(index);
         }
 
-        return result;
+        result
     }
 
-    return Corpus::iter()
+    Corpus::iter()
         .into_iter()
-        .map(|file| return remove_file_suffix(&file))
-        .collect();
+        .filter(|file| file.ends_with(".pl"))
+        .map(|file| remove_file_suffix(&file))
+        .collect()
 }
 
 pub fn get_from_web_app_data(file_name: &str) -> Option<String> {
@@ -43,4 +44,18 @@ mod ffi {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_list_corpus() {
+        let files = list_corpus();
+        assert!(!files.is_empty(), "No .pl files found in corpus");
+
+        for file in &files {
+            // Check that the original file exists and is not empty
+            let file_name = format!("{}.pl", file);
+            let content = get_from_corpus(&file_name);
+            assert!(content.is_some(), "File {} not found in corpus", file_name);
+            assert!(!content.unwrap().is_empty(), "File {} is empty", file_name);
+        }
+    }
 }

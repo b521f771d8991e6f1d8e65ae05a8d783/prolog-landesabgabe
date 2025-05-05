@@ -64,6 +64,7 @@ func setUpAuthentication(onApp _: Application) async throws {
 /// - Returns: A secured route or response based on the provided logic.
 ///
 /// Use this function to ensure that only authorized users can access specific routes.
+@Sendable
 func protectRoute<T>(
     _ handler: @escaping (Request) async throws -> T
 ) -> (Request) async throws -> T {

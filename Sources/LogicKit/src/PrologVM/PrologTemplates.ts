@@ -38,9 +38,7 @@ export abstract class PrologPerson {
 export abstract class PrologHandlung {
     public abstract get handlungId(): string;
     public abstract get date(): Date;
-    // TODO remove the next two
-    public abstract get gefördert(): number | undefined ;
-    public abstract get einheit(): string;
+    abstract get visualization(): JSX.Element;
     abstract serialize2Prolog(sachverhaltId: string, personId: string): string;
     abstract serialize2Prolog(sachverhalt: PrologSachverhalt, person: PrologHandlung): string;
 };

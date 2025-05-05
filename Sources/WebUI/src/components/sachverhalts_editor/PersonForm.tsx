@@ -166,8 +166,7 @@ function HandlungViewer({ handlung }: { handlung: PrologHandlung }) {
 				{handlung.date.getDay()}.{handlung.date.getUTCMonth()}.
 				{handlung.date.getFullYear()}
 			</Table.Td>
-			<Table.Td>{handlung.gefördert}</Table.Td>
-			<Table.Td>{handlung.einheit}</Table.Td>
+			{handlung.visualization}
 		</Table.Tr>
 	);
 }

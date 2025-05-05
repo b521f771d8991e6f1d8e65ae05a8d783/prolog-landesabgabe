@@ -3,14 +3,14 @@ services:
   worker:
     build:
       context: ../..
-      dockerfile: Sources/Docker/Backend.dockerfile
+      dockerfile: Sources/Docker/Backend-Debian.dockerfile
       target: ${WORKER_TARGET_STAGE}
     tty: true
     ports:
       - "1337:1337"
     volumes:
       - ../..:/workspace
-    env_file: ".env"
+    env_file: "../../.env.development"
 networks:
   default:
     name: "traefik_proxy_sprachguru_prod_local"

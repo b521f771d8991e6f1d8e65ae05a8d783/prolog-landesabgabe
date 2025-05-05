@@ -13,13 +13,13 @@ else
 	CARGO_RELEASE_FLAG :=
 endif
 
-ARTIFACT := .build/{TARGET}/LX
+ARTIFACT := .build/${TARGET}/LX
 
 .PHONY: init
 init:
+	git submodule update --init --recursive
 	npm install --workspaces
 	cargo fetch
-	git submodule update --init --recursive
 
 .PHONY: frontend
 frontend:
@@ -30,7 +30,7 @@ backend:
 	cmake -S . -B ./out/build/${VARIANT} --preset=${VARIANT}
 	cmake --build ./out/build/${VARIANT}
 	cargo build ${CARGO_RELEASE_FLAG}
-	swift build --configuration ${VARIANT}
+	CC=clang CXX=clang++ swift build --configuration ${VARIANT}
 
 .PHONY: ${ARTIFACT}
 ${ARTIFACT}: frontend backend
@@ -38,9 +38,15 @@ ${ARTIFACT}: frontend backend
 .PHONY: all
 all: ${ARTIFACT}
 
+.PHONY: test
+test: all
+	cargo test
+	npm run test --workspaces
+	CC=clang CXX=clang++ swift test
+
 .PHONY: run
 run: all
-	dotenvx run -- swift run
+	CC=clang CXX=clang++ dotenvx run -- swift run
 
 .PHONY: clean
 clean:
@@ -57,7 +63,7 @@ frontend-dev: frontend
 
 .PHONY: backend-dev
 backend-dev: backend
-	dotenvx run -f .env.development -- swift run
+	CC=clang CXX=clang++ dotenvx run -f .env.development -- swift run
 
 .PHONY: install
 install: all

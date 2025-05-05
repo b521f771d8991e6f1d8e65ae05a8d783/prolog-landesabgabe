@@ -3,7 +3,7 @@
 struct Corpus;
 
 #[derive(rust_embed::Embed)]
-#[folder = "../lxui/dist"]
+#[folder = "../WebUI/dist"]
 struct WebAppData;
 
 pub fn get_from_corpus(file_name: &str) -> Option<String> {

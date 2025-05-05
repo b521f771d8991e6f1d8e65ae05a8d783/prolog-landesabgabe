@@ -2,7 +2,8 @@
 
 import PackageDescription
 
-let rootPath = "/workspace/"
+var rootPath = #filePath
+rootPath.replace("/Package.swift", with: "")
 
 #if DEBUG
     let buildType = "debug"
@@ -15,7 +16,7 @@ let cmakeOutputDir = "\(rootPath)/out/build/\(buildType)"
 
 let rustFlags: [String] = [
     "\(rootPath)/Sources/generated/SwiftBridgeCore.swift",
-    "\(rootPath)/Sources/generated/logic-kit/logic-kit.swift",
+    "\(rootPath)/Sources/generated/prolog-vm/prolog-vm.swift",
     "\(rootPath)/Sources/generated/build-information/build-information.swift",
     "\(rootPath)/Sources/generated/assets/assets.swift",
     "-import-objc-header", "\(rootPath)/Sources/rust-bridging-header.h",
@@ -53,11 +54,11 @@ let package = Package(
             ],
             linkerSettings: [
                 .linkedLibrary("assets"),
-                .linkedLibrary("logic_kit"),
+                .linkedLibrary("prolog_vm"),
                 .linkedLibrary("build_information"),
                 .unsafeFlags(
                     rustFlags + [
-                        //"-L\(cmakeOutputDir)/Sources/LogicKit",
+                        //"-L\(cmakeOutputDir)/Sources/PrologVM",
                         //"-L\(cmakeOutputDir)/Sources/Assets",
                         "-L\(cmakeOutputDir)/vcpkg_installed/x64-linux/lib",
                         "-Ltarget/\(buildType)",

@@ -1,3 +1,4 @@
+import dedent from 'dedent-js';
 import { v4 as uuidv4 } from 'uuid';
 
 function generateUUID(id: string) {
@@ -92,17 +93,19 @@ export class LandesabgabeSachverhalt {
     }
 
     serialize2Prolog(): string {
-        return `% Sachverhalt
-                :- discontiguous verbum/3.
-                :- discontiguous nachname/2.
-                :- discontiguous vorname/2.
-                :- discontiguous natuerliche_person/1.
-                :- discontiguous alter/2.
-                :- discontiguous subjekt/2.
-                :- discontiguous objekt/4.
-                :- discontiguous verwertet_am/2.
-                :- discontiguous gefoerdert/3.
-        ` + this.handlungen2Prolog();
+        const discontiguousTags = [
+            "verbum/3",
+            "nachname/2",
+            "vorname/2",
+            "natuerliche_person/1",
+            "alter/2",
+            "subjekt/2",
+            "objekt/4",
+            "verwertet_am/2",
+            "gefoerdert/3"
+        ];
+        const prelude = `% Sachverhalt\n` + discontiguousTags.map(tag => `:- discontiguous ${tag}.`).join("\n");
+        return prelude + this.handlungen2Prolog();
     }
 }
 
@@ -150,13 +153,13 @@ export class LandesabgabePerson {
     }
 
     serialize2Prolog(sachverhaltsID: string): string {
-        return `% Person
-        subjekt(${sachverhaltsID}, ${this.personId}).
-        vorname(${this.personId}, "${this._vorname}").
-        nachname(${this.personId}, "${this._nachname}").
-        natuerliche_person(${this.personId}).
-        alter(${this.personId}, ${this._alter}).
-        ${this._berufsmäßig ? "" : `berufsmaessig(${this.personId}).`}
+        return dedent`% Person
+            subjekt(${sachverhaltsID}, ${this.personId}).
+            vorname(${this.personId}, "${this._vorname}").
+            nachname(${this.personId}, "${this._nachname}").
+            natuerliche_person(${this.personId}).
+            alter(${this.personId}, ${this._alter}).
+            ${this._berufsmäßig ? "" : `berufsmaessig(${this.personId}).`}
         `;
     }
 }
@@ -190,11 +193,11 @@ export class LandesabgabeHandlung {
     }
 
     serialize2Prolog(sachverhaltId: string, personId: string): string {
-        return `% Handlung
-        verbum(${sachverhaltId}, ${personId}, bergbau(gewinnen, obertags, mineralische_rohstoffe)).
-        objekt(${sachverhaltId}, ${personId}, bergbau(gewinnen, obertags, mineralische_rohstoffe), ${this.uuidWithPrefix}).
-        ${this.gefördert ? `gefoerdert(${this.uuidWithPrefix}, ${this.gefördert!}, ${this.einheit}).` : ""}
-        verwertet_am(${this.uuidWithPrefix}, date(${this.date.getFullYear()}, ${this.date.getMonth()}, ${this.date.getDay()}, 0, 0, 0, Off, TZ, DST)).
+        return dedent`% Handlung
+            verbum(${sachverhaltId}, ${personId}, bergbau(gewinnen, obertags, mineralische_rohstoffe)).
+            objekt(${sachverhaltId}, ${personId}, bergbau(gewinnen, obertags, mineralische_rohstoffe), ${this.uuidWithPrefix}).
+            ${this.gefördert ? `gefoerdert(${this.uuidWithPrefix}, ${this.gefördert!}, ${this.einheit}).` : ""}
+            verwertet_am(${this.uuidWithPrefix}, date(${this.date.getFullYear()}, ${this.date.getMonth()}, ${this.date.getDay()}, 0, 0, 0, Off, TZ, DST)).
         `; // TODO Stunde und Minute übernehmen*/
     }
 }

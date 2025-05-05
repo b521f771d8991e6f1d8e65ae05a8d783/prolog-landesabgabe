@@ -1,20 +1,20 @@
 FROM swift:rhel-ubi9 AS runtime-environment
-#RUN sudo dnf update -y && dnf upgrade -y && dnf install -y swiftlang zlib-devel
 
 FROM runtime-environment AS development
 
-RUN dnf install -y npm rust cargo cmake git ninja-build gcc gcc-c++ gdb wget zsh zip
-# gcc-c++ gcc-objc gcc-objc++ gnustep-base-devel 
-# somehow needed for vscode
-#RUN dnf install -y awk
+RUN dnf module enable -y nodejs:20
+RUN dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+RUN dnf install -y npm cmake git ninja-build gcc gcc-c++ gcc-objc gcc-objc++ gdb wget zsh zip gnustep-base-devel
 
-RUN cargo install wasm-pack
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
 
-ENV PATH="$PATH:/root/.nix-profile/bin:/root/.cargo/bin"
+ENV PATH="$PATH:/root/.nix-profile/bin:/root/.cargo/bin:/root/.cargo/env"
 ENV CC=gcc
 ENV CXX=g++
-ENV OBJC=gcc
-ENV OBJCXX=g++
+ENV OBJC=gcc-objc
+ENV OBJCXX=gcc-objc++
+
+RUN cargo install wasm-pack
 
 FROM development AS build
 ARG BUILD_VARIANT=debug

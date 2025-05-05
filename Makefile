@@ -42,11 +42,11 @@ all: ${ARTIFACT}
 test: all
 	cargo test
 	npm run test --workspaces
-	swift test
+	CC=clang CXX=clang++ swift test
 
 .PHONY: run
 run: all
-	dotenvx run -- swift run
+	CC=clang CXX=clang++ dotenvx run -- swift run
 
 .PHONY: clean
 clean:
@@ -63,7 +63,7 @@ frontend-dev: frontend
 
 .PHONY: backend-dev
 backend-dev: backend
-	dotenvx run -f .env.development -- swift run
+	CC=clang CXX=clang++ dotenvx run -f .env.development -- swift run
 
 .PHONY: install
 install: all

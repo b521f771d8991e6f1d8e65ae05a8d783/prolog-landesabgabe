@@ -5,7 +5,7 @@ import { LandesabgabePerson, LandesabgabeSachverhalt } from "./PrologTemplates";
 import { getPrologBinding } from "./PrologUtilities";
 
 export enum PrologVMImplementation {
-    SCRYER, SWIProlog
+    Scryer, SwiProlog
 }
 
 // AppState is dead, long live the AppState
@@ -13,9 +13,16 @@ export class PrologVM {
     private swipl: SWIPL.SWIPLModule;
     private factBase: PrologFile[];
 
-    private constructor(swipl: SWIPL.SWIPLModule, factBase: PrologFile[] = []) {
-        this.swipl = swipl;
-        this.factBase = factBase;
+    private constructor(swipl: SWIPL.SWIPLModule, factBase: PrologFile[] = [], prologVMImpl = PrologVMImplementation.SwiProlog) {
+        switch(prologVMImpl) {
+            case PrologVMImplementation.SwiProlog: {
+                this.swipl = swipl;
+                this.factBase = factBase;
+            }
+            default: {
+                throw "Unknown VM type";
+            }
+        }
     }
 
     private static async initPrologVM(): Promise<PrologVM> {

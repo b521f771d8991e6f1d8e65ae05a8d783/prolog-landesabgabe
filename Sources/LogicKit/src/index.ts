@@ -1,4 +1,3 @@
-import {add} from "../../../npm-pkgs/LogicKit";
 import { Prolog } from "scryer";
 import { PrologVM } from "./PrologVM/PrologVM";
 

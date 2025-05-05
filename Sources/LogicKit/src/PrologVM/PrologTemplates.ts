@@ -21,7 +21,24 @@ const DISCONTIGUOUS_TAGS = [
     "gefoerdert/3"
 ];
 
-export class LandesabgabeSachverhalt {
+export abstract class PrologSachverhalt {
+    public abstract get sacherhaltId(): string;
+    abstract serialize2Prolog(): string;
+};
+
+export abstract class PrologPerson {
+    public abstract get personId(): string;
+    abstract serialize2Prolog(sachverhaltsID: string): string;
+    abstract serialize2Prolog(sachverhalt: PrologSachverhalt): string;
+};
+
+export abstract class PrologHandlung {
+    public abstract get handlungId(): string;
+    abstract serialize2Prolog(sachverhaltId: string, personId: string): string;
+    abstract serialize2Prolog(sachverhalt: PrologSachverhalt, person: PrologHandlung): string;
+};
+
+export class LandesabgabeSachverhalt extends PrologSachverhalt {
     private _sachverhalt_id: string;
     private _sovereignPersons: LandesabgabePerson[];
     private _joinTable: [LandesabgabePerson, LandesabgabeHandlung][];
@@ -29,6 +46,7 @@ export class LandesabgabeSachverhalt {
     constructor(sachverhaltsID = generateUUID(SACHVERHALT_ID),
         sovereignPersons: LandesabgabePerson[] = [],
         umgesetzteHandlung: [LandesabgabePerson, LandesabgabeHandlung][] = []) {
+        super();
         this._sachverhalt_id = sachverhaltsID;
         this._sovereignPersons = sovereignPersons;
         this._joinTable = umgesetzteHandlung;
@@ -110,7 +128,7 @@ export class LandesabgabeSachverhalt {
     }
 }
 
-export class LandesabgabePerson {
+export class LandesabgabePerson extends PrologPerson {
     private _vorname: string;
     private _nachname: string;
     private _alter: number;
@@ -121,6 +139,7 @@ export class LandesabgabePerson {
         nachname: string,
         alter: number,
         berufsmäßig: boolean = true) {
+        super();
         this._vorname = vorname;
         this._nachname = nachname;
         this._alter = alter;
@@ -153,7 +172,17 @@ export class LandesabgabePerson {
         return this._berufsmäßig;
     }
 
-    serialize2Prolog(sachverhaltsID: string): string {
+    serialize2Prolog(sachverhaltsID: string): string;
+    serialize2Prolog(sachverhalt: PrologSachverhalt): string;
+    serialize2Prolog(arg: string | PrologSachverhalt): string {
+        let sachverhaltsID: string;
+        
+        if (typeof arg === "string") {
+            sachverhaltsID = arg;
+        } else {
+            sachverhaltsID = arg.sacherhaltId;
+        }
+
         return dedent`% Person
             subjekt(${sachverhaltsID}, ${this.personId}).
             vorname(${this.personId}, "${this._vorname}").
@@ -165,16 +194,21 @@ export class LandesabgabePerson {
     }
 }
 
-export class LandesabgabeHandlung {
+export class LandesabgabeHandlung extends PrologHandlung {
     private _gefördert?: number;
     private _date: Date;
     private _einheit: string = "tonne";
     private _uuidWithPrefix: string;
 
     constructor(date: Date, gefördert?: number) {
+        super();
         this._gefördert = gefördert;
         this._date = date;
         this._uuidWithPrefix = generateUUID(GESTEIN_ID);
+    }
+
+    public get handlungId(): string {
+        throw new Error('Method not implemented.');
     }
 
     public get gefördert(): number | undefined {
@@ -193,7 +227,23 @@ export class LandesabgabeHandlung {
         return this._uuidWithPrefix;
     }
 
-    serialize2Prolog(sachverhaltId: string, personId: string): string {
+    serialize2Prolog(sachverhaltId: string, personId: string): string;
+    serialize2Prolog(sachverhalt: PrologSachverhalt, person: PrologHandlung): string;
+    serialize2Prolog(arg1: string | PrologSachverhalt, arg2?: string | PrologHandlung): string {
+        let sachverhaltId: string;
+        let personId: string;
+
+        if (typeof arg1 === "string" && typeof arg2 === "string") {
+            sachverhaltId = arg1;
+            personId = arg2;
+        } else if (typeof arg1 !== "string" && arg2 && typeof arg2 !== "string") {
+            sachverhaltId = arg1.sacherhaltId;
+            // Assuming personId should be the handlungId of the person argument
+            personId = (arg2 as PrologHandlung).handlungId;
+        } else {
+            throw new Error("Invalid arguments for serialize2Prolog");
+        }
+
         return dedent`% Handlung
             verbum(${sachverhaltId}, ${personId}, bergbau(gewinnen, obertags, mineralische_rohstoffe)).
             objekt(${sachverhaltId}, ${personId}, bergbau(gewinnen, obertags, mineralische_rohstoffe), ${this.uuidWithPrefix}).

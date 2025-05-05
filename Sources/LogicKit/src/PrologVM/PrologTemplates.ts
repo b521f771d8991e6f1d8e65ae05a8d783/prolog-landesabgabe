@@ -80,6 +80,17 @@ export class LandesabgabeSachverhalt {
                 : LandesabgabeSachverhalt.joinSachverhalt(handlungen).serialize2Prolog(this.sacherhaltId, person.personId));
     }
 
+    private handlungen2Prolog(): string {
+        const keys = this.personsWithAssociatedHandlung.keys();
+        let ret = "";
+
+        for(const i of keys) {
+            ret = this.reduceSachverhaltToProlog(ret, i);
+        }
+
+        return ret;
+    }
+
     serialize2Prolog(): string {
         return `% Sachverhalt
                 :- discontiguous verbum/3.
@@ -91,8 +102,7 @@ export class LandesabgabeSachverhalt {
                 :- discontiguous objekt/4.
                 :- discontiguous verwertet_am/2.
                 :- discontiguous gefoerdert/3.
-        `// + this.personsWithAssociatedHandlung.keys().reduce((x, y) => this.reduceSachverhaltToProlog(x, y), "");
-        //TODO!!!!!
+        ` + this.handlungen2Prolog();
     }
 }
 

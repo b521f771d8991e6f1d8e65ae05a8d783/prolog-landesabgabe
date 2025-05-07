@@ -1,9 +1,10 @@
-FROM swift:bookworm AS development
+ARG distribution=bookworm
+FROM swift:${distribution} AS development
 
 WORKDIR /tmp
 COPY Makefile .
 RUN apt update && apt upgrade -y && apt install -y make
-RUN make install-debian-packages
+RUN make install-linux-packages
 
 ENV PATH="$PATH:/root/.nix-profile/bin:/root/.cargo/bin" \
     CC=gcc CXX=g++ OBJC=gcc OBJCXX=g++
@@ -17,7 +18,7 @@ WORKDIR /workspace
 COPY . .
 RUN TARGET=${BUILD_TARGET} make everything
 
-FROM swift:bookworm AS production
+FROM swift:${distribution} AS production
 
 WORKDIR /app
 COPY --from=build /workspace/LX .

@@ -96,3 +96,17 @@ install-rhel-packages: install-static-swift-sdk
 	dnf install -y npm cmake git ninja-build gcc gcc-c++ gcc-objc gcc-objc++ gdb wget zsh zip gnustep-base-devel
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
 	~/.cargo/bin/cargo install wasm-pack
+
+
+.PHONY: install-linux-packages
+install-linux-packages:
+	@if [ -f /etc/debian_version ]; then \
+		echo "Installing packages for debian"; \
+		$(MAKE) install-debian-packages; \
+	elif [ -f /etc/redhat-release ]; then \
+		echo "Installing packages for redhat"; \
+		$(MAKE) install-rhel-packages; \
+	else \
+		echo "Unsupported Linux distribution"; \
+		exit 1; \
+	fi

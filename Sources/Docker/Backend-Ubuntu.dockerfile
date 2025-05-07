@@ -1,47 +1,27 @@
 FROM swift:noble AS development
 
-# TOOD replace this with nixos/nix once nix has swift 6 support
-# FROM nixos/nix
-# https://github.com/NixOS/nixpkgs/issues/343210#issuecomment-2424134735
+WORKDIR /tmp
+COPY Makefile .
+RUN apt update && apt upgrade -y && apt install -y make
+RUN make install-debian-packages
 
-RUN apt update && apt upgrade -y && apt install -y nix npm cmake wget zsh zip gdb git ninja-build swi-prolog build-essential gnustep-core-devel gnustep-core-doc gobjc gobjc++
+ENV PATH="$PATH:/root/.nix-profile/bin:/root/.cargo/bin" \
+    CC=gcc CXX=g++ OBJC=gcc OBJCXX=g++
 
-ENV PATH="$PATH:/root/.nix-profile/bin:/root/.cargo/bin"
-ENV CC=gcc
-ENV CXX=g++
-ENV OBJC=gcc
-ENV OBJCXX=g++
-
-RUN nix --extra-experimental-features 'nix-command flakes' profile install \
-    nixpkgs#dotenvx \
-    nixpkgs#cargo \
-    nixpkgs#rustc \
-    nixpkgs#rustfmt
-
-RUN cargo install wasm-pack
-
-WORKDIR /
 RUN git config --global --add safe.directory /workspace
 
 FROM development AS build
-
 ARG BUILD_VARIANT=debug
-
-# TODO: build it to a static binary
 
 WORKDIR /workspace
 COPY . .
-RUN TARGET=${BUILD_TARGET} make init
-RUN TARGET=${BUILD_TARGET} make all
-
-WORKDIR /artifacts
-RUN cp /workspace/.build/${BUILD_VARIANT}/LX .
+RUN TARGET=${BUILD_TARGET} make everything
 
 # TODO switch to FROM scratch once we can build it statically
 FROM swift:noble AS production
 
 WORKDIR /app
-COPY --from=build /artifacts/* .
+COPY --from=build /workspace/LX .
 
 CMD ["/app/LX"]
 EXPOSE 1337

@@ -1,7 +1,7 @@
 #! /usr/bin/env make
 .DEFAULT_GOAL := all
 
-SHELL = /usr/bin/env zsh
+SHELL = /usr/bin/env sh
 VARIANT ?= debug
 # or release - do not put a space after debug
 INSTALL_DIR ?= /usr/local/bin
@@ -44,6 +44,10 @@ test: all
 	npm run test --workspaces
 	CC=clang CXX=clang++ swift test
 
+.PHONY: everything
+everything: init all
+	cp .build/${VARIANT}/LX .
+
 .PHONY: run
 run: all
 	CC=clang CXX=clang++ dotenvx run -- swift run
@@ -68,3 +72,27 @@ backend-dev: backend
 .PHONY: install
 install: all
 	cp ${ARTIFACT} ${INSTALL_DIR}
+
+.PHONY: install-static-swift-sdk
+install-static-swift-sdk:
+	swift sdk install https://download.swift.org/swift-6.1-release/static-sdk/swift-6.1-RELEASE/swift-6.1-RELEASE_static-linux-0.0.1.artifactbundle.tar.gz --checksum 111c6f7d280a651208b8c74c0521dd99365d785c1976a6e23162f55f65379ac6
+
+.PHONY: install-debian-packages
+install-debian-packages: install-static-swift-sdk
+# optimized for bookworm
+	apt install -y npm nix cmake wget zsh zip gdb git ninja-build swi-prolog build-essential gnustep-core-devel gnustep-core-doc gobjc gobjc++
+	nix --extra-experimental-features 'nix-command flakes' profile install \
+		nixpkgs#nodejs_23 			\
+		nixpkgs#dotenvx 			\
+		nixpkgs#wasm-pack			\
+		nixpkgs#cargo				\
+		nixpkgs#rustc
+
+.PHONY: install-rhel-packages
+install-rhel-packages: install-static-swift-sdk
+# optimized for rhel9
+	dnf module enable -y nodejs:20
+	dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+	dnf install -y npm cmake git ninja-build gcc gcc-c++ gcc-objc gcc-objc++ gdb wget zsh zip gnustep-base-devel
+	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
+	~/.cargo/bin/cargo install wasm-pack

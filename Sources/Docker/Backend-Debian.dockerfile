@@ -20,7 +20,6 @@ WORKDIR /
 RUN git config --global --add safe.directory /workspace
 
 FROM development AS build
-
 ARG BUILD_VARIANT=debug
 
 WORKDIR /workspace
@@ -29,6 +28,7 @@ RUN TARGET=${BUILD_TARGET} make init
 RUN TARGET=${BUILD_TARGET} make all
 
 FROM swift:bookworm AS production
+ARG BUILD_VARIANT=debug
 
 WORKDIR /app
 COPY --from=build /workspace/.build/${BUILD_VARIANT}/LX .

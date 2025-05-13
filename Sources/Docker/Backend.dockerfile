@@ -4,7 +4,7 @@ FROM swift:${distribution} AS development
 WORKDIR /tmp
 COPY Makefile .
 RUN apt update && apt upgrade -y && apt install -y make
-RUN make install-linux-packages
+RUN make install-linux-dependencies
 
 ENV PATH="$PATH:/root/.nix-profile/bin:/root/.cargo/bin" \
     CC=gcc CXX=g++ OBJC=gcc OBJCXX=g++

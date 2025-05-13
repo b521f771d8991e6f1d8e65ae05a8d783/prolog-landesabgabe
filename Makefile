@@ -82,7 +82,7 @@ install-debian-packages: install-static-swift-sdk
 # optimized for bookworm
 	apt install -y npm nix cmake wget zsh zip gdb git ninja-build swi-prolog build-essential gnustep-core-devel gnustep-core-doc gobjc gobjc++
 	nix --extra-experimental-features 'nix-command flakes' profile install \
-		nixpkgs#nodejs_23 			\
+		nixpkgs#nodejs_22 			\
 		nixpkgs#dotenvx 			\
 		nixpkgs#wasm-pack			\
 		nixpkgs#cargo				\

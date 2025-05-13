@@ -13,6 +13,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { TaskResultFetchingErrorView } from "./TaskResultFetchingErrorView";
 import { TaskResultView } from "./TaskResultView";
 import { TaskStartRequest } from "./TaskStartRequest";
+import "highlight.js/styles/xcode.css";
 
 export function CodeView({
 	code,

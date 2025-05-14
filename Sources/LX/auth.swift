@@ -38,9 +38,9 @@ struct KeycloakPayload: JWTPayload {
     func verify(using algorithm: some JWTAlgorithm) async throws {
         try self.expiration.verifyNotExpired()
 
-        //if !realmAccess.roles.contains(lxJwtRole!) {
-        //    throw Abort(.unauthorized, reason: "Unauthorized access: \(lxJwtRole!) not found in \(realmAccess.roles)")
-        //}
+        if !realmAccess.roles.contains(lxJwtRole!) {
+            throw Abort(.unauthorized, reason: "Unauthorized access: \(lxJwtRole!) not found in \(realmAccess.roles)")
+        }
     }
 }
 

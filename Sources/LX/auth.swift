@@ -39,7 +39,7 @@ struct KeycloakPayload: JWTPayload {
         try self.expiration.verifyNotExpired()
 
         if lxJwtRole != nil && !realmAccess.roles.contains(lxJwtRole!) {
-            throw Abort(.unauthorized, reason: "Unauthorized access: No role/incorrect role for role: \(realmAccess.roles)")
+            throw Abort(.unauthorized, reason: "Unauthorized access: \(lxJwtRole!) not found in \(realmAccess.roles)")
         }
     }
 }

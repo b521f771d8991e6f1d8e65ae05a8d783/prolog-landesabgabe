@@ -56,7 +56,7 @@ run: all
 clean:
 	swift package clean
 	cargo clean
-	rm -rf out .build target Sources/generated *.o *.swiftdeps* *.d
+	rm -rf out .build target Sources/generated *.o *.swiftdeps* *.d npm-pkgs node_modules .build
 
 .PHONY: clean-build
 clean-build: clean all

@@ -32,18 +32,18 @@
             "type": "swift",
             "request": "launch",
             "args": [],
-            "cwd": "${workspaceFolder:workspace}",
+            "cwd": "${workspaceFolder:prolog-landesabgabe}",
             "name": "Debug LX",
-            "program": "${workspaceFolder:workspace}/.build/debug/LX",
+            "program": "${workspaceFolder:prolog-landesabgabe}/.build/debug/LX",
             "preLaunchTask": "swift: Build Debug LX"
         },
         {
             "type": "swift",
             "request": "launch",
             "args": [],
-            "cwd": "${workspaceFolder:workspace}",
+            "cwd": "${workspaceFolder:prolog-landesabgabe}",
             "name": "Release LX",
-            "program": "${workspaceFolder:workspace}/.build/release/LX",
+            "program": "${workspaceFolder:prolog-landesabgabe}/.build/release/LX",
             "preLaunchTask": "swift: Build Release LX"
         }
     ]

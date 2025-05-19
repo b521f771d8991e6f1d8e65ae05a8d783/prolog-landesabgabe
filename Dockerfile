@@ -1,14 +1,17 @@
 FROM swift:bookworm AS development
 
-RUN apt update && apt upgrade -y && apt install -y nix cmake wget zsh zip gdb git ninja-build swi-prolog build-essential gnustep-core-devel gnustep-core-doc gobjc gobjc++
-
-RUN curl --proto '=https' --tlsv1.3 -sSf https://sh.rustup.rs | bash -s -- -y
-
-ENV PATH="$PATH:/root/.nix-profile/bin:/root/.cargo/bin"
+ENV PATH="$PATH:/root/.nix-profile/bin:/opt/rust/bin"
 ENV CC=gcc
 ENV CXX=g++
 ENV OBJC=gcc
 ENV OBJCXX=g++
+ENV RUSTUP_HOME=/opt/rust
+ENV CARGO_HOME=/opt/rust
+
+RUN apt update && apt upgrade -y && apt install -y nix cmake wget zsh zip gdb git ninja-build swi-prolog \
+    build-essential gnustep-core-devel gnustep-core-doc gobjc gobjc++
+
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y --no-modify-path
 
 RUN nix --extra-experimental-features 'nix-command flakes' profile install \
     nixpkgs#nodejs_22 \

@@ -27,7 +27,7 @@
     "runArgs": [
         "--userns=keep-id:uid=1000,gid=1000"
     ],
-    "containerUser": "vscode",
+    "containerUser": "root",
     "workspaceFolder": "/workspace/prolog-landesabgabe",
     "mounts": [
         "type=bind,source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,readonly",

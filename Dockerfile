@@ -1,12 +1,8 @@
 FROM swift:bookworm AS development
 
 ENV PATH="$PATH:/root/.nix-profile/bin:/opt/rust/bin"
-ENV CC=gcc
-ENV CXX=g++
-ENV OBJC=gcc
-ENV OBJCXX=g++
-ENV RUSTUP_HOME=/opt/rust
-ENV CARGO_HOME=/opt/rust
+ENV CC=gcc CXX=g++ OBJC=gcc OBJCXX=g++
+ENV RUSTUP_HOME=/opt/rust CARGO_HOME=/opt/rust
 
 RUN apt update && apt upgrade -y && apt install -y nix cmake wget zsh zip gdb git ninja-build swi-prolog \
     build-essential gnustep-core-devel gnustep-core-doc gobjc gobjc++

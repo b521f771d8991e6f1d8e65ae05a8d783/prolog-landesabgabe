@@ -3,7 +3,7 @@ services:
   worker:
     build:
       context: ../..
-      dockerfile: Sources/Docker/Backend-Debian.dockerfile
+      dockerfile: Dockerfile
       target: ${WORKER_TARGET_STAGE}
     tty: true
     ports:

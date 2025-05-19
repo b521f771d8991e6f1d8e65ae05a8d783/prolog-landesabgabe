@@ -12,12 +12,11 @@ RUN apt update && apt upgrade -y && apt install -y nix cmake wget zsh zip gdb gi
     build-essential gnustep-core-devel gnustep-core-doc gobjc gobjc++
 
 RUN curl https://sh.rustup.rs -sSf | bash -s -- -y --no-modify-path
+RUN rustup target add wasm32-unknown-unknown
 
 RUN nix --extra-experimental-features 'nix-command flakes' profile install \
     nixpkgs#nodejs_22 \
     nixpkgs#dotenvx
-
-RUN cargo install wasm-pack
 
 WORKDIR /
 RUN git config --global --add safe.directory /workspace

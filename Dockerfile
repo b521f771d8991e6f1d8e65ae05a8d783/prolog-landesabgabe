@@ -18,6 +18,7 @@ RUN cargo install wasm-pack
 
 WORKDIR /
 RUN git config --global --add safe.directory /workspace
+RUN useradd -ms /bin/zsh vscode
 
 FROM development AS build
 ARG BUILD_VARIANT=debug

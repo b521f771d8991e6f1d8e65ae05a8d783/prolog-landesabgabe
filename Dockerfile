@@ -1,23 +1,22 @@
 FROM swift:bookworm AS development
 
-RUN apt update && apt upgrade -y && apt install -y nix cmake wget zsh zip gdb git ninja-build swi-prolog build-essential gnustep-core-devel gnustep-core-doc gobjc gobjc++
+ENV PATH="$PATH:/root/.nix-profile/bin:/opt/rust/bin"
+ENV CC=gcc CXX=g++ OBJC=gcc OBJCXX=g++
+ENV RUSTUP_HOME=/opt/rust CARGO_HOME=/opt/rust
 
-RUN curl --proto '=https' --tlsv1.3 -sSf https://sh.rustup.rs | bash -s -- -y
+RUN apt update && apt upgrade -y && apt install -y nix cmake wget zsh zip gdb git ninja-build swi-prolog \
+    build-essential gnustep-core-devel gnustep-core-doc gobjc gobjc++
 
-ENV PATH="$PATH:/root/.nix-profile/bin:/root/.cargo/bin"
-ENV CC=gcc
-ENV CXX=g++
-ENV OBJC=gcc
-ENV OBJCXX=g++
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y --no-modify-path
+RUN rustup target add wasm32-unknown-unknown
 
 RUN nix --extra-experimental-features 'nix-command flakes' profile install \
     nixpkgs#nodejs_22 \
     nixpkgs#dotenvx
 
-RUN cargo install wasm-pack
-
 WORKDIR /
 RUN git config --global --add safe.directory /workspace
+RUN useradd -ms /bin/zsh vscode
 
 FROM development AS build
 ARG BUILD_VARIANT=debug

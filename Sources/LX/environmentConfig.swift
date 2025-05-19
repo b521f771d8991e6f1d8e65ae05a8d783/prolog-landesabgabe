@@ -1,6 +1,6 @@
 import Foundation
 
-let lxJwtRsa256 = ProcessInfo.processInfo.environment["LX_JWT_RSA_256"]
+let lxJwtRsa256 = ProcessInfo.processInfo.environment["LX_JWT_RSA_256"]?.replacingOccurrences(of: "\\n", with: "\n")
 let lxJwtRole = ProcessInfo.processInfo.environment["LX_JWT_ROLE"]
 
 let workerPortString = ProcessInfo.processInfo.environment["LX_WORKER_LISTEN_PORT"] ?? "1337"

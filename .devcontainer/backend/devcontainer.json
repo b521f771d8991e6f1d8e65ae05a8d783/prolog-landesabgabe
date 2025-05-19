@@ -1,9 +1,9 @@
 {
-    "dockerComposeFile": [
-        "docker-compose.yml",
-        "../../Sources/Docker/docker-compose.yml"
-    ],
-    "service": "worker",
+    "build": {
+        "target": "development",
+        "dockerfile": "../../Dockerfile",
+        "context": "../.."
+    },
     "customizations": {
         "vscode": {
             "terminal.integrated.shell.linux": "/bin/zsh",
@@ -24,9 +24,14 @@
             ]
         }
     },
-    "workspaceFolder": "/workspace",
+    "runArgs": [
+        "--userns=keep-id:uid=1000,gid=1000"
+    ],
+    "containerUser": "root",
+    "workspaceFolder": "/workspace/prolog-landesabgabe",
     "mounts": [
         "type=bind,source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/root/.ssh,readonly",
+        "type=bind,source=${localWorkspaceFolder},target=/workspace/prolog-landesabgabe"
         //"type=bind,source=${localEnv:HOME}${localEnv:USERPROFILE}/.gnupg,target=/root/.gnupg,readonly"
     ]
 }

@@ -1,7 +1,6 @@
 [workspace]
 resolver = "2"
 members = [
-    "Sources/Assets",
     "Sources/BuildInformation",
     "Sources/PrologVM",
     "Sources/LX"

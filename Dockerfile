@@ -32,9 +32,9 @@ ARG BUILD_VARIANT=debug
 RUN apt update && apt upgrade -y && apt install -y curl
 
 WORKDIR /app
-COPY --from=build /workspace/.build/${BUILD_VARIANT}/LX .
+COPY --from=build /workspace/target/${BUILD_VARIANT}/backend .
 
-CMD ["/app/LX"]
+CMD ["/app/backend"]
 #EXPOSE 1337
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s  CMD curl --fail http://localhost:1337/api/status | grep -q 👌 || exit 1
 

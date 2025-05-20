@@ -39,7 +39,7 @@ struct KeycloakPayload: JWTPayload {
         try self.expiration.verifyNotExpired()
 
         if lxJwtRole != nil && !realmAccess.roles.contains(lxJwtRole!) {
-            NSLog("Unauthorized: No role/incorrect role")
+            NSLog("Unauthorized: No role/incorrect role: \(lxJwtRole) not in \(realmAccess.roles!)")
             // TODO do this properly
             //throw Abort(.unauthorized, reason: "No role/incorrect role")
         }

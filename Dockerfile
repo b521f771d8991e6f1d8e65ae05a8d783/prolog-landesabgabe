@@ -33,5 +33,5 @@ WORKDIR /app
 COPY --from=build /workspace/.build/${BUILD_VARIANT}/LX .
 
 CMD ["/app/LX"]
-EXPOSE 1337
-HEALTHCHECK CMD curl --fail http://localhost:1337/api/status || exit 1
+#EXPOSE 1337
+#HEALTHCHECK CMD curl --fail http://localhost:1337/api/status || exit 1

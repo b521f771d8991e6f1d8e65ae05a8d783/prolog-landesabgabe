@@ -29,9 +29,12 @@ RUN TARGET=${BUILD_TARGET} make all
 FROM swift:bookworm AS production
 ARG BUILD_VARIANT=debug
 
+RUN apt update && apt upgrade -y && apt install -y curl
+
 WORKDIR /app
 COPY --from=build /workspace/.build/${BUILD_VARIANT}/LX .
 
 CMD ["/app/LX"]
-EXPOSE 1337
-HEALTHCHECK CMD curl --fail http://localhost:1337/api/status || exit 1
+#EXPOSE 1337
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s  CMD curl --fail http://localhost:1337/api/status | grep -q 👌 || exit 1
+

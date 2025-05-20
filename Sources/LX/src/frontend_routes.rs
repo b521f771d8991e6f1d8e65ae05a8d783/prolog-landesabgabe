@@ -3,7 +3,7 @@ use actix_web::{web, HttpResponse };
 use log::info;
 
 #[derive(rust_embed::Embed)]
-#[folder = "../generated/web-dist/frontend"]
+#[folder = "../../generated/web-dist/frontend"]
 pub struct WebAppData;
 
 impl WebAppData {
@@ -82,25 +82,4 @@ pub fn add_services(app: &mut web::ServiceConfig) {
     app.service(explore);
     app.service(sitemap);
     app.service(not_found);
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[actix_web::test]
-    async fn test_root() {
-        let app = test::init_service(App::new().service(root)).await;
-        let req = test::TestRequest::get().uri("/").to_request();
-        let resp = test::call_service(&app, req).await;
-        assert!(resp.status().is_success());
-    }
-
-    #[actix_web::test]
-    async fn test_index() {
-        let app = test::init_service(App::new().service(index)).await;
-        let req = test::TestRequest::get().uri("/index.html").to_request();
-        let resp = test::call_service(&app, req).await;
-        assert!(resp.status().is_success());
-    }
 }

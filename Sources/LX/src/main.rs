@@ -1,16 +1,16 @@
 use actix_cors::Cors;
 use actix_web::{
+    App, HttpServer,
     middleware::NormalizePath,
     web::{self},
-    App, HttpServer,
 };
 use std::env;
 
-mod frontend_routes;
-mod util_services;
-mod app_state;
 mod app_config;
+mod app_state;
+mod frontend_routes;
 mod keycloak_config;
+mod util_services;
 
 async fn do_health_check() -> std::io::Result<()> {
     let url = format!(
@@ -57,7 +57,7 @@ async fn main() -> std::io::Result<()> {
         app_state.server_port().clone(),
     );
 
-    const api_prefix: &str = env!("VITE_API_PREFIX");
+    const api_prefix: &str = env!("VITE_LX_API_PREFIX");
 
     println!(
         "Launching formular profi backend service on port {} listening on {} using api prefix '{}'",
@@ -68,14 +68,14 @@ async fn main() -> std::io::Result<()> {
 
     // set up the http server
     HttpServer::new(move || {
-        let allowed_origins = env::var("ALLOWED_CORS_ORIGIN")
+        let allowed_origins = env::var("LX_ALLOWED_CORS_ORIGIN")
             .map(|origins| {
                 origins
                     .split(env!("LIST_SEPERATOR"))
                     .map(|s| s.trim().to_string())
                     .collect::<Vec<_>>()
             })
-            .expect("ALLOWED_CORS_ORIGIN not set");
+            .expect("LX_ALLOWED_CORS_ORIGIN not set");
 
         let cors = Cors::default()
             .allowed_origin_fn(move |origin, _req_head| {
@@ -100,10 +100,8 @@ async fn main() -> std::io::Result<()> {
                     .service(util_services::convert_to_teapot)
                     .service(app_config::app_config)
                     .service(
-                        web::scope("/private")
-                            .wrap(app_state.keycloak_config().clone())
-                            //.service(cors_proxy::cors_proxy)
-                    )
+                        web::scope("/private").wrap(app_state.keycloak_config().clone()), //.service(cors_proxy::cors_proxy)
+                    ),
             )
     })
     .bind(server_binding)?

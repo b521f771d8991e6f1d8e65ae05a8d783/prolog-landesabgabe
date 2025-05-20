@@ -27,36 +27,20 @@ frontend:
 
 .PHONY: backend
 backend:
-	cmake -S . -B ./out/build/${VARIANT} --preset=${VARIANT}
-	cmake --build ./out/build/${VARIANT}
-	cargo build ${CARGO_RELEASE_FLAG}
-	CC=clang CXX=clang++ swift build --configuration ${VARIANT}
-
-.PHONY: ${ARTIFACT}
-${ARTIFACT}: frontend backend
+	dotenvx run -- cargo build ${CARGO_RELEASE_FLAG}
 
 .PHONY: all
-all: ${ARTIFACT}
+all: frontend backend
 
 .PHONY: test
 test: all
 	cargo test
 	npm run test --workspaces
-	CC=clang CXX=clang++ swift test
-
-.PHONY: everything
-everything: init all
-	cp .build/${VARIANT}/LX .
-
-.PHONY: run
-run: all
-	CC=clang CXX=clang++ dotenvx run -- swift run
 
 .PHONY: clean
 clean:
-	swift package clean
 	cargo clean
-	rm -rf out .build target Sources/generated *.o *.swiftdeps* *.d npm-pkgs node_modules .build
+	rm -rf out .build target Sources/generated *.o *.d npm-pkgs node_modules .build
 
 .PHONY: clean-build
 clean-build: clean all
@@ -67,7 +51,7 @@ frontend-dev: frontend
 
 .PHONY: backend-dev
 backend-dev: backend
-	CC=clang CXX=clang++ dotenvx run -f .env.development -- swift run
+	CC=clang CXX=clang++ dotenvx run -- cargo run
 
 .PHONY: install
 install: all

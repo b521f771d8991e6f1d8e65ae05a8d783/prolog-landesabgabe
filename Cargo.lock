@@ -360,6 +360,7 @@ dependencies = [
  "actix-cors",
  "actix-web",
  "actix-web-middleware-keycloak-auth",
+ "backend-interfaces",
  "build-information",
  "derive-getters",
  "diesel",
@@ -368,6 +369,15 @@ dependencies = [
  "mime_guess",
  "reqwest",
  "rust-embed",
+ "serde",
+ "serde_json",
+ "wasm-bindgen",
+]
+
+[[package]]
+name = "backend-interfaces"
+version = "0.1.0"
+dependencies = [
  "serde",
  "serde_json",
  "wasm-bindgen",

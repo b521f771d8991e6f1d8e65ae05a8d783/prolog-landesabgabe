@@ -3,6 +3,5 @@ resolver = "2"
 members = [
     "Sources/Assets",
     "Sources/BuildInformation",
-    "Sources/LogicKit",
-    "Sources/PrologVM"
+    "Sources/PrologVM",
 ]

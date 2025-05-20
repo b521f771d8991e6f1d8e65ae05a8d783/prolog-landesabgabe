@@ -126,7 +126,7 @@ mod tests {
     async fn test_load_module() {
         let mut vm = PrologVM::new_with_modules().await;
         let result = vm
-            .execute("import {SwiPrologVM} from 'index'; new SwiPrologVM()".to_string())
+            .execute("new SwiPrologVM()".to_string())
             .await
             .expect("Error while constructing PrologVM");
     }

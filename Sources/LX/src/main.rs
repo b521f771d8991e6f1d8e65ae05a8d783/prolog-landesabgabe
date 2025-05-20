@@ -8,6 +8,7 @@ use std::env;
 
 mod app_config;
 mod app_state;
+mod corpus;
 mod frontend_routes;
 mod keycloak_config;
 mod util_services;
@@ -99,6 +100,7 @@ async fn main() -> std::io::Result<()> {
                     .service(util_services::status)
                     .service(util_services::convert_to_teapot)
                     .service(app_config::app_config)
+                    .service(corpus::corpus)
                     .service(
                         web::scope("/private").wrap(app_state.keycloak_config().clone()), //.service(cors_proxy::cors_proxy)
                     ),

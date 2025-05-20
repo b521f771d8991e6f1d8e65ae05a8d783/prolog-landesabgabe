@@ -1,11 +1,11 @@
 FROM swift:bookworm AS development
 
 ENV PATH="$PATH:/root/.nix-profile/bin:/opt/rust/bin"
-ENV CC=gcc CXX=g++ OBJC=gcc OBJCXX=g++
+ENV CC=clang CXX=clang++ OBJC=clang OBJCXX=clang++
 ENV RUSTUP_HOME=/opt/rust CARGO_HOME=/opt/rust
 
 RUN apt update && apt upgrade -y && apt install -y nix cmake wget zsh zip gdb git ninja-build swi-prolog \
-    build-essential gnustep-core-devel gnustep-core-doc gobjc gobjc++
+    libgnustep-base-dev gnustep-base-doc
 
 RUN curl https://sh.rustup.rs -sSf | bash -s -- -y --no-modify-path
 RUN rustup target add wasm32-unknown-unknown

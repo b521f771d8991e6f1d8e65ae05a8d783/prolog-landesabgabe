@@ -72,39 +72,3 @@ backend-dev: backend
 .PHONY: install
 install: all
 	cp ${ARTIFACT} ${INSTALL_DIR}
-
-.PHONY: install-static-swift-sdk
-install-static-swift-sdk:
-	swift sdk install https://download.swift.org/swift-6.1-release/static-sdk/swift-6.1-RELEASE/swift-6.1-RELEASE_static-linux-0.0.1.artifactbundle.tar.gz --checksum 111c6f7d280a651208b8c74c0521dd99365d785c1976a6e23162f55f65379ac6
-
-.PHONY: install-debian-dependencies
-install-debian-dependencies: install-static-swift-sdk
-# optimized for bookworm
-	apt install -y npm nix cmake wget zsh zip gdb git ninja-build swi-prolog build-essential gnustep-core-devel gnustep-core-doc gobjc gobjc++
-	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
-	nix --extra-experimental-features 'nix-command flakes' profile install \
-		nixpkgs#nodejs_22 			\
-		nixpkgs#dotenvx
-
-.PHONY: install-rhel-dependencies
-install-rhel-dependencies: install-static-swift-sdk
-# optimized for rhel9
-	dnf module enable -y nodejs:20
-	dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
-	dnf install -y npm cmake git ninja-build gcc gcc-c++ gcc-objc gcc-objc++ gdb wget zsh zip gnustep-base-devel
-	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
-	~/.cargo/bin/cargo install wasm-pack
-
-
-.PHONY: install-linux-packages
-install-linux-dependencies:
-	@if [ -f /etc/debian_version ]; then \
-		echo "Installing packages for debian"; \
-		$(MAKE) install-debian-dependencies; \
-	elif [ -f /etc/redhat-release ]; then \
-		echo "Installing packages for redhat"; \
-		$(MAKE) install-rhel-dependencies; \
-	else \
-		echo "Unsupported Linux distribution"; \
-		exit 1; \
-	fi

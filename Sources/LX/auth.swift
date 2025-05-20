@@ -40,6 +40,7 @@ struct KeycloakPayload: JWTPayload {
 
         if lxJwtRole != nil && !realmAccess.roles.contains(lxJwtRole!) {
             NSLog("Unauthorized: No role/incorrect role")
+            // TODO do this properly
             //throw Abort(.unauthorized, reason: "No role/incorrect role")
         }
     }

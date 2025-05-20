@@ -134,7 +134,6 @@ export function HomePage() {
 				direction="column"
 				wrap="wrap"
 			>
-				<Title td="underline">Sachverhalts-Editor</Title>
 				<Paper shadow="sm" p="sm" m="sm">
 					<Flex
 						className={"select-none"}

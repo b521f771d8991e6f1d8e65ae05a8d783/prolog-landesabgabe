@@ -1,0 +1,21 @@
+[package]
+name = "backend"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+rust-embed = { version = "8.7.1", features = ["debug-embed"]}
+actix-web = "4.9.0"
+log = "0.4.27"
+serde = "1.0.217"
+diesel = "2.2.9"
+serde_json = "1.0.138"
+reqwest = { version = "0.12.15", features = ["json", "rustls-tls"], default-features = false }
+env_logger = "0.11.8"
+actix-cors = "0.7.1"
+mime_guess = "2.0.5"
+build-information = { path = "../BuildInformation" }
+backend-interfaces = { path = "../BackendInterfaces" }
+actix-web-middleware-keycloak-auth = "0.5.0"
+derive-getters = "0.5.0"
+wasm-bindgen = "0.2.100"

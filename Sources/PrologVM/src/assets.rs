@@ -11,8 +11,8 @@ pub fn get_index_js() -> std::option::Option<String> {
 mod test {
     use super::*;
 
-    #[test]
-    fn test_logic_kit_embedding() {
+    #[tokio::test]
+    async fn test_logic_kit_embedding() {
         assert!(get_index_js().is_some());
     }
 

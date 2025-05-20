@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "test": "vitest",
-    "wasm-pack": "npx wasm-pack build --out-dir ../../npm-pkgs/logic-kit-rust .",
-    "build": "npm run wasm-pack && vite build --emptyOutDir",
+    "build": "vite build --emptyOutDir",
     "start": "node dist"
   },
   "devDependencies": {

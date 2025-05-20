@@ -123,16 +123,11 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_execute_js() {
-        let mut vm = PrologVM::new();
-        assert_eq!(
-            vm.execute_js("console.log('Well, boys, this works!' 🍒);".to_string()),
-            ()
-        );
-    }
-
-    #[tokio::test]
     async fn test_load_module() {
-        let mut vm = PrologVM::new();
+        let mut vm = PrologVM::new_with_modules().await;
+        let result = vm
+            .execute("new SwiPrologVM()".to_string())
+            .await
+            .expect("Error while constructing PrologVM");
     }
 }

@@ -1,11 +1,11 @@
 FROM swift:bookworm AS development
 
 ENV PATH="$PATH:/root/.nix-profile/bin:/opt/rust/bin"
-ENV CC=gcc CXX=g++ OBJC=gcc OBJCXX=g++
+ENV CC=clang CXX=clang++ OBJC=clang OBJCXX=clang++
 ENV RUSTUP_HOME=/opt/rust CARGO_HOME=/opt/rust
 
 RUN apt update && apt upgrade -y && apt install -y nix cmake wget zsh zip gdb git ninja-build swi-prolog \
-    build-essential gnustep-core-devel gnustep-core-doc gobjc gobjc++
+    libgnustep-base-dev gnustep-base-doc
 
 RUN curl https://sh.rustup.rs -sSf | bash -s -- -y --no-modify-path
 RUN rustup target add wasm32-unknown-unknown
@@ -32,9 +32,9 @@ ARG BUILD_VARIANT=debug
 RUN apt update && apt upgrade -y && apt install -y curl
 
 WORKDIR /app
-COPY --from=build /workspace/.build/${BUILD_VARIANT}/LX .
+COPY --from=build /workspace/target/${BUILD_VARIANT}/backend .
 
-CMD ["/app/LX"]
+CMD ["/app/backend"]
 #EXPOSE 1337
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s  CMD curl --fail http://localhost:1337/api/status | grep -q 👌 || exit 1
 

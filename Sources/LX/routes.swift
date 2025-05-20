@@ -99,7 +99,7 @@ private func routesUnprotected(onApp app: Application) throws {
     AppConfig.register(onApp: app)
 
     app.get("\(apiPrefix)", "status") { req async throws -> String in
-        return "OK"
+        return "👌"
     }
 
     app.get("\(apiPrefix)", "version") { req async throws -> String in

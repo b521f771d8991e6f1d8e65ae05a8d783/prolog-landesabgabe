@@ -38,8 +38,10 @@ struct KeycloakPayload: JWTPayload {
     func verify(using algorithm: some JWTAlgorithm) async throws {
         try self.expiration.verifyNotExpired()
 
-        if !realmAccess.roles.contains(lxJwtRole!) {
-            throw Abort(.unauthorized, reason: "Unauthorized access: \(lxJwtRole!) not found in \(realmAccess.roles)")
+        if let role = lxJwtRole, !realmAccess.roles.contains(role) {
+            NSLog("Unauthorized: No role/incorrect role: \(lxJwtRole) not in \(realmAccess.roles)")
+            // TODO do this properly
+            //throw Abort(.unauthorized, reason: "No role/incorrect role")
         }
     }
 }

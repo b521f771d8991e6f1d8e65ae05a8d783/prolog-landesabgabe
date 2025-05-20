@@ -14,6 +14,12 @@ rootPath.replace("/Package.swift", with: "")
 
 let cmakeOutputDir = "\(rootPath)/out/build/\(buildType)"
 
+let cmakeSwiftFlags = ["-I\(cmakeOutputDir)"]
+let cmakeLinkerFlags = [
+    "-L\(cmakeOutputDir)/vcpkg_installed/x64-linux/lib",
+    "-Ltarget/\(buildType)",
+]
+
 let rustFlags: [String] = [
     "\(rootPath)/Sources/generated/SwiftBridgeCore.swift",
     "\(rootPath)/Sources/generated/prolog-vm/prolog-vm.swift",
@@ -46,24 +52,13 @@ let package = Package(
             ],
             swiftSettings: [
                 .interoperabilityMode(.Cxx),
-                .unsafeFlags(
-                    rustFlags + [
-                        // cmake dependencies
-                        "-I\(cmakeOutputDir)"
-                        //"-I\(rootPath)/Sources/Assets/include",
-                    ]),
+                .unsafeFlags(rustFlags + cmakeSwiftFlags),
             ],
             linkerSettings: [
                 .linkedLibrary("assets"),
                 .linkedLibrary("prolog_vm"),
                 .linkedLibrary("build_information"),
-                .unsafeFlags(
-                    rustFlags + [
-                        //"-L\(cmakeOutputDir)/Sources/PrologVM",
-                        //"-L\(cmakeOutputDir)/Sources/Assets",
-                        "-L\(cmakeOutputDir)/vcpkg_installed/x64-linux/lib",
-                        "-Ltarget/\(buildType)",
-                    ]),
+                .unsafeFlags(rustFlags + cmakeLinkerFlags),
             ]),
     ],
     cLanguageStandard: .c11,

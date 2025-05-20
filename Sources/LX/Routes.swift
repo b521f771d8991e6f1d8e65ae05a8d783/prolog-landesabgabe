@@ -47,7 +47,7 @@ private func routesProtected(onApp app: Application) throws {
 
     app.get(
         "\(apiPrefix)", "queryModel",
-        use: protectRoute { req async throws -> String in
+        use: protectRoute { req async throws -> Response in
             guard let lawName: String = req.query[String.self, at: "law"] else {
                 throw Abort(.badRequest, reason: "request requires the parameter 'law'")
             }
@@ -66,17 +66,14 @@ private func routesProtected(onApp app: Application) throws {
                 throw Abort(.badRequest, reason: "Law \(lawName) not found.")
             }
 
-            let pvm = PrologVM()
+            let modelRet = try queryModel(
+                onLaws: [legalText], withJavaScript: javascript, andProlog: query)
+            let jsonData = try JSONEncoder().encode(modelRet)
 
-            if let javascript = javascript {
-                try pvm.execute_js(javascript)
-            }
-
-            if let query = query {
-                try pvm.execute_prolog(query)
-            }
-
-            throw Abort(.internalServerError, reason: "unexpected ending of method")
+            return Response(
+                status: .ok, headers: ["Content-Type": "application/json"],
+                body: .init(data: jsonData)
+            )
         })
 }
 

@@ -37,6 +37,7 @@ let package = Package(
         .target(
             name: "ActKit"
         ),
+        .testTarget(name: "ActKitTests", dependencies: ["ActKit"]),
         .executableTarget(
             name: "LX",
             dependencies: [

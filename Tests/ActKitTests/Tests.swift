@@ -263,7 +263,3 @@ class ActKitTests: XCTestCase {
     }
 
 }
-
-XCTMain([
-    testCase(ActKitTests.allTests)
-])

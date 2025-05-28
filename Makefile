@@ -51,7 +51,7 @@ frontend-dev: frontend
 
 .PHONY: backend-dev
 backend-dev: backend
-	CC=clang CXX=clang++ dotenvx run -- cargo run
+	CC=clang CXX=clang++ dotenvx run -- cargo run --package backend
 
 .PHONY: install
 install: all

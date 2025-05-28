@@ -1982,8 +1982,7 @@ dependencies = [
  "deno_core",
  "futures",
  "rust-embed",
- "swift-bridge",
- "swift-bridge-build",
+ "serde",
  "tokio",
 ]
 

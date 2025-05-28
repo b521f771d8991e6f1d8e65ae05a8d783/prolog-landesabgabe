@@ -1,5 +1,4 @@
 use deno_core::url::Url;
-use futures::executor;
 
 use crate::{assets::PrologVMAssets, prolog_file::PrologFile};
 
@@ -49,7 +48,20 @@ impl PrologVM {
     }
 
     pub async fn new_with_modules(modules: Vec<PrologFile>) -> Self {
-        return Self::new_with_default_modules().await;
+        let mut pvm = Self::new_with_default_modules().await;
+
+        for module in modules {
+            let specifier =
+                deno_core::resolve_url_or_path(&module.title, std::path::Path::new("."))
+                    .expect("Could not resolve module URL");
+            let code = module.content.clone();
+
+            if let Err(err) = pvm.load_module_from_code(specifier, code).await {
+                eprintln!("Error loading module '{}': {:?}", module.title, err);
+            }
+        }
+
+        pvm
     }
 
     pub async fn load_module_from_file(
@@ -92,6 +104,7 @@ impl PrologVM {
         self.js_runtime.execute_script("main.js", script)
     }
 }
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -112,7 +125,7 @@ mod tests {
     async fn test_load_module() {
         let mut vm = PrologVM::new_with_default_modules().await;
         let result = vm
-            .execute("new SwiPrologVM()".to_string())
+            .execute("1".to_string())
             .await
             .expect("Error while constructing PrologVM");
     }

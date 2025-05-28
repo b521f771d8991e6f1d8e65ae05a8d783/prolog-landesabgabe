@@ -1,12 +1,22 @@
 use actix_web::{Error, HttpResponse, get, web};
 use serde::Deserialize;
 
+pub struct PrologFile {
+    pub title: String,
+    pub content: Option<String>,
+}
+
 #[derive(rust_embed::Embed)]
 #[folder = "../Corpus"]
 struct Corpus;
 
 pub fn get_from_corpus(file_name: &str) -> Option<String> {
-    Corpus::get(file_name).map(|data| String::from_utf8_lossy(&data.data).to_string())
+    let file_name = if file_name.ends_with(".pl") {
+        file_name.to_string()
+    } else {
+        format!("{}.pl", file_name)
+    };
+    Corpus::get(&file_name).map(|data| String::from_utf8_lossy(&data.data).to_string())
 }
 
 pub fn list_corpus() -> Vec<String> {

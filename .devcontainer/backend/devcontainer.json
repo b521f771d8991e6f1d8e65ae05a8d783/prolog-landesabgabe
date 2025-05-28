@@ -25,7 +25,8 @@
         }
     },
     "runArgs": [
-        "--userns=keep-id:uid=1000,gid=1000"
+        "--userns=keep-id:uid=1000,gid=1000",
+        "--env-file=${localWorkspaceFolder}/.env"
     ],
     "containerUser": "root",
     "workspaceFolder": "/workspace/prolog-landesabgabe",

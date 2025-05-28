@@ -119,6 +119,7 @@ export async function executePrologFileInPrologVM<T extends PrologVM = SwiProlog
     return pvm.execute(queryString);
 }
 
+
 export class SwiPrologVM extends PrologVM {
     private swipl: SWIPL.SWIPLModule;
     private factBase: PrologFile[];

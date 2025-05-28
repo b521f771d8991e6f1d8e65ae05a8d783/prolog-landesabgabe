@@ -360,6 +360,7 @@ dependencies = [
  "log",
  "mime_guess",
  "prolog-vm",
+ "rand 0.9.1",
  "reqwest",
  "rust-embed",
  "serde",

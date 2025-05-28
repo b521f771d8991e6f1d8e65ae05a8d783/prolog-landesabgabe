@@ -1,8 +1,6 @@
-import { Prolog } from "scryer";
-import { SwiPrologVM } from "./PrologVM/PrologVM";
 
-console.log(Prolog.name);
-const i = await SwiPrologVM.initPrologVM();
-console.log(i.getFactBase());
+export async function run() {
+    console.log("We are now live in TypeScript");
+}
 
-console.log("aefe");
+run();

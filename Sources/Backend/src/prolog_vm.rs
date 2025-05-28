@@ -27,7 +27,7 @@ async fn query(query: web::Query<Params>) -> impl Responder {
         Err(resp) => return resp,
     };
 
-    let mut prolog_vm = PrologVM::new_with_modules(laws_content).await;
+    let mut prolog_vm = PrologVM::new_with_loaded_prolog_files(laws_content).await;
     let result = prolog_vm.execute(code.to_string()).await;
 
     HttpResponse::Ok().body(format!("{:?}", result))

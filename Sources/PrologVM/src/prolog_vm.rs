@@ -1,4 +1,4 @@
-use deno_core::url::Url;
+use deno_core::{error::CoreError, url::Url};
 
 use crate::{assets::PrologVMAssets, prolog_file::PrologFile};
 
@@ -25,38 +25,25 @@ impl PrologVM {
             module_loader: Some(std::rc::Rc::new(deno_core::FsModuleLoader)),
             ..Default::default()
         };
+
         return Self::from_options(options);
     }
 
-    pub async fn new_with_default_modules() -> Self {
+    pub async fn new_with_default_runtime() -> Self {
         let mut pvm = Self::new();
 
-        let specifier =
-            deno_core::resolve_url_or_path("file:///main.js", std::path::Path::new("."))
-                .expect("Could not resolve URL");
-        let file = PrologVMAssets::get("index.js")
-            .expect("could not load")
-            .data
-            .clone();
-        let code = String::from_utf8(file.to_vec()).expect("could not convert to utf-8");
-
-        if let Err(err) = pvm.load_module_from_code(specifier, code).await {
-            eprintln!("Error loading module from code: {:?}", err);
+        if let Err(e) = pvm.load_module_from_embedded_file("index.js").await {
+            eprintln!("Error while loading embedded file: {}", e)
         }
 
         return pvm;
     }
 
-    pub async fn new_with_modules(modules: Vec<PrologFile>) -> Self {
-        let mut pvm = Self::new_with_default_modules().await;
+    pub async fn new_with_loaded_prolog_files(modules: Vec<PrologFile>) -> Self {
+        let mut pvm = Self::new_with_default_runtime().await;
 
         for module in modules {
-            let specifier =
-                deno_core::resolve_url_or_path(&module.title, std::path::Path::new("."))
-                    .expect("Could not resolve module URL");
-            let code = module.content.clone();
-
-            if let Err(err) = pvm.load_module_from_code(specifier, code).await {
+            if let Err(err) = pvm.load_module_from_prolog_file(&module).await {
                 eprintln!("Error loading module '{}': {:?}", module.title, err);
             }
         }
@@ -74,25 +61,63 @@ impl PrologVM {
         return Ok(mod_id);
     }
 
+    pub async fn load_module_from_file_and_evaluate(
+        &mut self,
+        file_path: &str,
+    ) -> Result<(), CoreError> {
+        let mod_id = self
+            .load_module_from_file(file_path)
+            .await
+            .expect("could not load module from file");
+
+        self.evaluate_module(mod_id).await
+    }
+
     pub async fn load_module_from_code(
         &mut self,
         specifier: Url,
-        code: String,
+        code: &str,
     ) -> Result<(), deno_core::error::CoreError> {
+        let code_str = code.to_string();
+
         let module_id = self
             .js_runtime
-            .load_main_es_module_from_code(&specifier, code)
+            .load_main_es_module_from_code(&specifier, code_str)
             .await
             .expect("Could not load module from code");
 
-        return self.js_runtime.mod_evaluate(module_id).await;
+        return self.evaluate_module(module_id).await;
+    }
+
+    pub async fn load_module_from_embedded_file(&mut self, name: &str) -> Result<(), CoreError> {
+        let file = PrologVMAssets::get(name)
+            .expect("could not load embedded file")
+            .data
+            .clone();
+
+        let file_name = format!("file:///{}", name);
+
+        let specifier = deno_core::resolve_url_or_path(&file_name, std::path::Path::new("."))
+            .expect("Could not resolve URL");
+
+        let code = String::from_utf8(file.to_vec()).expect("could not convert to utf-8");
+
+        self.load_module_from_code(specifier, &code).await
+    }
+
+    pub async fn load_module_from_prolog_file(
+        &mut self,
+        prolog_file: &PrologFile,
+    ) -> Result<(), deno_core::error::CoreError> {
+        todo!("Implement this");
+        Ok(())
     }
 
     pub async fn evaluate_module(
         &mut self,
         mod_id: deno_core::ModuleId,
-    ) -> Result<impl ?Sized, deno_core::error::CoreError> {
-        let result = self.js_runtime.mod_evaluate(mod_id);
+    ) -> Result<(), deno_core::error::CoreError> {
+        let result = self.js_runtime.mod_evaluate(mod_id).await?;
         self.js_runtime.run_event_loop(Default::default()).await?;
         return Ok(result);
     }
@@ -123,7 +148,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_load_module() {
-        let mut vm = PrologVM::new_with_default_modules().await;
+        let mut vm = PrologVM::new_with_default_runtime().await;
         let result = vm
             .execute("1".to_string())
             .await

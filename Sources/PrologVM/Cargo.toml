@@ -9,6 +9,9 @@ tokio = "1.44.2"
 futures =  "0.3.31"
 rust-embed = "8.7.0"
 serde = "1.0.219"
+rand = "0.9.1"
+rand_distr = "0.5.1"
+log = "0.4.27"
 
 [lib]
 crate-type = ["staticlib", "rlib"]

@@ -1,11 +1,6 @@
 use actix_web::{Error, HttpResponse, get, web};
 use serde::Deserialize;
 
-pub struct PrologFile {
-    pub title: String,
-    pub content: Option<String>,
-}
-
 #[derive(rust_embed::Embed)]
 #[folder = "../Corpus"]
 struct Corpus;

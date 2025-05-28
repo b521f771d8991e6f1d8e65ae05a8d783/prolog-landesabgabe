@@ -1,7 +1,7 @@
 use deno_core::url::Url;
 use futures::executor;
 
-use crate::assets::PrologVMAssets;
+use crate::{assets::PrologVMAssets, prolog_file::PrologFile};
 
 pub struct PrologVM {
     js_runtime: deno_core::JsRuntime,
@@ -29,7 +29,7 @@ impl PrologVM {
         return Self::from_options(options);
     }
 
-    pub async fn new_with_modules() -> Self {
+    pub async fn new_with_default_modules() -> Self {
         let mut pvm = Self::new();
 
         let specifier =
@@ -46,6 +46,10 @@ impl PrologVM {
         }
 
         return pvm;
+    }
+
+    pub async fn new_with_modules(modules: Vec<PrologFile>) -> Self {
+        return Self::new_with_default_modules().await;
     }
 
     pub async fn load_module_from_file(
@@ -85,27 +89,9 @@ impl PrologVM {
         &mut self,
         script: String,
     ) -> Result<deno_core::v8::Global<deno_core::v8::Value>, deno_core::error::CoreError> {
-        self.js_runtime.execute_script("script.js", script)
-    }
-
-    pub fn execute_js(&mut self, script: String) -> () {
-        let result: Result<
-            deno_core::v8::Global<deno_core::v8::Value>,
-            deno_core::error::CoreError,
-        > = executor::block_on(self.execute(script));
-
-        match result {
-            Ok(value) => Ok(()),
-            Err(error) => Err(PrologVMError::DenoError("".to_string())),
-        };
-    }
-
-    pub fn execute_prolog(&mut self, prolog_expression: String) -> () {
-        // TODO implement this
-        self.execute_js(prolog_expression);
+        self.js_runtime.execute_script("main.js", script)
     }
 }
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -124,7 +110,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_load_module() {
-        let mut vm = PrologVM::new_with_modules().await;
+        let mut vm = PrologVM::new_with_default_modules().await;
         let result = vm
             .execute("new SwiPrologVM()".to_string())
             .await

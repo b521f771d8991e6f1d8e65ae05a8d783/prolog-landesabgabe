@@ -359,6 +359,7 @@ dependencies = [
  "env_logger",
  "log",
  "mime_guess",
+ "prolog-vm",
  "reqwest",
  "rust-embed",
  "serde",

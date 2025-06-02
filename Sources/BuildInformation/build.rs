@@ -1,4 +1,3 @@
-use std::path::PathBuf;
 use std::process::Command;
 
 fn get_build_profile_name() -> String {

@@ -59,11 +59,11 @@ async fn main() -> std::io::Result<()> {
         app_state.server_port().clone(),
     );
 
-    const api_prefix: &str = env!("VITE_LX_API_PREFIX");
+    const API_PREFIX: &str = env!("VITE_LX_API_PREFIX");
 
     println!(
         "Launching formular profi backend service on port {} listening on {} using api prefix '{}'",
-        server_binding.1, server_binding.0, api_prefix
+        server_binding.1, server_binding.0, API_PREFIX
     );
 
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
@@ -95,7 +95,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(app_state.clone())
             .configure(frontend_routes::add_services)
             .service(
-                web::scope(api_prefix)
+                web::scope(API_PREFIX)
                     .service(util_services::build_information)
                     .service(util_services::version)
                     .service(util_services::status)

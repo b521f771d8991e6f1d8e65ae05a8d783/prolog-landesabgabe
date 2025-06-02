@@ -1,5 +1,4 @@
 use actix_web::{HttpResponse, Responder, get, web};
-use log::log;
 use prolog_vm::{prolog_file::PrologFile, prolog_vm::PrologVM};
 
 use crate::corpus::get_from_corpus;

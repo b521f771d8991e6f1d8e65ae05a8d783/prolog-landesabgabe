@@ -1,5 +1,4 @@
 use actix_web::{Error, HttpResponse, get, web};
-use serde::Deserialize;
 
 #[derive(rust_embed::Embed)]
 #[folder = "../Corpus"]

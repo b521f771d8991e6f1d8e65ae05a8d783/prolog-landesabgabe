@@ -87,7 +87,7 @@ impl PrologVM {
             .await
             .expect("Could not load module from code");
 
-        self.evaluate_module(module_id).await;
+        self.evaluate_module(module_id).await?;
 
         return Ok(module_id);
     }
@@ -105,7 +105,7 @@ impl PrologVM {
             .await
             .expect("Could not load module from code");
 
-        self.evaluate_module(module_id).await;
+        self.evaluate_module(module_id).await?;
 
         return Ok(module_id);
     }
@@ -131,7 +131,7 @@ impl PrologVM {
 
     pub async fn load_module_from_prolog_file(
         &mut self,
-        prolog_file: &PrologFile,
+        _prolog_file: &PrologFile,
     ) -> Result<(), deno_core::anyhow::Error> {
         todo!("Implement this");
     }
@@ -174,7 +174,7 @@ impl PrologVM {
     }
 
     fn generate_inline_module_name() -> String {
-        let random_suffix: String = rand::thread_rng()
+        let random_suffix: String = rand::rng()
             .sample_iter(&Alphanumeric)
             .take(8)
             .map(char::from)

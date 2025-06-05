@@ -1,40 +1,43 @@
-FROM swift:bookworm AS development
+FROM debian:trixie AS development
 
-ENV PATH="$PATH:/root/.nix-profile/bin:/opt/rust/bin"
-ENV CC=clang CXX=clang++ OBJC=clang OBJCXX=clang++
-ENV RUSTUP_HOME=/opt/rust CARGO_HOME=/opt/rust
+ENV PATH="$PATH:/root/.nix-profile/bin" CC=gcc CXX=g++ OBJC=gcc OBJCXX=g++
 
-RUN apt update && apt upgrade -y && apt install -y nix cmake wget zsh zip gdb git ninja-build swi-prolog \
-    libgnustep-base-dev gnustep-base-doc
-
-RUN curl https://sh.rustup.rs -sSf | bash -s -- -y --no-modify-path
-RUN rustup target add wasm32-unknown-unknown
-
-RUN nix --extra-experimental-features 'nix-command flakes' profile install \
-    nixpkgs#nodejs_22 \
-    nixpkgs#dotenvx
+RUN apt update && apt upgrade -y && apt install -y nix nano podman curl gpg rpm wget zsh zip git  \
+    make cmake ninja-build \
+    build-essential musl-tools gnustep-core-devel gnustep-core-doc gcc gobjc g++ gobjc++ clang clang-format clang-tidy clangd clang-tools gdb \
+    rustc cargo rust-src \
+    swiftlang \
+    npm \
+    android-sdk sdkmanager
 
 WORKDIR /
+
+RUN yes | sdkmanager --licenses
+RUN mkdir -p ~/.config/nix && echo "extra-experimental-features = flakes nix-command" > ~/.config/nix/nix.conf
+RUN echo 'unqualified-search-registries=["docker.io"]' >> /etc/containers/registries.conf
 RUN git config --global --add safe.directory /workspace
 RUN useradd -ms /bin/zsh vscode
+RUN nix profile install nixpkgs#dotenvx
 
 FROM development AS build
 ARG BUILD_VARIANT=debug
 
 WORKDIR /workspace
 COPY . .
-RUN TARGET=${BUILD_TARGET} make init
-RUN TARGET=${BUILD_TARGET} make all
+RUN VARIANT=${BUILD_VARIANT} dotenvx run -- make init
+RUN VARIANT=${BUILD_VARIANT} dotenvx run -- make linux-packages
 
-FROM swift:bookworm AS production
-ARG BUILD_VARIANT=debug
+FROM debian:trixie-slim AS run
 
+WORKDIR /tmp
+COPY --from=build /workspace/out .
+RUN dpkg -i *.deb
 RUN apt update && apt upgrade -y && apt install -y curl
 
-WORKDIR /app
-COPY --from=build /workspace/target/${BUILD_VARIANT}/backend .
+WORKDIR /
+# TODO remove this
+RUN chmod +x /usr/bin/backend
 
-CMD ["/app/backend"]
-#EXPOSE 1337
+CMD ["/usr/bin/backend"]
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s  CMD curl --fail http://localhost:1337/api/status | grep -q 👌 || exit 1
 

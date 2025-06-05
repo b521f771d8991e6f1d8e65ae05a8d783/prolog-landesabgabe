@@ -20,6 +20,12 @@ export class PrologFile {
         this._sachverhalt = sachverhalt
     }
 
+    public static fromPrologText(text: string, type: PrologFileType = PrologFileType.FACT): PrologFile {
+        const randomSuffix = Math.random().toString(36).substring(2, 10);
+        const name = `inline_${randomSuffix}`;
+        return new PrologFile(name, text, undefined, type);
+    }
+
     public get prologFileType() {
         return this._prologFileType;
     }

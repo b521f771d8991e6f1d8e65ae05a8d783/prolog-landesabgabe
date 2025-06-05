@@ -1,11 +1,11 @@
 use actix_web_middleware_keycloak_auth::{AlwaysReturnPolicy, DecodingKey, KeycloakAuth};
 use log::info;
 use reqwest::Client;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::env;
 use std::error::Error;
 
-#[derive(Deserialize, derive_getters::Getters)]
+#[derive(Deserialize, Serialize, derive_getters::Getters)]
 struct RealmConfig {
     realm: String,
     #[serde(rename = "public_key")]

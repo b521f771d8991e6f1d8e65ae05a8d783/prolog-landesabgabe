@@ -1,11 +1,12 @@
 use actix_web::http::Error;
-use actix_web::{web, HttpResponse };
+use actix_web::{HttpResponse, web};
 use log::info;
 
 #[derive(rust_embed::Embed)]
 #[folder = "../../generated/web-dist/frontend"]
 pub struct WebAppData;
 
+#[allow(dead_code)]
 impl WebAppData {
     fn lookup(path: &str) -> Result<HttpResponse, Error> {
         match Self::get(path) {

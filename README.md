@@ -3,6 +3,9 @@
 
 ## Internals
 
+PrologVM --> is properly sandboxed version of LogicKit, written in Rust
+LogicKit --> executes Prolog code, mostly written in TypeScript
+
 ### Frontend
 The frontend is written in React and Typescript..
 

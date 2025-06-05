@@ -6,7 +6,20 @@
 
 version: 2
 updates:
- - package-ecosystem: "devcontainers"
-   directory: "/"
+ - package-ecosystem: "npm"
+   directory: "/" # Location of package.json
    schedule:
-     interval: weekly
+    interval: "weekly" # Options: "daily", "weekly", "monthly"
+   commit-message:
+    prefix: "update" # Prefix for the commit message
+   open-pull-requests-limit: 5 # Limit the number of open PRs
+   target-branch: "dev"
+
+ - package-ecosystem: "cargo"
+   directory: "/" # Location of Cargo.toml
+   schedule:
+    interval: "weekly" # Options: "daily", "weekly", "monthly"
+   commit-message:
+    prefix: "update" # Prefix for the commit message
+   open-pull-requests-limit: 5 # Limit the number of open PRs
+   target-branch: "dev"

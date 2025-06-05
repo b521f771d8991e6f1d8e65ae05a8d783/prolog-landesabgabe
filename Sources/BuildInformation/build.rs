@@ -1,4 +1,3 @@
-use std::path::PathBuf;
 use std::process::Command;
 
 fn get_build_profile_name() -> String {
@@ -10,18 +9,6 @@ fn get_build_profile_name() -> String {
         .nth_back(3)
         .unwrap_or_else(|| "unknown")
         .to_string()
-}
-
-fn build_swift_bridge() {
-    let out_dir = PathBuf::from("../generated");
-
-    let bridges = vec!["src/lib.rs"];
-    for path in &bridges {
-        println!("cargo:rerun-if-changed={}", path);
-    }
-
-    swift_bridge_build::parse_bridges(bridges)
-        .write_all_concatenated(out_dir, env!("CARGO_PKG_NAME"));
 }
 
 fn main() {
@@ -67,6 +54,4 @@ fn main() {
         let build_profile_name = get_build_profile_name();
         println!("cargo:rustc-env=CARGO_BUILD_PROFILE={}", build_profile_name);
     }
-
-    build_swift_bridge();
 }

@@ -1,8 +1,7 @@
 [workspace]
-resolver = "2"
+resolver = "3"
 members = [
-    "Sources/Assets",
     "Sources/BuildInformation",
-    "Sources/LogicKit",
-    "Sources/PrologVM"
+    "Sources/PrologVM",
+    "Sources/Backend"
 ]

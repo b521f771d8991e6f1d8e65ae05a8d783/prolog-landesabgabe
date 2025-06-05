@@ -1,58 +1,58 @@
 #! /usr/bin/env make
 .DEFAULT_GOAL := all
 
-SHELL = /usr/bin/env zsh
+SHELL = /usr/bin/env sh
 VARIANT ?= debug
-# or release - do not put a space after debug
-INSTALL_DIR ?= /usr/local/bin
+
+SOURCES_DIR := Sources
+CMAKE_DIRS := $(shell find $(SOURCES_DIR) -type f -name CMakeLists.txt -exec dirname {} \;)
+
+OUT_DIR ?= out
 
 # some tools require special treatment 🦄
 ifeq ($(VARIANT),release)
 	CARGO_RELEASE_FLAG := --release
 else
 	CARGO_RELEASE_FLAG :=
-endif
-
-ARTIFACT := .build/${TARGET}/LX
+endif	
 
 .PHONY: init
 init:
 	git submodule update --init --recursive
 	npm install --workspaces
 	cargo fetch
+	swift package resolve
+
+.PHONY: cmake-projects
+cmake-projects:
+	echo ${CMAKE_DIRS}
+	@for i in $(CMAKE_DIRS); do \
+		echo "Running cmake in $$i"; \
+		VARIANT=${VARIANT} ${CMAKE} -S $$i -B .cmake/$$i; \
+		VARIANT=${VARIANT} ${CMAKE} --build .cmake/$$i; \
+	done
 
 .PHONY: frontend
 frontend:
 	npm run build --workspaces --${VARIANT}
 
 .PHONY: backend
-backend:
-	cmake -S . -B ./out/build/${VARIANT} --preset=${VARIANT}
-	cmake --build ./out/build/${VARIANT}
+backend: cmake-projects
 	cargo build ${CARGO_RELEASE_FLAG}
-	CC=clang CXX=clang++ swift build --configuration ${VARIANT}
-
-.PHONY: ${ARTIFACT}
-${ARTIFACT}: frontend backend
+	swift build --configuration ${VARIANT}
 
 .PHONY: all
-all: ${ARTIFACT}
+all: frontend backend
 
 .PHONY: test
 test: all
 	cargo test
 	npm run test --workspaces
-	CC=clang CXX=clang++ swift test
-
-.PHONY: run
-run: all
-	CC=clang CXX=clang++ dotenvx run -- swift run
 
 .PHONY: clean
 clean:
-	swift package clean
 	cargo clean
-	rm -rf out .build target Sources/generated *.o *.swiftdeps* *.d npm-pkgs node_modules .build
+	rm -rf out .build target *.o *.d npm-pkgs node_modules .build .cmake generated
 
 .PHONY: clean-build
 clean-build: clean all
@@ -63,8 +63,12 @@ frontend-dev: frontend
 
 .PHONY: backend-dev
 backend-dev: backend
-	CC=clang CXX=clang++ dotenvx run -f .env.development -- swift run
+	cargo run --package backend
 
-.PHONY: install
-install: all
-	cp ${ARTIFACT} ${INSTALL_DIR}
+.PHONY: linux-packages
+linux-packages: all
+	VARIANT=${VARIANT} cmake -S . -B .cmake/root
+	VARIANT=${VARIANT} cmake --build .cmake/root
+	cd .cmake/root && cpack
+	mkdir -p ${OUT_DIR}
+	mv .cmake/root/*.deb .cmake/root/*.rpm .cmake/root/*.sh .cmake/root/*.tar.gz ${OUT_DIR}/

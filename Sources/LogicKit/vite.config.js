@@ -5,9 +5,9 @@ export default {
     target: 'es2022',
     outDir: 'dist',
     rollupOptions: {
-      input: './src/index.ts',
+      input: './src/runtime.ts',
       output: {
-        entryFileNames: 'index.js',
+        entryFileNames: 'runtime.js',
         format: 'es',
       },
     },

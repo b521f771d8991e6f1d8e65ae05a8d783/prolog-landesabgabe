@@ -1,4 +1,6 @@
-FROM debian:trixie AS development
+ARG DEBIAN_VERSION=trixie
+
+FROM debian:${DEBIAN_VERSION} AS development
 
 ENV PATH="$PATH:/root/.nix-profile/bin" CC=gcc CXX=g++ OBJC=gcc OBJCXX=g++
 
@@ -27,7 +29,7 @@ COPY . .
 RUN VARIANT=${BUILD_VARIANT} dotenvx run -- make init
 RUN VARIANT=${BUILD_VARIANT} dotenvx run -- make linux-packages
 
-FROM debian:trixie-slim AS run
+FROM debian:${DEBIAN_VERSION}-slim AS run
 
 WORKDIR /tmp
 COPY --from=build /workspace/out .

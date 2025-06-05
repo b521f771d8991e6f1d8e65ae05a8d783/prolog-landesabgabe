@@ -4,14 +4,14 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-deno_core = "0.343.0"
-swift-bridge = { version = "0.1.57", features = ["async"]}
+deno_core = "0.350.0"
 tokio = "1.44.2"
 futures =  "0.3.31"
 rust-embed = "8.7.0"
-
-[build-dependencies]
-swift-bridge-build = "0.1"
+serde = "1.0.219"
+rand = "0.9.1"
+rand_distr = "0.5.1"
+log = "0.4.27"
 
 [lib]
 crate-type = ["staticlib", "rlib"]

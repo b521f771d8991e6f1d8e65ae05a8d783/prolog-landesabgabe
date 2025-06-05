@@ -1,7 +1,7 @@
 [workspace]
-resolver = "2"
+resolver = "3"
 members = [
     "Sources/BuildInformation",
     "Sources/PrologVM",
-    "Sources/LX"
+    "Sources/Backend"
 ]

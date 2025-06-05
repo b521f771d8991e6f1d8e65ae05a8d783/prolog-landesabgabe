@@ -1,75 +1,19 @@
-cmake_minimum_required(VERSION 3.25)
-project(LX LANGUAGES OBJCXX CXX OBJC C)
+cmake_minimum_required(VERSION 3.0)
+project(prolog-landesabgabe)
 
-include(CTest)
+# Packaging
 
-# configuration for our targets
+# add you binaries here
+set(EXTERNAL_BINARY_PATH "target/$ENV{VARIANT}/backend")
+install(FILES ${EXTERNAL_BINARY_PATH} DESTINATION bin)
 
-#add_subdirectory(Sources/Assets)
+set(CPACK_PACKAGE_NAME "prolog-landesabgabe")
+set(CPACK_PACKAGE_VERSION "0.0.1")
+set(CPACK_PACKAGE_DESCRIPTION "bla")
+set(CPACK_PACKAGE_VENDOR "bla")
+set(CPACK_PACKAGE_CONTACT "bla")
+set(CPACK_PACKAGE_LICENSE "bla")
+set(CPACK_PACKAGE_EXECUTABLES "backend")
+set(CPACK_GENERATOR "DEB;RPM;TGZ;STGZ")
 
-# configuration for our tests
-#add_subdirectory(Tests/XYZ)
-
-# configuration for all targets
-set(TARGETS
-)
-
-set(TEST_TARGETS
-)
-
-# add target configuration
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
-    OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  set(SWIFT_TESTABLE
-    $<$<COMPILE_LANGUAGE:Swift>:-enable-testing>
-  )
-
-  set(Wall "$<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-Wall>")
-  set(Wextra "$<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-Wextra>")
-  set(Wpedantic "$<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-Wpedantic>")
-  set(Werror "$<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJXX>:-Werror>")
-else()
-  message("This program should be compiled with clang or gcc")
-endif()
-
-find_program(CLANG_TIDY_EXE NAMES "clang-tidy")
-set(CLANG_TIDY_COMMAND "${CLANG_TIDY_EXE}")
-set(CLANG_TIDY_OPTIONS "-checks=-*,bugprone-*,objc-*,cert-*,clang-analyzer-*,darwin-*,hicpp-*,performance-*,portability-*")
-
-set_target_properties(PROPERTIES
-    OBJCXX_CLANG_TIDY "${CLANG_TIDY_EXE};${CLANG_TIDY_OPTIONS}"
-    OBJC_CLANG_TIDY "${CLANG_TIDY_EXE};${CLANG_TIDY_OPTIONS}"
-    CXX_CLANG_TIDY "${CLANG_TIDY_EXE};${CLANG_TIDY_OPTIONS}"
-    C_CLANG_TIDY "${CLANG_TIDY_EXE};${CLANG_TIDY_OPTIONS}"
-  )
-
-foreach(TARGET ${TARGETS} ${TEST_TARGETS})
-  target_compile_options(${TARGET} PRIVATE
-    ${SWIFT_TESTABLE}
-    ${Wall}
-    ${Wextra}
-    ${Werror}
-    ${Wpedantic}
-  )
-
-  set_target_properties(${TARGET} PROPERTIES
-    COMPILE_WARNING_AS_ERROR ON
-    
-    CMAKE_Swift_LANGUAGE_VERSION 6
-
-    CMAKE_OBJCXX_STANDARD 20
-    CMAKE_CXX_STANDARD 20
-    CMAKE_OBJC_STANDARD 23
-    CMAKE_C_STANDARD 23
-
-    CMAKE_OBJCXX_STANDARD_REQUIRED ON
-    CMAKE_CXX_STANDARD_REQUIRED ON
-    CMAKE_OBJC_STANDARD_REQUIRED ON
-    CMAKE_C_STANDARD_REQUIRED ON
-
-    CMAKE_OBJCXX_EXTENSIONS OFF
-    CMAKE_CXX_EXTENSIONS OFF
-    CMAKE_OBJC_EXTENSIONS OFF
-    CMAKE_C_EXTENSIONS OFF
-  )
-endforeach()
+include(CPack)

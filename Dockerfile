@@ -2,7 +2,8 @@ FROM debian:trixie AS development
 
 ENV PATH="$PATH:/root/.nix-profile/bin" CC=gcc CXX=g++ OBJC=gcc OBJCXX=g++
 
-RUN apt update && apt upgrade -y && apt install -y make nix nano podman curl gpg rpm cmake wget zsh zip git ninja-build \
+RUN apt update && apt upgrade -y && apt install -y nix nano podman curl gpg rpm wget zsh zip git  \
+    make cmake ninja-build \
     build-essential musl-tools gnustep-core-devel gnustep-core-doc gcc gobjc g++ gobjc++ clang clang-format clang-tidy clangd clang-tools gdb \
     rustc cargo rust-src \
     swiftlang \
@@ -23,15 +24,20 @@ ARG BUILD_VARIANT=debug
 
 WORKDIR /workspace
 COPY . .
-RUN dotenvx run -- make init
-RUN dotenvx run -- make all
+RUN VARIANT=${BUILD_VARIANT} dotenvx run -- make init
+RUN VARIANT=${BUILD_VARIANT} dotenvx run -- make linux-packages
 
-FROM scratch AS production
-ARG BUILD_VARIANT=debug
+FROM debian:trixie-slim AS run
 
-WORKDIR /bin
-COPY --from=build /workspace/target/${BUILD_VARIANT}/backend .
+WORKDIR /tmp
+COPY --from=build /workspace/out .
+RUN dpkg -i *.deb
+RUN apt update && apt upgrade -y && apt install -y curl
 
-CMD ["/bin/backend"]
-#HEALTHCHECK --interval=30s --timeout=5s --start-period=30s  CMD curl --fail http://localhost:1337/api/status | grep -q 👌 || exit 1
+WORKDIR /
+# TODO remove this
+RUN chmod +x /usr/bin/backend
+
+CMD ["/usr/bin/backend"]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s  CMD curl --fail http://localhost:1337/api/status | grep -q 👌 || exit 1
 

@@ -69,3 +69,5 @@ jobs:
           containers.github.scch.at/land-ooe/lx-worker:${{ steps.fetch_branch.outputs.branch }}-latest
         labels: |
           ${{ steps.backend-meta.outputs.labels }}
+        build-args: |
+          BUILD_VARIANT=release

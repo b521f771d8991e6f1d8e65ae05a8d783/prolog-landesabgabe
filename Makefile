@@ -3,6 +3,7 @@
 
 SHELL = /usr/bin/env sh
 VARIANT ?= debug
+TARGET ?= x88_64-unknown-linux-gnu
 # or release - do not put a space after debug
 INSTALL_DIR ?= /usr/local/bin
 
@@ -11,15 +12,14 @@ ifeq ($(VARIANT),release)
 	CARGO_RELEASE_FLAG := --release
 else
 	CARGO_RELEASE_FLAG :=
-endif
-
-ARTIFACT := .build/${TARGET}/LX
+endif	
 
 .PHONY: init
 init:
 	git submodule update --init --recursive
 	npm install --workspaces
 	cargo fetch
+	swift package resolve
 
 .PHONY: frontend
 frontend:
@@ -27,7 +27,8 @@ frontend:
 
 .PHONY: backend
 backend:
-	dotenvx run -- cargo build ${CARGO_RELEASE_FLAG}
+	cargo build ${CARGO_RELEASE_FLAG}
+	swift build --configuration ${VARIANT}
 
 .PHONY: all
 all: frontend backend
@@ -51,8 +52,4 @@ frontend-dev: frontend
 
 .PHONY: backend-dev
 backend-dev: backend
-	CC=clang CXX=clang++ dotenvx run -- cargo run --package backend
-
-.PHONY: install
-install: all
-	cp ${ARTIFACT} ${INSTALL_DIR}
+	cargo run --package backend

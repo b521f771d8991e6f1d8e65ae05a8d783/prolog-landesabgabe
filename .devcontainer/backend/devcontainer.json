@@ -32,7 +32,7 @@
     "workspaceFolder": "/workspace/prolog-landesabgabe",
     "mounts": [
         "type=bind,source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/root/.ssh,readonly",
-        "type=bind,source=${localWorkspaceFolder},target=/workspace/prolog-landesabgabe"
-        //"type=bind,source=${localEnv:HOME}${localEnv:USERPROFILE}/.gnupg,target=/root/.gnupg,readonly"
+        "type=bind,source=${localWorkspaceFolder},target=/workspace/prolog-landesabgabe",
+        "type=bind,source=/nix,target=/nix"
     ]
 }

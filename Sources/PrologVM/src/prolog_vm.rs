@@ -1,7 +1,14 @@
 use deno_core::{anyhow::Ok, error::CoreError, url::Url};
+use serde::{Deserialize, Serialize};
 
 use crate::{assets::PrologVMAssets, prolog_file::PrologFile};
 use rand::{Rng, distr::Alphanumeric};
+
+#[derive(Debug, Eq, PartialEq, PartialOrd, Ord, Serialize, Deserialize)]
+pub struct VariableBinding {
+    name: String,
+    value: Option<String>,
+}
 
 pub struct PrologVM {
     js_runtime: deno_core::JsRuntime,
@@ -150,6 +157,30 @@ impl PrologVM {
         script: String,
     ) -> Result<deno_core::v8::Global<deno_core::v8::Value>, CoreError> {
         self.js_runtime.execute_script("main.js", script)
+    }
+
+    pub async fn execute_prolog_query(
+        &mut self,
+        files: Vec<String>,
+        query: &str,
+        variables: Vec<String>,
+    ) -> Vec<VariableBinding> {
+        let js_code = format!(
+            "globalThis.__prolog_results = await runQuery([{}], '{}', [{}]);",
+            files.join(", "),
+            query.replace('\'', "\\'"),
+            variables.join(", ")
+        );
+
+        log::info!("Executing JS command {}", js_code);
+
+        // Execute the JS code as a module
+        if let Err(e) = self.execute_module(&js_code, "__prolog_results").await {
+            log::error!("Failed to execute prolog query: {}", e);
+            return vec![];
+        }
+
+        vec![]
     }
 
     pub async fn execute_module(

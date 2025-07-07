@@ -19,6 +19,8 @@
     "stylelint": "^16.14.1",
     "stylelint-config-standard-scss": "^14.0.0",
     "typescript-eslint": "^8.22.0",
-    "wasm-pack": "^0.13.1"
-  }
+    "wasm-pack": "^0.13.1",
+    "@dotenvx/dotenvx": "^1.45.2"
+  },
+  "dependencies": {}
 }

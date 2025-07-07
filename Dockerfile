@@ -1,35 +1,14 @@
-ARG DEBIAN_VERSION=trixie
-
-FROM debian:${DEBIAN_VERSION} AS development
-
-ENV PATH="$PATH:/root/.nix-profile/bin" CC=gcc CXX=g++ OBJC=gcc OBJCXX=g++
-
-RUN apt update && apt upgrade -y && apt install -y nix nano podman curl gpg rpm wget zsh zip git  \
-    make cmake ninja-build \
-    build-essential musl-tools gnustep-core-devel gnustep-core-doc gcc gobjc g++ gobjc++ clang clang-format clang-tidy clangd clang-tools gdb \
-    rustc cargo rust-src \
-    swiftlang \
-    npm \
-    android-sdk sdkmanager
-
-WORKDIR /
-
-RUN yes | sdkmanager --licenses
-RUN mkdir -p ~/.config/nix && echo "extra-experimental-features = flakes nix-command" > ~/.config/nix/nix.conf
-RUN echo 'unqualified-search-registries=["docker.io"]' >> /etc/containers/registries.conf
-RUN git config --global --add safe.directory /workspace
-RUN useradd -ms /bin/zsh vscode
-RUN nix profile install nixpkgs#dotenvx
+FROM containers.github.scch.at/land-ooe/docker-images/trixie-tools-static:main-latest AS development
 
 FROM development AS build
 ARG BUILD_VARIANT=debug
 
 WORKDIR /workspace
 COPY . .
-RUN VARIANT=${BUILD_VARIANT} dotenvx run -- make init
-RUN VARIANT=${BUILD_VARIANT} dotenvx run -- make linux-packages
+RUN VARIANT=${BUILD_VARIANT} make init
+RUN VARIANT=${BUILD_VARIANT} npx dotenvx run -- make linux-packages
 
-FROM debian:${DEBIAN_VERSION}-slim AS run
+FROM containers.github.scch.at/land-ooe/docker-images/trixie-tools-runtime:main-latest AS run
 
 WORKDIR /tmp
 COPY --from=build /workspace/out .

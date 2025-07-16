@@ -1,4 +1,4 @@
-FROM containers.github.scch.at/land-ooe/docker-images/trixie-tools-static:main-latest AS development
+FROM ghcr.io/b521f771d8991e6f1d8e65ae05a8d783/base-tools/trixie-tools:main AS development
 
 FROM development AS build
 ARG BUILD_VARIANT=debug
@@ -8,7 +8,7 @@ COPY . .
 RUN VARIANT=${BUILD_VARIANT} make init
 RUN VARIANT=${BUILD_VARIANT} npx dotenvx run -- make linux-packages
 
-FROM containers.github.scch.at/land-ooe/docker-images/trixie-tools-runtime:main-latest AS run
+FROM ghcr.io/b521f771d8991e6f1d8e65ae05a8d783/base-tools/trixie-tools-runtime:main AS run
 
 WORKDIR /tmp
 COPY --from=build /workspace/out .

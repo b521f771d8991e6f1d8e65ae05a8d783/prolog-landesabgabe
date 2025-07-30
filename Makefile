@@ -20,6 +20,7 @@ endif
 init:
 	git submodule update --init --recursive
 	npm install --workspaces
+	npm install
 	cargo fetch
 	swift package resolve
 

@@ -4,9 +4,10 @@
     "Sources/LogicKit"
   ],
   "devDependencies": {
-    "@eslint/css": "^0.6.0",
+    "@dotenvx/dotenvx": "^1.45.2",
+    "@eslint/css": "^0.10.0",
     "@eslint/js": "^9.24.0",
-    "@eslint/json": "^0.11.0",
+    "@eslint/json": "^0.13.0",
     "@eslint/markdown": "^6.3.0",
     "@stylistic/eslint-plugin-js": "^4.2.0",
     "@types/node": "^22.14.1",
@@ -19,6 +20,6 @@
     "stylelint": "^16.14.1",
     "stylelint-config-standard-scss": "^14.0.0",
     "typescript-eslint": "^8.22.0",
-    "wasm-pack": "^0.13.1"
+    "wasm-pack": "^0.0.0"
   }
 }

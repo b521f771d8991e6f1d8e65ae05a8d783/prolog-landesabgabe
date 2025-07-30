@@ -27,3 +27,4 @@ dist
 /npm-pkgs
 /.cmake
 /out
+/.swiftpm

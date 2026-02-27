@@ -1,0 +1,29 @@
+{
+    "cmake.configureOnOpen": true,
+    "latex-workshop.latex.outDir": "%TMPDIR%",
+    "editor.rulers": [
+        80
+    ],
+    "git.autofetch": "all",
+    "cmake.automaticReconfigure": false,
+    //"explorer.excludeGitIgnore": true,
+    "cSpell.words": [
+        "endforeach"
+    ],
+    "clangd.arguments": [
+        "--compile-commands-dir=.cmake"
+    ],
+    "C_Cpp.intelliSenseEngine": "disabled",
+    "prettier.configPath": "/workspace/.prettierrc",
+    "eslint.workingDirectories": [
+        "/workspace"
+    ],
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "markdown",
+        "json"
+    ],
+    "makefile.configureOnOpen": true
+}

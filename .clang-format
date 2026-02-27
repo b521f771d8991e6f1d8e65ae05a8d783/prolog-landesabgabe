@@ -1,0 +1,8 @@
+BasedOnStyle: GNU
+ContinuationIndentWidth: 2
+MaxEmptyLinesToKeep: 1
+PointerAlignment: Right
+SortIncludes: false
+SpaceBeforeParens: Never
+SpacesInContainerLiterals: false
+ColumnLimit: 80

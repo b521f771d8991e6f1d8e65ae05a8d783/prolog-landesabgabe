@@ -1,0 +1,13 @@
+/target
+/.build
+/.cmake
+/node_modules
+/generated
+/result
+/output
+/out
+/Sources/WebUI/dist
+/Sources/LogicKit/dist
+/Sources/WebUI/node_modules
+/Sources/LogicKit/node_modules
+/*.local

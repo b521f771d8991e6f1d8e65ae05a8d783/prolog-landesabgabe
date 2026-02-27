@@ -1,0 +1,6 @@
+{
+  "workspaces": [
+    "Sources/WebUI",
+    "Sources/LogicKit"
+  ]
+}

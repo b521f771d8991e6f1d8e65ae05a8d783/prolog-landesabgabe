@@ -1,0 +1,55 @@
+[package]
+name = "prolog-landesabgabe"
+version = "0.1.0"
+edition = "2024"
+resolver = "2"
+
+[dependencies]
+rust-embed = { version = "8.7.1", features = ["debug-embed"] }
+log = "0.4.27"
+serde = { version = "1.0.217", features = ["derive"] }
+serde_json = "1.0.138"
+env_logger = "0.11.8"
+derive-getters = "0.5.0"
+wasm-bindgen = "0.2.100"
+scryer-prolog = { version = "0.9.4", default-features = false }
+rand = { version = "0.9.1", optional = true }
+mime_guess = { version = "2.0.5", optional = true }
+actix-web-middleware-keycloak-auth = { version = "0.5.0", optional = true }
+reqwest = { version = "0.12.15", features = ["json", "rustls-tls"], default-features = false, optional = true }
+actix-web = { version = "4.9.0", optional = true }
+actix-cors = { version = "0.7.1", optional = true }
+base64 = { version = "0.22.1", optional = true }
+deno_core = { version = "0.350.0", optional = true }
+either = { version = "1.15.0", optional = true }
+wasm-bindgen-futures = "0.4.50"
+
+[dev-dependencies]
+tokio = "1.47.1"
+prolog-landesabgabe = { path = ".", features = ["test-utils"] }
+ctor = "0.5.0"
+
+[lib]
+path = "src/lib.rs"
+name = "prolog_landesabgabe"
+crate-type = ["cdylib", "rlib", "staticlib"]
+
+[[bin]]
+path = "src/bin.rs"
+name = "backend"
+required-features = ["backend"]
+
+[features]
+backend = [
+    "dep:actix-web",
+    "dep:actix-web-middleware-keycloak-auth",
+    "dep:reqwest",
+    "dep:actix-cors",
+    "dep:mime_guess",
+    "dep:base64",
+    "dep:rand",
+    "dep:deno_core",
+    "dep:either",
+    "scryer-prolog/hostname"
+]
+test-utils = ["scryer-prolog/hostname"]

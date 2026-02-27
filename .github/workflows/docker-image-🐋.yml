@@ -63,7 +63,7 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           file: Dockerfile
           context: .
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           cache-to: type=inline
           tags: |

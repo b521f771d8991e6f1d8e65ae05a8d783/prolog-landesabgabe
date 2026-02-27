@@ -1,4 +1,4 @@
-FROM ghcr.io/b521f771d8991e6f1d8e65ae05a8d783/base-tools/trixie-tools:main AS development
+FROM ghcr.io/b521f771d8991e6f1d8e65ae05a8d783/base-tools/debian-tools:main AS development
 RUN apt update && apt upgrade -y && apt install -y swi-prolog
 
 FROM development AS build
@@ -8,7 +8,7 @@ WORKDIR /workspace
 COPY . .
 RUN VARIANT=${BUILD_VARIANT} make init linux-packages
 
-FROM ghcr.io/b521f771d8991e6f1d8e65ae05a8d783/base-tools/trixie-tools-runtime:main AS run
+FROM ghcr.io/b521f771d8991e6f1d8e65ae05a8d783/base-tools/debian-tools-runtime:main AS run
 
 WORKDIR /tmp
 COPY --from=build /workspace/output .

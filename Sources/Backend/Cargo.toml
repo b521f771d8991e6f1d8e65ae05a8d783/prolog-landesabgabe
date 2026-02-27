@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-rust-embed = { version = "8.7.1", features = ["debug-embed"]}
+rust-embed = { version = "8.11.0", features = ["debug-embed"]}
 actix-web = "4.9.0"
 log = "0.4.27"
 serde = "1.0.217"

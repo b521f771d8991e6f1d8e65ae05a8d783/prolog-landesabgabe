@@ -9,7 +9,6 @@
     "command": "nix build .#frontend --out-link result"
   },
   "assets": {
-    "directory": "./result",
-    "binding": "ASSETS"
+    "directory": "./result"
   }
 }

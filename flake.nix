@@ -55,10 +55,29 @@
             '';
           };
 
-          # Runnable wrapper: serves the static frontend on localhost:8080
+          # Runnable wrapper: serves the static frontend via lighttpd
+          # Usage: nix run -- [PORT]  or  PORT=3000 nix run
           serve = pkgs.writeShellScriptBin "prolog-landesabgabe" ''
-            echo "Serving on http://localhost:8080"
-            ${pkgs.python3}/bin/python3 -m http.server 8080 --directory ${frontend}
+            PORT="''${1:-''${PORT:-8080}}"
+            CONF=$(mktemp)
+            trap "rm -f $CONF" EXIT
+            cat > "$CONF" <<EOF
+            server.document-root = "${frontend}"
+            server.port = $PORT
+            server.bind = "0.0.0.0"
+            index-file.names = ( "index.html" )
+            mimetype.assign = (
+              ".html" => "text/html",
+              ".css"  => "text/css",
+              ".js"   => "application/javascript",
+              ".json" => "application/json",
+              ".svg"  => "image/svg+xml",
+              ".png"  => "image/png",
+              ".wasm" => "application/wasm",
+            )
+            EOF
+            echo "Serving on http://localhost:$PORT"
+            ${pkgs.lighttpd}/bin/lighttpd -D -f "$CONF"
           '';
         in
         rec {

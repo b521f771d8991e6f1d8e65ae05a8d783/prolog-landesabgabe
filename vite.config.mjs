@@ -12,6 +12,7 @@ export default defineConfig(({ command }) => {
 			globals: true,
 			environment: "jsdom",
 			setupFiles: "./vitest.setup.mjs",
+			include: ["src/**/*.test.{ts,tsx}"],
 		},
 		build: {
 			minify: true,

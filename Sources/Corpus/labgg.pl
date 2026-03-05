@@ -1,7 +1,9 @@
 % file_search_path(stdlib, './stdlib').
 %:- use_module(stdlib(stdlib)).
 
+:- if(current_prolog_flag(dialect, swi)).
 :- style_check(-singleton).
+:- endif.
 
 langtitel(labgg,
     "Landesgesetz über eine Landesabgabe für das obertägige Gewinnen mineralischer Rohstoffe (Oö. Landschaftsabgabegesetz)").
@@ -52,8 +54,8 @@ ausnahme(labgg, Person, Verbum, Objekt) :-
 %%% - Material aus Seitenentnahmen und
 
 ausnahme(labgg, Person, Verbum, Objekt) :-
-    current_predicate(entstammt_seitentnahme/1),
-    entstammt_seitentnahme(Objekt).
+    current_predicate(entstammt_seitenentnahme/1),
+    entstammt_seitenentnahme(Objekt).
 
 %%% - Rohstoffe,  deren  Verwendung  Maßnahmen  zur  Abwehr  einer  unmittelbaren  Gefahr  für  das Leben  oder  die  Gesundheit  von  Menschen  oder  zur  unmittelbaren  Abwehr  von  Katastrophen dient.
 
@@ -115,7 +117,7 @@ betreiber(Person) :-
 % §3 Abgabepflichtige bzw. Abgabepflichtiger
 %% Abgabepflichtige bzw. Abgabepflichtiger ist die Betreiberin bzw. der Betreiber einer Gewinnungsstätte eines abgabepflichtigen Materials
 
-abgabepfichtiger(labgg, Person)
+abgabepflichtiger(labgg, Person)
     :- betreiber(Person).
 
 % §4 Abgabenbefreiung:
@@ -136,7 +138,7 @@ abgabe_hoehe(labgg, Objekt, X) :-
 %% (2) Der im Abs. 1 festgesetzte Tarif ändert sich jeweils zum 1. Jänner entsprechend den durchschnittlichen Änderungen des von der Bundesanstalt „Statistik Austria“ für das zweitvorangegangene Jahr verlautbarten Verbraucherpreisindex 2015 oder eines an seine Stelle tretenden Index, soweit sich die Indexzahl um mehr als 5 % geändert hat. Bezugsgröße für die erstmalige Änderung ist  der  durchschnittliche  Indexwert  für  das  Jahr  2017;  Bezugsgröße  für  jede  weitere  Änderung  ist  der durchschnittliche Indexwert desjenigen Kalenderjahres, das für die letzte Änderung maßgeblich war. Ein sich  aus  dieser  Berechnung  ergebender  neuer  Betrag  ist  auf  einen  vollen  Zehntel-Centbetrag  zu  runden, wobei Beträge  bis einschließlich 0,05 Cent abgerundet und Beträge  über 0,05 Cent aufgerundet  werden. Eine  solchermaßen  ermittelte  Änderung  des  Tarifs  wird  nur  dann  wirksam,  wenn  der  geänderte  Betrag von der Landesregierung vor dem Stichtag 1. Jänner im Landesgesetzblatt für Oberoesterreich kundgemacht wurde. 
 
 abgabe_hoehe_index(labgg, statistik_austria_vpi).
-abgabe_hoehe_index_angapassen_wenn(labgg, aenderung, groesser, 5, percent).
+abgabe_hoehe_index_anpassen_wenn(labgg, aenderung, groesser, 5, percent).
 abgabe_hoehe_runden(labgg, symmetrisch_IEEE_754_ohne_regel_3).
 
 % §6 Entstehen der Abgabeschuld:
@@ -150,13 +152,13 @@ abgabenschuld_zeitpunkt(labgg, Objekt, X) :-
 %% Die bzw. der Abgabepflichtige ist verpflichtet, zur Feststellung der Abgabe und der Grundlagen ihrer Berechnung Aufzeichnungen zu führen. 
 
 aufzeichnungspflicht(labgg, X) :-
-    abgabepfichtiger(labgg, X).
+    abgabepflichtiger(labgg, X).
 
 % §8 Anzeigepflicht:
 %% Die  bzw.  der  Abgabepflichtige  hat  den  Beginn  und  das  Ende  eines  abgabepflichtigen  Gewinnens binnen vier Wochen der Abgabenbehörde anzuzeigen.
 
 anzeigepflicht(labgg, X) :-
-    abgabepfichtiger(labgg, X).
+    abgabepflichtiger(labgg, X).
 
 % §9 Selbstbemessung, Fälligkeit:
 %% (1)  Die  bzw.  der  Abgabepflichtige  hat  die  Abgabe  selbst  zu  bemessen.  Die Abgabenerklärung ist  jeweils  bis  30. April  eines  jeden  Jahres  (Fälligkeitstag)  für  die  im  Vorjahr  entstandene  Abgabenschuld einzureichen.

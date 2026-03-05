@@ -6,6 +6,7 @@ import {
 	Flex,
 	LoadingOverlay,
 	Paper,
+	SegmentedControl,
 	Text,
 	Title,
 } from "@mantine/core";
@@ -13,6 +14,7 @@ import {
 	PrologFile,
 	PrologFileType,
 } from "../util/PrologVM/PrologFileSystem";
+import { PrologVM } from "../util/PrologVM/PrologVM";
 import { SwiPrologVM } from "../util/PrologVM/SwiPrologVM";
 
 import "highlight.js/styles/github.css";
@@ -25,18 +27,11 @@ import { VersionString } from "@/components/VersionString";
 import { labgg } from "@/corpus";
 import logo from "../static/logo.svg";
 
+export type PrologEngine = "swipl" | "scryer";
+
 const DOWNLOAD_FILE_DEFAULT_NAME = "Sachverhalt.sv";
 export const WIDTH = 550;
 
-/**
- * Sets the favicon of the document to the provided SVG data URL.
- *
- * This function creates a new link element with the relationship set to "shortcut icon"
- * and the type set to "image/svg+xml". It then sets the href attribute to the provided
- * SVG data URL and appends the link element to the document's head.
- *
- * @param {string} svgDataURL - The data URL of the SVG to be used as the favicon.
- */
 function setFavicon(svgDataURL: string) {
 	const link = document.createElement("link");
 	link.rel = "shortcut icon";
@@ -49,54 +44,26 @@ function setTitle(title: string) {
 	document.title = title;
 }
 
-/**
- * Represents the home page component of the application.
- *
- * @param {Object} props - The properties object.
- * @param {SwiPrologVM} props.prologVM - The application state managed by Prolog VM.
- *
- * @returns {JSX.Element} The rendered home page component.
- *
- * @component
- *
- * @example
- * // Usage example:
- * <HomePage prologVM={appState} />
- *
- * @remarks
- * This component sets the page title and favicon on mount, and provides a button
- * to reset the application state and reload the page.
- */
+async function initVM(engine: PrologEngine, lawText: string): Promise<PrologVM> {
+	if (engine === "scryer") {
+		const { ScryerPrologVM } = await import("../util/PrologVM/ScryerPrologVM");
+		return ScryerPrologVM.initFromAppState(lawText);
+	}
+	return SwiPrologVM.initFromAppState(lawText);
+}
+
 export function HomePage() {
-	const [pvm, setPVM] = useState<SwiPrologVM | null>(null);
+	const [pvm, setPVM] = useState<PrologVM | null>(null);
+	const [engine, setEngine] = useState<PrologEngine>("swipl");
 	const [statisticViewOpened, setStatisticViewOpened] = useState<boolean>(false);
 
 	useEffect(() => {
-		if (pvm === null) {
-			SwiPrologVM.initFromAppState(labgg).then((pvm) => setPVM(() => pvm));
-		}
-	}, []);
+		setPVM(null);
+		initVM(engine, labgg).then((vm) => setPVM(vm));
+	}, [engine]);
 
 	function onDeleteButtonClicked() {
 		window.location.reload();
-	}
-
-	async function onSaveClicked() {
-		/*
-    const storage = getLocalStorage() ?? "[]"; // if there is no object yet created, create an empty array (no object)
-
-    // Create a download link
-    const downloadLink = document.createElement('a');
-    downloadLink.setAttribute('href', 'data:application/octet-stream;charset=utf-8,' + encodeURIComponent(storage));
-    downloadLink.setAttribute('download', DOWNLOAD_FILE_DEFAULT_NAME);
-
-    // Append the link to the document and click it
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-
-    // Remove the temporary link
-    document.body.removeChild(downloadLink);
-    */
 	}
 
 	function showStatisticsButtonClicked() {
@@ -133,20 +100,16 @@ export function HomePage() {
 						direction="row"
 						wrap="wrap"
 					>
-						<Button leftSection={"📅"} disabled>
-							Historie
-						</Button>
+						<SegmentedControl
+							value={engine}
+							onChange={(v) => setEngine(v as PrologEngine)}
+							data={[
+								{ label: "SWI-Prolog", value: "swipl" },
+								{ label: "Scryer Prolog", value: "scryer" },
+							]}
+						/>
 						<Button onClick={onDeleteButtonClicked} leftSection={"🗑"}>
 							Alles löschen
-						</Button>
-						<Button onClick={onSaveClicked} leftSection={"💾"} disabled>
-							Speichern
-						</Button>
-						<Button leftSection={"⚡"} disabled>
-							Laden
-						</Button>
-						<Button leftSection={"🔐"} disabled>
-							Login
 						</Button>
 						{statisticViewOpened ? (
 							<Button onClick={showStatisticsButtonClicked} leftSection={"❌"}>
@@ -187,7 +150,7 @@ export function HomePage() {
  *  - creating the Prolog from the output
  *  - re-creating the page from the prolog VM on page reload
  */
-function AppView({ prologVM }: { prologVM: SwiPrologVM }) {
+function AppView({ prologVM }: { prologVM: PrologVM }) {
 	const [factBase, setFactFiles] = useState<PrologFile[]>(
 		prologVM.getFactBase(),
 	);

@@ -6,7 +6,6 @@ SHELL := zsh
 TARGET ?= $(shell rustc -vV | awk '/^host:/ {print $$2}')
 OUT_DIR ?= ./output
 
-SWIFT_SDK_CMD := --swift-sdk $(shell echo $(TARGET) | sed 's/unknown/swift/')
 CARGO_TARGET_FLAG := --target ${TARGET}
 CMAKE_BUILDER := Ninja
 
@@ -44,15 +43,8 @@ endif
 
 .PHONY: init
 init:
-	git submodule update --init --recursive
 	cargo fetch
-	npm install --workspaces
 	npm install
-	swift package resolve
-
-.PHONY: trixie-tools-static-offline
-trixie-tools-offline:
-	docker build -f Dependencies/base-images/trixie-tools.dockerfile . -t trixie-tools:main
 
 .PHONY: cmake-projects
 cmake-projects:
@@ -76,12 +68,11 @@ shared-frontend-and-backend-parts:
 
 .PHONY: frontend
 frontend: shared-frontend-and-backend-parts
-	npx dotenvx run -- npm run build:web --workspaces
+	npx dotenvx run -- npm run build:web
 
 .PHONY: backend
 backend: cmake-projects
 	npx dotenvx run -- cargo build ${CARGO_TARGET_FLAG} ${CARGO_VARIANT_FLAG} --features backend
-	CC=clang CXX=clang++ swift build --configuration ${VARIANT} # ${SWIFT_SDK_CMD}
 
 .PHONY: show-info
 show-info:
@@ -100,13 +91,11 @@ all: show-info shared-frontend-and-backend-parts frontend backend
 test:
 	npx dotenvx run -- ctest --test-dir .cmake
 	npx dotenvx run -- cargo test
-	npx dotenvx run -- swift test
 
 .PHONY: clean
 clean:
 	cargo clean
-	swift package clean
-	rm -rf .build .cmake target generated node_modules result output
+	rm -rf .cmake target generated node_modules result output
 
 .PHONY: linux-packages
 linux-packages: all
@@ -136,7 +125,7 @@ run: all
 
 .PHONY: all
 frontend-dev:
-	npx dotenvx run -- npm run dev --workspaces # start frontend
+	npx dotenvx run -- npm run dev
 
 .PHONY: rust-dev
 rust-dev:
@@ -144,8 +133,14 @@ rust-dev:
 
 .PHONY: format
 format:
+	nix fmt
 	cargo fmt
 	clang-format -i $(shell find $(CMAKE_DIRS) -type f \
                     \( -name '*.c'  -o -name '*.cc' -o -name '*.cpp' -o -name '*.c++' -o -name '*.h' -o \
                       -name '*.h++' -o -name '*.cxx' -o -name '*.m'   -o -name '*.mm' \) )
 	npx prettier --write Sources
+
+.PHONY: lint
+lint:
+	npx eslint Sources
+	run-clang-tidy -checks "clang-analyzer-*,bugprone-*,portability-*,cert-*,darwin-*,objc-*,concurrency-*" -fix -p .cmake -j4

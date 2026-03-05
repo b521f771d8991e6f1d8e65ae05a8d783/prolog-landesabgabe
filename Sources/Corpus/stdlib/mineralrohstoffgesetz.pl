@@ -9,4 +9,5 @@
 bundeseigener_rohstoff(X) :-
     X = steinsalz;
     X = mit_steinsalz_vorkommende_salze;
+    X = kohlenwasserstoffe;
     X = uran_und_thoriumhaltige_rohstoffe.

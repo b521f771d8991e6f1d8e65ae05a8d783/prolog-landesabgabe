@@ -1,0 +1,15 @@
+{
+  // Deploy with: npx wrangler deploy
+  // The build step runs nix build automatically before deploying
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "prolog-landesabgabe",
+  "compatibility_date": "2026-02-06",
+  "compatibility_flags": ["nodejs_compat"],
+  "build": {
+    "command": "nix build .#frontend --out-link result"
+  },
+  "assets": {
+    "directory": "./result",
+    "binding": "ASSETS"
+  }
+}

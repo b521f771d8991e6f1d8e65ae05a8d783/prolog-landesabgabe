@@ -1,6 +1,6 @@
 /target
-/.build
 /.cmake
+/.cmake-emscripten
 /node_modules
 /generated
 /result

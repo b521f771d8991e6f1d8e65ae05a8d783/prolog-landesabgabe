@@ -44,7 +44,7 @@ bezirk(oberoesterreich, X) :-
     X = freistadt ;
     X = braunau_am_inn ;
     X = eferding ;
-    X = gmund ;
+    X = gmunden ;
     X = grieskirchen ;
     X = kirchdorf_an_der_krems ;
     X = linz_land ;
@@ -55,14 +55,14 @@ bezirk(oberoesterreich, X) :-
     X = scharding ;
     X = steyr_land  ;
     X = steyr_stadt ;
-    X = ullsdorf  ;
+    X = urfahr_umgebung  ;
     X = vocklabruck ;
     X = wels_land  ;
     X = wels_stadt.
 
-gemeinde(steyr_land, adlwang).
-gemeinde(wels_land, aichkirchen).
-gemeinde(rohrbach, aigen_schlaegl).
+gemeinde(oberoesterreich, adlwang).
+gemeinde(oberoesterreich, aichkirchen).
+gemeinde(oberoesterreich, aigen_schlaegl).
 gemeinde(oberoesterreich, aistersalzell).
 gemeinde(oberoesterreich, alberndorf_in_der_riedmark).
 gemeinde(oberoesterreich, alkoven).

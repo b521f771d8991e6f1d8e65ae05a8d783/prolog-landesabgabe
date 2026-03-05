@@ -1,5 +1,5 @@
 % Beispiel-Input für dieses Sachverhalts-Mapping
-% "Max Mustermann" ist Betreiber und fördert in einem obertägigen Bergbau mineralische Rohstoffe. Er fördert dieses Jahr 1 Tonne mineralische Rohstoffe. Heinricht R. ist eine
+% "Max Mustermann" ist Betreiber und fördert in einem obertägigen Bergbau mineralische Rohstoffe. Er fördert dieses Jahr 2 Tonnen mineralische Rohstoffe. Heinrich R. ist eine
 % natürliche Person und 30 Jahre alt.
 
 :- discontiguous vorname/2.
@@ -31,6 +31,6 @@ alter(heinrich_raudinger, 30).
 % abgabepflichtiger(labgg, X). --> max_mustermann
 % abgabenschuld_zeitpunkt(labgg, mein_gestein, X).
 % aufzeichnungspflicht(labgg, X). -> max_mustermann
-% ausnahme(labgg, max_mustermann, bergbau(gewinnen, obertags, mineralische_rohstoffe), mein_gestein). --> true, weil Menge zu klein
+% ausnahme(labgg, max_mustermann, bergbau(gewinnen, obertags, mineralische_rohstoffe), mein_gestein). --> true, weil Menge zu klein (2 * 0.2074 = 0.4148 EUR < 120 EUR)
 % abgabepflichtig(labgg, sachverhalt, max_mustermann). --> false
 % abgabepflichtig(labgg, sachverhalt, heinrich_raudinger). --> false

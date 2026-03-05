@@ -278,7 +278,7 @@ describe("LAbgG - Landesabgabegesetz", () => {
 	});
 
 	describe("SS 4 - Abgabenbefreiung (< 120 EUR threshold)", () => {
-		it("2 tonnes -> 40.28 cents -> exempt (below 120 EUR)", async () => {
+		it("2 tonnes -> 0.41 EUR -> exempt (below 120 EUR)", async () => {
 			const sv = sachverhalt("klein_miner", { tonnen: 2 });
 			const vm = await createVM(sv);
 			const result = vm.execute(
@@ -287,8 +287,8 @@ describe("LAbgG - Landesabgabegesetz", () => {
 			expect(isPrologFalse(result)).toBe(false);
 		});
 
-		it("5 tonnes -> 100.7 -> exempt (below threshold)", async () => {
-			const sv = sachverhalt("mittel_miner", { tonnen: 5 });
+		it("100 tonnes -> 20.74 EUR -> exempt (below 120 EUR)", async () => {
+			const sv = sachverhalt("mittel_miner", { tonnen: 100 });
 			const vm = await createVM(sv);
 			const result = vm.execute(
 				"ausnahme(labgg, mittel_miner, bergbau(gewinnen, obertags, mineralische_rohstoffe), gestein).",
@@ -296,18 +296,17 @@ describe("LAbgG - Landesabgabegesetz", () => {
 			expect(isPrologFalse(result)).toBe(false);
 		});
 
-		it("100 tonnes -> 2014 -> NOT exempt (above threshold)", async () => {
-			const sv = sachverhalt("gross_miner_a", { tonnen: 100 });
+		it("578 tonnes -> 119.88 EUR -> exempt (just below threshold)", async () => {
+			const sv = sachverhalt("grenz_miner", { tonnen: 578 });
 			const vm = await createVM(sv);
 			const result = vm.execute(
-				"ausnahme(labgg, gross_miner_a, bergbau(gewinnen, obertags, mineralische_rohstoffe), gestein).",
+				"ausnahme(labgg, grenz_miner, bergbau(gewinnen, obertags, mineralische_rohstoffe), gestein).",
 			);
-			// 100 * 20.14 = 2014 > 120, so bagatelle exception does NOT apply
-			expect(isPrologFalse(result)).toBe(true);
+			expect(isPrologFalse(result)).toBe(false);
 		});
 
-		it("6 tonnes -> 120.84 -> NOT exempt (above threshold)", async () => {
-			const sv = sachverhalt("gross_miner", { tonnen: 6 });
+		it("579 tonnes -> 120.08 EUR -> NOT exempt (just above threshold)", async () => {
+			const sv = sachverhalt("gross_miner", { tonnen: 579 });
 			const vm = await createVM(sv);
 
 			// Check that the bagatelle exception does NOT apply
@@ -322,7 +321,7 @@ describe("LAbgG - Landesabgabegesetz", () => {
 			expect(isPrologFalse(result)).toBe(false);
 		});
 
-		it("10000 tonnes -> 2014 EUR -> NOT exempt", async () => {
+		it("10000 tonnes -> 2074 EUR -> NOT exempt", async () => {
 			const sv = sachverhalt("berg_gmbh", {
 				juristischePerson: true,
 				natuerlichePerson: false,
@@ -336,25 +335,25 @@ describe("LAbgG - Landesabgabegesetz", () => {
 	});
 
 	describe("SS 5 - Hoehe der Abgabe", () => {
-		it("calculates 20.14 cents per tonne: 1 tonne = 20.14", async () => {
+		it("calculates 0.2074 EUR per tonne: 1 tonne = 0.2074", async () => {
 			const sv = sachverhalt("calc_a", { tonnen: 1 });
 			const vm = await createVM(sv);
 			const result = vm.executeQueryAndEvaluate<number>("abgabe_hoehe(labgg, gestein, X).", "X");
-			expect(result[0]).toBeCloseTo(20.14);
+			expect(result[0]).toBeCloseTo(0.2074);
 		});
 
-		it("calculates 20.14 cents per tonne: 100 tonnes = 2014", async () => {
+		it("calculates 0.2074 EUR per tonne: 100 tonnes = 20.74", async () => {
 			const sv = sachverhalt("calc_b", { tonnen: 100 });
 			const vm = await createVM(sv);
 			const result = vm.executeQueryAndEvaluate<number>("abgabe_hoehe(labgg, gestein, X).", "X");
-			expect(result[0]).toBeCloseTo(2014.0);
+			expect(result[0]).toBeCloseTo(20.74);
 		});
 
-		it("calculates 20.14 cents per tonne: 50000 tonnes = 1007000", async () => {
+		it("calculates 0.2074 EUR per tonne: 50000 tonnes = 10370", async () => {
 			const sv = sachverhalt("calc_c", { tonnen: 50000 });
 			const vm = await createVM(sv);
 			const result = vm.executeQueryAndEvaluate<number>("abgabe_hoehe(labgg, gestein, X).", "X");
-			expect(result[0]).toBeCloseTo(1007000.0);
+			expect(result[0]).toBeCloseTo(10370.0);
 		});
 
 		it("index reference is Statistik Austria VPI", async () => {
@@ -530,19 +529,19 @@ describe("LAbgG - Landesabgabegesetz", () => {
 	});
 
 	describe("Edge cases", () => {
-		it("5 tonnes: abgabe_hoehe = 100.7 (below threshold 120)", async () => {
-			const sv = sachverhalt("edge_a", { tonnen: 5 });
+		it("578 tonnes: abgabe_hoehe = 119.88 EUR (below threshold 120)", async () => {
+			const sv = sachverhalt("edge_a", { tonnen: 578 });
 			const vm = await createVM(sv);
 			const hoehe = vm.executeQueryAndEvaluate<number>("abgabe_hoehe(labgg, gestein, X).", "X");
-			expect(hoehe[0]).toBeCloseTo(100.7);
+			expect(hoehe[0]).toBeCloseTo(119.88);
 			expect(hoehe[0]).toBeLessThan(120);
 		});
 
-		it("6 tonnes: abgabe_hoehe = 120.84 (above threshold 120)", async () => {
-			const sv = sachverhalt("edge_b", { tonnen: 6 });
+		it("579 tonnes: abgabe_hoehe = 120.08 EUR (above threshold 120)", async () => {
+			const sv = sachverhalt("edge_b", { tonnen: 579 });
 			const vm = await createVM(sv);
 			const hoehe = vm.executeQueryAndEvaluate<number>("abgabe_hoehe(labgg, gestein, X).", "X");
-			expect(hoehe[0]).toBeCloseTo(120.84);
+			expect(hoehe[0]).toBeCloseTo(120.08);
 			expect(hoehe[0]).toBeGreaterThan(120);
 		});
 

@@ -10,6 +10,9 @@ langtitel(labgg,
 titel(labgg, "Oö. Landschaftsabgabegesetz").
 kurztitel(labgg, "LAbgG").
 link(labgg, "https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=LrOO&Gesetzesnummer=20000943").
+%# Stammfassung: LGBl.Nr. 99/2017
+%# Novellen: LGBl.Nr. 95/2022, LGBl.Nr. 96/2023
+%# Indexanpassungen: K LGBl.Nr. 75/2024 (20,14 Cent), K LGBl.Nr. 36/2025 (20,74 Cent)
 
 % §1 Gegenstand der Abgabe:
 
@@ -63,7 +66,7 @@ ausnahme(labgg, Person, Verbum, Objekt) :-
     current_predicate(rohstoff_zur_abwehr_von_gefahren/1),
     rohstoff_zur_abwehr_von_gefahren(Objekt).
 
-%% 3. Die Gemeinde, in der sich eine Gewinnungsstätte befindet, erhält einen Ertragsanteil in Höhe von 10 % der Landschaftsabgabe, die im Gemeindegebiet erhoben wurde
+%% 3. Die Gemeinde, in der sich eine Gewinnungsstätte befindet, erhält einen Ertragsanteil in Höhe von 20 % der Landschaftsabgabe, die im Gemeindegebiet erhoben wurde (Anm: LGBl.Nr. 96/2023)
 
 %% (4) Die Landschaftsabgabe ist für Angelegenheiten des Natur- und Landschaftsschutzes sowie der
 %% Landschafts- und Ortsbildpflege, zur Verbesserung der ökologischen Infrastruktur, die Umweltbildung
@@ -128,18 +131,21 @@ ausnahme(labgg, Person, Verbum, Objekt) :-
     A < 120. 
 
 % §5 Höhe der Abgabe:
-%% (1)  Die  Höhe  der  Landschaftsabgabe  beträgt  20,14  Cent  pro  Tonne  gewonnenen  und  verwerteten  mineralischen Rohstoffs.
+%% (1)  Die  Höhe  der  Landschaftsabgabe  beträgt  15,95  Cent  pro  Tonne  gewonnenen  und
+%%      verwerteten  mineralischen Rohstoffs. (Anm: LGBl.Nr. 95/2022)
+%%      Indexangepasster Tarif: 20,74 Cent pro Tonne (K LGBl.Nr. 36/2025, ab 1. Jänner 2026)
 
 abgabe_hoehe(labgg, Objekt, X) :-
     current_predicate(gefoerdert/3),
     gefoerdert(Objekt, B, tonne),
-    X is B * 20.14.
+    X is B * 0.2074.
 
 %% (2) Der im Abs. 1 festgesetzte Tarif ändert sich jeweils zum 1. Jänner entsprechend den durchschnittlichen Änderungen des von der Bundesanstalt „Statistik Austria“ für das zweitvorangegangene Jahr verlautbarten Verbraucherpreisindex 2015 oder eines an seine Stelle tretenden Index, soweit sich die Indexzahl um mehr als 5 % geändert hat. Bezugsgröße für die erstmalige Änderung ist  der  durchschnittliche  Indexwert  für  das  Jahr  2017;  Bezugsgröße  für  jede  weitere  Änderung  ist  der durchschnittliche Indexwert desjenigen Kalenderjahres, das für die letzte Änderung maßgeblich war. Ein sich  aus  dieser  Berechnung  ergebender  neuer  Betrag  ist  auf  einen  vollen  Zehntel-Centbetrag  zu  runden, wobei Beträge  bis einschließlich 0,05 Cent abgerundet und Beträge  über 0,05 Cent aufgerundet  werden. Eine  solchermaßen  ermittelte  Änderung  des  Tarifs  wird  nur  dann  wirksam,  wenn  der  geänderte  Betrag von der Landesregierung vor dem Stichtag 1. Jänner im Landesgesetzblatt für Oberoesterreich kundgemacht wurde. 
 
 abgabe_hoehe_index(labgg, statistik_austria_vpi).
 abgabe_hoehe_index_anpassen_wenn(labgg, aenderung, groesser, 5, percent).
 abgabe_hoehe_runden(labgg, symmetrisch_IEEE_754_ohne_regel_3).
+%# Indexanpassungen: K LGBl.Nr. 75/2024, K LGBl.Nr. 36/2025
 
 % §6 Entstehen der Abgabeschuld:
 %% Die Abgabenschuld entsteht zu dem Zeitpunkt, in dem das gewonnene Material verwertet wird.
@@ -169,9 +175,11 @@ zur_abgabenbemessung_verpflichtet(labgg, X) :-
 abgabenerklaerung_einzureichen_bis(labgg, allgemein, 0430).
 abgabenerklaerung_einzureichen_bis(labgg, erstes_halbjahr_2018, 1031).
 
-%% (2)  Die  Abgabenerklärung  ist  nach  Gemeinden  und  nach  Gewinnungsstätten  aufzugliedern  und  hat gegebenenfalls auch Angaben über zivilrechtliche Verträge im Sinn des § 1 Abs. 4 zu machen, die einen entsprechend niedrigeren Abgabenbetrag rechtfertigen. Die bzw. der Abgabepflichtige hat den Abgabenbetrag zu berechnen und die Abgabe am Fälligkeitstag zu entrichten.
+%% (2)  Die  Abgabenerklärung  ist  nach  Gemeinden  und  nach  Gewinnungsstätten  aufzugliedern.
+%%      Die bzw. der Abgabepflichtige hat den Abgabenbetrag zu berechnen und die Abgabe am
+%%      Fälligkeitstag zu entrichten. (Anm: LGBl.Nr. 96/2023)
 
-abgabenerklaerung_aufbau(labgg, gewinnungsstaette, zivilrechtliche_leistungen).
+abgabenerklaerung_aufbau(labgg, gemeinde, gewinnungsstaette).
 abgabenschuld_zu_entrichten_bis(labgg, allgemein, 0430).
 abgabenschuld_zu_entrichten_bis(labgg, erstes_halbjahr_2018, 1031).
 
@@ -179,7 +187,19 @@ abgabenschuld_zu_entrichten_bis(labgg, erstes_halbjahr_2018, 1031).
 %% Abgabenbehörde ist die Landesregierung.
 abgabenbehoerde(labgg, landesregierung_ooe).
 
-% §11 Schlussbestimmungen:
+% §11 Übermittlung von Daten: (Anm: LGBl.Nr. 95/2022)
+%% (1) Die Abgabenbehörde hat bis jeweils 30. September eines jeden Jahres den für die Vollziehung
+%%     des Oö. Rohstoffgewinnungsplans zuständigen Stellen die Namen der Betreiberinnen bzw.
+%%     Betreiber, die Lage der Gewinnungsstätten und die gewonnenen Mengen auf elektronischem
+%%     Weg zu übermitteln.
+%% (2) Bestehen Hindernisse für die Datenübermittlung, hat die Abgabenbehörde die zuständigen
+%%     Stellen davon zu verständigen.
+%% (3) Die Naturschutzbehörde hat in Bewilligungen nach §5 Abs. 11 und 15 Oö. Natur- und
+%%     Landschaftsschutzgesetz 2001 auf die Pflichten nach diesem Landesgesetz hinzuweisen. (Anm: LGBl.Nr. 96/2023)
+
+datenuebermittlung_frist(labgg, 0930).
+
+% §12 Schlussbestimmungen: (Anm: LGBl.Nr. 95/2022)
 %% (1) Dieses Landesgesetz tritt mit dem seiner Kundmachung im Landesgesetzblatt für Oberoesterreich folgenden Monatsersten in Kraft.
 inkrafttreten(labgg, 20180101).
 

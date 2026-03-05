@@ -68,7 +68,7 @@ ausnahme(labgg, Person, Verbum, Objekt) :-
     rohstoff_zur_abwehr_von_gefahren(Objekt).
 ```
 
-Abs. 3--6 regeln die Ertragsanteile (Gemeinde: 20 %, Land: 80 %) sowie die Zweckbindung der Mittel (Natur- und Landschaftsschutz, ökologische Infrastruktur, Umweltbildung). Die Ertragsanteile sind als Fakten modelliert:
+Abs. 3--6 (Anm: LGBl.Nr. 96/2023) regeln die Ertragsanteile (Gemeinde: 20 %, Land: 80 %) sowie die Zweckbindung der Mittel (Natur- und Landschaftsschutz, ökologische Infrastruktur, Umweltbildung). Die Ertragsanteile sind als Fakten modelliert:
 
 ```prolog
 ertragsanteil(labgg, gemeinde, 0.2).
@@ -107,15 +107,15 @@ ausnahme(labgg, Person, Verbum, Objekt) :-
 
 #### § 5 -- Höhe der Abgabe
 
-Abs. 1 legt den Abgabensatz auf 20,14 Cent pro Tonne fest:
+Abs. 1 legt den gesetzlichen Basiszinssatz auf 15,95 Cent pro Tonne fest (Anm: LGBl.Nr. 95/2022). Durch Indexanpassung beträgt der aktuelle Tarif 20,74 Cent pro Tonne (K LGBl.Nr. 36/2025, ab 1. Jänner 2026). Die Berechnung erfolgt in Euro (nicht Cent), damit der Vergleich mit der Freigrenze in § 4 (120 Euro) einheitlich ist:
 
 ```prolog
 abgabe_hoehe(labgg, Objekt, X) :-
     gefoerdert(Objekt, B, tonne),
-    X is B * 20.14.
+    X is B * 0.2074.
 ```
 
-Abs. 2 regelt die Indexanpassung anhand des Verbraucherpreisindex der Statistik Austria. Diese Regelung ist als deklarative Fakten (Indexbezug, Änderungsschwelle, Rundungsregel) abgebildet, die dynamische Berechnung ist jedoch noch nicht implementiert:
+Abs. 2 regelt die Indexanpassung anhand des Verbraucherpreisindex der Statistik Austria. Diese Regelung ist als deklarative Fakten (Indexbezug, Änderungsschwelle, Rundungsregel) abgebildet, die dynamische Berechnung ist jedoch noch nicht implementiert. Bisherige Indexanpassungen: K LGBl.Nr. 75/2024, K LGBl.Nr. 36/2025:
 
 ```prolog
 abgabe_hoehe_index(labgg, statistik_austria_vpi).
@@ -156,7 +156,13 @@ abgabenerklaerung_einzureichen_bis(labgg, erstes_halbjahr_2018, 1031).
 abgabenbehoerde(labgg, landesregierung_ooe).
 ```
 
-#### § 11 -- Schlussbestimmungen
+#### § 11 -- Übermittlung von Daten (Anm: LGBl.Nr. 95/2022)
+
+§ 11 wurde durch LGBl.Nr. 95/2022 neu eingefügt und regelt die Übermittlung von Betreiberdaten, Gewinnungsstätten und Mengen an die für den Rohstoffinformationsplan zuständigen Stellen (Frist: 30. September). Abs. 3 (Anm: LGBl.Nr. 96/2023) verpflichtet die Naturschutzbehörde, in Bewilligungen nach dem Oö. Natur- und Landschaftsschutzgesetz 2001 auf die Pflichten nach dem LAbgG hinzuweisen.
+
+#### § 12 -- Schlussbestimmungen (Anm: LGBl.Nr. 95/2022)
+
+Ehemals § 11, durch LGBl.Nr. 95/2022 umnummeriert.
 
 ```prolog
 inkrafttreten(labgg, 20180101).
@@ -210,14 +216,16 @@ objekt(sachverhalt, max_mustermann, bergbau(gewinnen, obertags, mineralische_roh
 gefoerdert(mein_gestein, 2, tonne).
 ```
 
-Die Subsumtionsprüfung `abgabepflichtig(labgg, sachverhalt, max_mustermann)` liefert in diesem Fall `false`, da die Abgabe von 40,28 Cent unter der Freigrenze von 120 Euro liegt (§ 4 LAbgG).
+Die Subsumtionsprüfung `abgabepflichtig(labgg, sachverhalt, max_mustermann)` liefert in diesem Fall `false`, da die Abgabe von 0,41 Euro (2 × 0,2074) unter der Freigrenze von 120 Euro liegt (§ 4 LAbgG).
 
 ## Testfälle (`corpus/tests/`)
 
 Das Projekt enthält mehrere Beispiel-Sachverhalte, die die korrekte Anwendung der formalisierten Normen demonstrieren:
 
 - **Sachverhalt 1** (Kohleförderung): Der geförderte Rohstoff ist Kohle. Die Ausnahme gem. § 1 Abs. 2 LAbgG greift. Ergebnis: Keine Abgabepflicht.
-- **Sachverhalt 3** (Geringe Fördermenge): Bei 2 Tonnen beträgt die Abgabe 40,28 Cent -- unterhalb der Freigrenze von 120 Euro gem. § 4 LAbgG. Ergebnis: Abgabenbefreiung.
+- **Sachverhalt 3** (Geringe Fördermenge): Bei 2 Tonnen beträgt die Abgabe 0,41 Euro -- unterhalb der Freigrenze von 120 Euro gem. § 4 LAbgG. Ergebnis: Abgabenbefreiung.
+
+Siehe [docs/AMENDMENTS.md](docs/AMENDMENTS.md) für die vollständige Änderungshistorie des LAbgG.
 
 ## Technische Umsetzung
 

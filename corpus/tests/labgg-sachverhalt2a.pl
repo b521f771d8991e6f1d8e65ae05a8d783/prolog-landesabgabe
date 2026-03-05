@@ -10,5 +10,7 @@ verbum(sachverhalt, max_mustermann, bergbau(gewinnen, obertags, mineralische_roh
 objekt(sachverhalt, max_mustermann, bergbau(gewinnen, obertags, mineralische_rohstoffe), mein_gestein).
 gefoerdert(mein_gestein, 20, tonne).
 
-% Ausführen mit: abgabepflichtig(labgg, sachverhalt, max_mustermann). --> true
-% Besteht eine Ausnahme: ausnahme(labgg, max_mustermann, bergbau(gewinnen, obertags, mineralische_rohstoffe), mein_gestein). --> false
+% Ausführen mit: abgabepflichtig(labgg, sachverhalt, max_mustermann). --> false
+%# (max_mustermann ist kein betreiber: weder natuerliche_person noch gewerblich/berufsmaessig definiert)
+% Besteht eine Ausnahme: ausnahme(labgg, max_mustermann, bergbau(gewinnen, obertags, mineralische_rohstoffe), mein_gestein). --> true
+%# (20 * 0.2074 = 4.148 Euro < 120 Euro --> Abgabenbefreiung gem. §4)

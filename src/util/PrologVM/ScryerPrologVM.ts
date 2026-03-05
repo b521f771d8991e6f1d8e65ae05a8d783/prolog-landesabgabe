@@ -1,10 +1,16 @@
 import { PrologFile, PrologFileType } from "./PrologFileSystem";
 import { PrologVM } from "./PrologVM";
 
-import { executeQueryOnFiles, PrologFile as BackendPrologFile } from "../../../generated/npm-pkgs/prolog_landesabgabe";
+import { Prolog } from "scryer";
 
 export class ScryerPrologVM extends PrologVM {
 	factBase: PrologFile[] = [];
+	private prolog: Prolog;
+
+	constructor() {
+		super();
+		this.prolog = new Prolog({ concurrency: "interrupt" });
+	}
 
 	static async initPrologVM(): Promise<ScryerPrologVM> {
 		return new ScryerPrologVM();
@@ -22,11 +28,16 @@ export class ScryerPrologVM extends PrologVM {
 	}
 
 	execute(queryString: string, input?: Record<string, unknown>): any[] {
-		const ret = executeQueryOnFiles(
-			this.factBase.map((x) => new BackendPrologFile(x.name, x.evaluatedProlog)),
-			queryString,
-		);
-		return JSON.parse(ret) as any[];
+		for (const pf of this.factBase) {
+			this.prolog.consultText(pf.evaluatedProlog);
+		}
+
+		const results: any[] = [];
+		const query = this.prolog.query(queryString);
+		for (const answer of query) {
+			results.push(answer.bindings);
+		}
+		return results;
 	}
 
 	getFactBase(): PrologFile[] {

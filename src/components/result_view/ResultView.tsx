@@ -15,7 +15,7 @@ import { v7 } from "uuid";
 import {
 	LandesabgabePerson,
 	LandesabgabeSachverhalt,
-} from "../../../../Corpus/LabggDefinitions";
+} from "../../../corpus/LabggDefinitions";
 import { PrologFile } from "../../util/PrologVM/PrologFileSystem";
 import { isPrologFalse } from "../../util/PrologVM/PrologUtilities";
 import {

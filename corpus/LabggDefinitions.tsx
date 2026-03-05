@@ -4,7 +4,7 @@ import {
 	DISCONTIGUOUS_TAGS,
 	PrologPerson,
 	PrologHandlung,
-} from "../WebUI/src/util/PrologVM/PrologTemplates";
+} from "../src/util/PrologVM/PrologTemplates";
 import dedent from "dedent-js";
 import { Table } from "@mantine/core";
 

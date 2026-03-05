@@ -54,11 +54,22 @@
               cp -a generated/web-dist/frontend/* $out/
             '';
           };
+
+          # Runnable wrapper: serves the static frontend on localhost:8080
+          serve = pkgs.writeShellScriptBin "prolog-landesabgabe" ''
+            echo "Serving on http://localhost:8080"
+            ${pkgs.python3}/bin/python3 -m http.server 8080 --directory ${frontend}
+          '';
         in
         rec {
           packages = {
-            inherit frontend;
+            inherit frontend serve;
             default = frontend;
+          };
+
+          apps.default = {
+            type = "app";
+            program = "${serve}/bin/prolog-landesabgabe";
           };
 
           checks = packages;

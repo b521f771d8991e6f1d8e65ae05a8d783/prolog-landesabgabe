@@ -2,7 +2,7 @@ import { PrologFile } from "../util/PrologVM/PrologFileSystem";
 import {
 	LandesabgabePerson,
 	LandesabgabeHandlung,
-} from "../../../Corpus/LabggDefinitions";
+} from "../../corpus/LabggDefinitions";
 import {
 	Title,
 	Text,

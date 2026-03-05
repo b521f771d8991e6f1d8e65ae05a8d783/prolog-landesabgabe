@@ -2,7 +2,7 @@ import {
 	LandesabgabeHandlung,
 	LandesabgabePerson,
 	LandesabgabeSachverhalt,
-} from "../../../../Corpus/LabggDefinitions";
+} from "../../../corpus/LabggDefinitions";
 import {
 	Text,
 	Paper,

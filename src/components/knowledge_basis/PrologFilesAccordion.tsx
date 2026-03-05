@@ -6,10 +6,7 @@ import {
 	Button,
 	Center,
 	Flex,
-	Input,
 	List,
-	LoadingOverlay,
-	Modal,
 	Paper,
 	Text,
 	Title,
@@ -19,9 +16,7 @@ import {
 	PrologFile,
 	PrologFileType,
 } from "../../util/PrologVM/PrologFileSystem";
-import { useGetWebServerJSON } from "@/util/BackendQueryProvider";
 import { CodeView } from "../CodeView";
-import GenericWebServerRequest from "../../util/GenericWebServerRequest";
 import { executePrologFileInPrologVM } from "../../util/PrologVM/PrologVM";
 
 interface PrologFilesAccordionProps {
@@ -72,26 +67,6 @@ interface LawViewProps {
 }
 
 function LawView({ title, laws, addToFactBase }: LawViewProps) {
-	const [addLawFromLibraryView, setAddLawFromLibraryView] =
-		useState<boolean>(false);
-	const [searchError, setSearchError] = useState<string | undefined>("");
-	const [searchFieldValue, setSearchFieldValue] = useState<string>("");
-
-	function resetLawView() {
-		setAddLawFromLibraryView(false);
-		setSearchFieldValue("");
-		setSearchError(undefined);
-	}
-
-	function addLawFromLibraryClicked() {
-		setAddLawFromLibraryView(true);
-		setSearchFieldValue("");
-	}
-
-	function closeModalView() {
-		resetLawView();
-	}
-
 	return (
 		<>
 			<Title order={2}>{title}</Title>
@@ -107,148 +82,7 @@ function LawView({ title, laws, addToFactBase }: LawViewProps) {
 					))}
 				</>
 			)}
-
-			<Center>
-				<Flex
-					className={"select-none"}
-					mih={50}
-					gap="xs"
-					justify="center"
-					align="center"
-					direction="row"
-					wrap="wrap"
-					mt={"xs"}
-				>
-					<Button leftSection={"⚖️"} onClick={addLawFromLibraryClicked}>
-						Gesetz aus Bibliothek hinzufügen
-					</Button>
-					<ModalView
-						addLawFromLibraryView={addLawFromLibraryView}
-						closeModalView={closeModalView}
-						addPrologFileToLibrary={addToFactBase}
-					/>
-					<Button leftSection={"✏️"} disabled>
-						Gesetze manuell hinzufügen
-					</Button>
-				</Flex>
-			</Center>
 		</>
-	);
-}
-
-interface ModalViewProps {
-	addLawFromLibraryView: boolean;
-	closeModalView: () => void;
-	addPrologFileToLibrary: (result: PrologFile) => void;
-}
-
-function ModalView({
-	addLawFromLibraryView,
-	closeModalView: closeModalView,
-	addPrologFileToLibrary,
-}: ModalViewProps) {
-	const [loadError, setLoadError] = useState<string | undefined>(undefined);
-	const [lawLibrary, setLawLibrary] = useState<string[]>([]);
-	const [searchText, setSearchText] = useState<string>("");
-	const [searchError, setSearchError] = useState<string>("");
-	const [isSearchInProgress, setIsSearchInProgress] = useState<boolean>(false);
-
-	const { data, error, isLoading, isError, isSuccess } =
-		useGetWebServerJSON<string[]>("private/fetch-law");
-
-	useEffect(() => {
-		if (isSuccess) {
-			setLawLibrary(JSON.parse(JSON.stringify(data!)) as string[]);
-		}
-
-		if (isError) {
-			setLoadError(error!.message);
-		}
-	}, [isSuccess, isError]);
-
-	const searchConcludedCallback = (result: string) => {
-		setIsSearchInProgress(() => false);
-		const kurztitel = searchText;
-		setSearchText(() => "");
-		setSearchError(() => "");
-		addPrologFileToLibrary(
-			new PrologFile(kurztitel, result, undefined, PrologFileType.LAW),
-		);
-		closeModalView();
-	};
-
-	const searchErrorCallback = (errorMessage: string) => {
-		setIsSearchInProgress(() => false);
-		setSearchError(() => "Nichts gefunden 😞");
-		console.error(errorMessage);
-	};
-
-	const searchButtonClicked = () => {
-		setIsSearchInProgress(() => true);
-	};
-
-	return (
-		<Modal
-			opened={addLawFromLibraryView}
-			onClose={closeModalView}
-			title="Gesetz aus Bibliothek hinzufügen"
-		>
-			<Flex
-				gap="xs"
-				justify="center"
-				align="center"
-				direction="column"
-				wrap="wrap"
-			>
-				<Input
-					radius="lg"
-					value={searchText!}
-					onChange={(event) => setSearchText(event.currentTarget.value)}
-					rightSection={
-						searchText !== "" ? (
-							<Input.ClearButton onClick={() => setSearchText(() => "")} />
-						) : undefined
-					}
-					rightSectionPointerEvents="auto"
-					placeholder="Kurztitel"
-					error={searchError}
-				/>
-
-				<Button leftSection={"🔍"} onClick={searchButtonClicked}>
-					Suchen & Hinzufügen
-				</Button>
-				{isSearchInProgress && searchText !== "" && (
-					<GenericWebServerRequest
-						urlSuffix={"private/fetch-law?kurztitel=" + searchText}
-						callback={searchConcludedCallback}
-						errorCallback={searchErrorCallback}
-					/>
-				)}
-
-				<Box pos="relative">
-					<LoadingOverlay
-						visible={isLoading}
-						zIndex={1000}
-						overlayProps={{ radius: "sm", blur: 2 }}
-					/>
-					<Flex gap="xs" justify="left" align="left" direction="column" wrap="wrap">
-						{loadError && <Text c="red">Error: {loadError}</Text>}
-						{lawLibrary.length == 0 ? (
-							<Text>Keine Gesetze am Server gefunden</Text>
-						) : (
-							<>
-								<Text td="underline">Am Server sind folgende Gesetze verfügbar:</Text>
-								<List>
-									{lawLibrary.map((x) => (
-										<List.Item key={v7()}>{x}</List.Item>
-									))}
-								</List>
-							</>
-						)}
-					</Flex>
-				</Box>
-			</Flex>
-		</Modal>
 	);
 }
 

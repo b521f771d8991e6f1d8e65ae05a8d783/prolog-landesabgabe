@@ -32,5 +32,5 @@ verbot(namensbezeichnung_von(titel, wuerden, adelsbezeichnungen)).
 %% § 7.
 %% (1)Dieses Gesetz tritt am Tage seiner Kundmachung in Kraft.
 
-inkrafttreten(krog, 20180101).
+inkrafttreten(krog, 19190410).
 %% (2)Mit seinem Vollzuge sind der Staatssekretär für Inneres und Unterricht und der %% Staatssekretär für Justiz betraut.

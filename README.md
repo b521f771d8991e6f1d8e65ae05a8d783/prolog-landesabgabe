@@ -179,7 +179,7 @@ abgabepflichtig(labgg, Sachverhalt, Person) :-
 
 Das Modul `mineralrohstoffgesetz` bildet § 4 Abs. 1 MinroG ab, der die bundeseigenen mineralischen Rohstoffe enumerativ aufzählt: Steinsalz (und mit diesem vorkommende Salze), Kohlenwasserstoffe sowie uran- und thoriumhaltige Rohstoffe. Dieses Modul wird vom LAbgG referenziert, um den Ausnahmetatbestand für bundeseigene Rohstoffe zu prüfen.
 
-## Standardbibliothek (`Sources/Corpus/stdlib/`)
+## Standardbibliothek (`corpus/stdlib/`)
 
 Neben den oben genannten Normen enthält die Standardbibliothek allgemeine, normübergreifende Wissensbasen:
 
@@ -212,7 +212,7 @@ gefoerdert(mein_gestein, 2, tonne).
 
 Die Subsumtionsprüfung `abgabepflichtig(labgg, sachverhalt, max_mustermann)` liefert in diesem Fall `false`, da die Abgabe von 40,28 Cent unter der Freigrenze von 120 Euro liegt (§ 4 LAbgG).
 
-## Testfälle (`Tests/Corpus/`)
+## Testfälle (`corpus/tests/`)
 
 Das Projekt enthält mehrere Beispiel-Sachverhalte, die die korrekte Anwendung der formalisierten Normen demonstrieren:
 
@@ -221,7 +221,7 @@ Das Projekt enthält mehrere Beispiel-Sachverhalte, die die korrekte Anwendung d
 
 ## Technische Umsetzung
 
-Das System ist als reine Frontend-Anwendung konzipiert -- es wird kein Backend benötigt. Der Prolog-Korpus (`Sources/Corpus/`) wird zur Build-Zeit direkt in das JavaScript-Bundle eingebettet. Die Prolog-Abfragen werden vollständig im Browser ausgeführt, wahlweise über [SWI-Prolog](https://www.swi-prolog.org/) (via `swipl-wasm`) oder [Scryer Prolog](https://github.com/mthom/scryer-prolog) (via WebAssembly, erfordert Rust + `wasm-pack`). Die Benutzeroberfläche ist ein React/TypeScript-Frontend (`src/`) mit Mantine-UI und Sachverhalts-Editor. Als Build-System dient Nix Flakes (`nix build .#frontend`), für die lokale Entwicklung steht ein `Makefile` bereit (`make init && npm run dev`). Das Deployment auf Cloudflare Workers erfolgt via `npx wrangler deploy`.
+Das System ist als reine Frontend-Anwendung konzipiert -- es wird kein Backend benötigt. Der Prolog-Korpus (`corpus/`) wird zur Build-Zeit direkt in das JavaScript-Bundle eingebettet. Die Prolog-Abfragen werden vollständig im Browser ausgeführt, wahlweise über [SWI-Prolog](https://www.swi-prolog.org/) (via `swipl-wasm`) oder [Scryer Prolog](https://github.com/mthom/scryer-prolog) (via WebAssembly, erfordert Rust + `wasm-pack`). Die Benutzeroberfläche ist ein React/TypeScript-Frontend (`src/`) mit Mantine-UI und Sachverhalts-Editor. Als Build-System dient Nix Flakes (`nix build .#frontend`), für die lokale Entwicklung genügt `npm install && npm run dev`. Das Deployment auf Cloudflare Workers erfolgt via `npx wrangler deploy`.
 
 ## TODO
 

@@ -6,7 +6,9 @@
 :- discontiguous nachname/2.
 :- discontiguous natuerliche_person/1.
 :- discontiguous subjekt/2.
+:- if(current_prolog_flag(dialect, swi)).
 :- debug.
+:- endif.
 
 subjekt(sachverhalt, max_mustermann).
 vorname(max_mustermann, "Max").
@@ -20,13 +22,13 @@ gefoerdert(mein_gestein, 2, tonne).
 verwertet_am(mein_gestein, date(2024, 11, 12, 0, 0, 0, Off, TZ, DST)).
 
 subjekt(sachverhalt, heinrich_raudinger).
-vorname(reinrich_raudinger, "Heinrich").
+vorname(heinrich_raudinger, "Heinrich").
 nachname(heinrich_raudinger, "Raudinger").
 natuerliche_person(heinrich_raudinger).
 alter(heinrich_raudinger, 30).
 
 % abgabe_hoehe(labgg, mein_gestein, Y).
-% abgabepfichtiger(labgg, X). --> max_mustermann 
+% abgabepflichtiger(labgg, X). --> max_mustermann
 % abgabenschuld_zeitpunkt(labgg, mein_gestein, X).
 % aufzeichnungspflicht(labgg, X). -> max_mustermann
 % ausnahme(labgg, max_mustermann, bergbau(gewinnen, obertags, mineralische_rohstoffe), mein_gestein). --> true, weil Menge zu klein

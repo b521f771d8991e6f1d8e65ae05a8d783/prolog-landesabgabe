@@ -9,6 +9,6 @@
     "command": "npm run build:web"
   },
   "assets": {
-    "directory": "./result"
+    "directory": "./dist"
   }
 }

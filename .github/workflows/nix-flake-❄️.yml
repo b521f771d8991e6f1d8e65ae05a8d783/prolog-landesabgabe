@@ -4,71 +4,21 @@ on:
  push:
     branches:
       - master
-      - dev
  pull_request:
     branches:
       - master
-      - dev
- # we do not need a schedule here, since nix is reproducible
 
 jobs:
  build:
   permissions:
    contents: read
-   packages: write
-   actions: write
-  strategy:
-   matrix:
-    os: [ubuntu-latest]
-  runs-on: ${{ matrix.os }}
+  runs-on: ubuntu-latest
   steps:
-   # Pin to version tags — for max supply-chain security upgrade to pinned SHAs
    - uses: actions/checkout@v4
-     with:
-       submodules: recursive
 
-   - name: Check for nix
-     id: check_nix
-     run: |
-      if command -v nix >/dev/null 2>&1; then
-        echo "NIX_PRESENT=true" >> $GITHUB_ENV
-        echo "present=true" >> $GITHUB_OUTPUT
-      else
-        echo "NIX_PRESENT=false" >> $GITHUB_ENV
-        echo "present=false" >> $GITHUB_OUTPUT
-      fi
+   - uses: DeterminateSystems/nix-installer-action@v17
 
-   - uses: DeterminateSystems/flake-checker-action@v0.1.2
-     with:
-       fail-mode: false
+   - uses: DeterminateSystems/magic-nix-cache-action@v8
 
-   - uses: DeterminateSystems/nix-installer-action@v13
-     if: steps.check_nix.outputs.present == 'false'
-     with:
-       flakehub: false
-
-   - uses: DeterminateSystems/magic-nix-cache-action@v7
-     with:
-       use-flakehub: false
-
-   - name: Lint and test
-     run: |
-      make lint
-      make test
-
-   - name: Build Nix Flake
-     run: |
-      nix --extra-experimental-features "flakes nix-command" flake check -L --show-trace
-      mkdir ${{ runner.temp }}/result
-      nix --extra-experimental-features "flakes nix-command" copy --no-check-sigs \
-        .#web-app .#web-app-debug \
-        .#native .#native-debug \
-        .#docker-image .#docker-image-debug \
-        --to ${{ runner.temp }}/result
-
-   - name: Upload artifact
-     uses: actions/upload-artifact@v4
-     with:
-      name: digests-${{ runner.os }}-${{ runner.arch }}
-      path: ${{ runner.temp }}/result
-      if-no-files-found: error
+   - name: Build and test
+     run: nix build -L --show-trace

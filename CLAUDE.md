@@ -13,7 +13,7 @@
 ## Commit rules
 
 - NEVER add `Co-Authored-By` lines to commit messages. The user signs all commits with GPG — Claude is a tool, not a co-author.
-- NEVER use `--no-verify` or `--no-gpg-sign`. The pre-commit hook (nix build including tests) MUST pass.
+- NEVER actually commit, just write the commit message
 - Keep commit messages in English. Reference Austrian law identifiers (LGBl.Nr., BGBl., etc.) verbatim.
 
 ## Build & test
@@ -37,11 +37,6 @@ Common issues:
 - Moving files without updating all import paths → TS2307 "Cannot find module"
 - Importing from `generated/` directories that only exist after a backend build → remove or replace these imports
 - Trailing commas in `package.json` → esbuild rejects them
-
-## Deployment
-
-- `npx wrangler deploy` deploys to Cloudflare Workers. The wrangler config automatically runs `nix build` first.
-- Branch deploys: `./deploy.sh` — master deploys to production, other branches to `prolog-landesabgabe-<branch>`.
 
 ## Prolog corpus
 

@@ -1,24 +1,49 @@
 name: Nix Flake ❄️
 on:
- workflow_dispatch:
- push:
+  workflow_dispatch:
+  push:
     branches:
       - master
- pull_request:
+  pull_request:
     branches:
       - master
 
 jobs:
- build:
-  permissions:
-   contents: read
-  runs-on: ubuntu-latest
-  steps:
-   - uses: actions/checkout@v4
+  build:
+    permissions:
+      contents: read
+      packages: write        # required to push to ghcr.io
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-   - uses: DeterminateSystems/nix-installer-action@v17
+      - uses: DeterminateSystems/nix-installer-action@v17
+      - uses: DeterminateSystems/magic-nix-cache-action@v8
 
-   - uses: DeterminateSystems/magic-nix-cache-action@v8
+      - name: Build and test
+        run: nix build -L --show-trace
 
-   - name: Build and test
-     run: nix build -L --show-trace
+      - name: Build Docker image
+        run: nix build -L --show-trace .#dockerImage
+
+      - name: Login to ghcr.io
+        # skopeo is pre-installed on ubuntu-latest
+        run: |
+          skopeo login ghcr.io \
+            --username ${{ github.actor }} \
+            --password ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push to ghcr.io
+        # Only push on actual commits to master, not on PRs
+        if: github.event_name != 'pull_request'
+        env:
+          IMAGE: ghcr.io/${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          IMAGE_ARCHIVE=$(readlink -f result)
+          skopeo copy \
+            docker-archive:"$IMAGE_ARCHIVE" \
+            docker://"$IMAGE":latest
+          skopeo copy \
+            docker-archive:"$IMAGE_ARCHIVE" \
+            docker://"$IMAGE":"${SHA::8}"

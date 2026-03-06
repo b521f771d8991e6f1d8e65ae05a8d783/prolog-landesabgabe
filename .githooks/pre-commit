@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "==> pre-commit: running nix build (includes tests)..."
+nix build --no-link
+echo "==> pre-commit: nix build succeeded."

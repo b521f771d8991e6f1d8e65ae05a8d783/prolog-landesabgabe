@@ -46,6 +46,7 @@
             buildPhase = ''
               export HOME=$TMPDIR/home
               mkdir -p $HOME
+              npm run vitest
               npm run build:web
             '';
 

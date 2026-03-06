@@ -6,7 +6,7 @@
   "compatibility_date": "2026-02-06",
   "compatibility_flags": ["nodejs_compat"],
   "build": {
-    "command": "curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux --no-confirm --extra-conf "sandbox = false" && . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh && nix build .#frontend --out-link result"
+    "command": "nix build .#frontend --out-link result"
   },
   "assets": {
     "directory": "./result"

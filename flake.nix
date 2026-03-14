@@ -80,12 +80,50 @@
             echo "Serving on http://localhost:$PORT"
             ${pkgs.lighttpd}/bin/lighttpd -D -f "$CONF"
           '';
+          # OCI / Docker image: lighttpd serving the static frontend (Linux only)
+          dockerImage = pkgs.dockerTools.buildLayeredImage {
+            name = "prolog-landesabgabe";
+            tag = "latest";
+            contents = [
+              pkgs.lighttpd
+            ];
+            extraCommands = ''
+              mkdir -p srv/www
+              cp -a ${frontend}/* srv/www/
+              mkdir -p etc
+              cat > etc/lighttpd.conf <<CONF
+              server.document-root = "/srv/www"
+              server.port = 8080
+              server.bind = "0.0.0.0"
+              index-file.names = ( "index.html" )
+              mimetype.assign = (
+                ".html" => "text/html",
+                ".css"  => "text/css",
+                ".js"   => "application/javascript",
+                ".json" => "application/json",
+                ".svg"  => "image/svg+xml",
+                ".png"  => "image/png",
+                ".wasm" => "application/wasm",
+              )
+              CONF
+            '';
+            config = {
+              Cmd = [ "${pkgs.lighttpd}/bin/lighttpd" "-D" "-f" "/etc/lighttpd.conf" ];
+              ExposedPorts = {
+                "8080/tcp" = { };
+              };
+            };
+          };
+          isLinux = builtins.elem system [
+            "x86_64-linux"
+            "aarch64-linux"
+          ];
         in
         rec {
           packages = {
             inherit frontend serve;
             default = frontend;
-          };
+          } // pkgs.lib.optionalAttrs isLinux { inherit dockerImage; };
 
           apps.default = {
             type = "app";

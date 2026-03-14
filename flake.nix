@@ -80,40 +80,51 @@
             echo "Serving on http://localhost:$PORT"
             ${pkgs.lighttpd}/bin/lighttpd -D -f "$CONF"
           '';
+          listenPort = "8080";
+
+          lighttpdConf = pkgs.writeText "lighttpd.conf" ''
+            server.document-root = "${frontend}"
+            server.port = ${listenPort}
+            server.bind = "0.0.0.0"
+            index-file.names = ( "index.html" )
+            mimetype.assign = (
+              ".html" => "text/html",
+              ".css"  => "text/css",
+              ".js"   => "application/javascript",
+              ".json" => "application/json",
+              ".svg"  => "image/svg+xml",
+              ".png"  => "image/png",
+              ".wasm" => "application/wasm",
+            )
+          '';
+
           # OCI / Docker image: lighttpd serving the static frontend (Linux only)
           dockerImage = pkgs.dockerTools.buildLayeredImage {
             name = "prolog-landesabgabe";
-            tag = "latest";
             contents = [
               pkgs.lighttpd
+              pkgs.busybox
             ];
-            extraCommands = ''
-              mkdir -p srv/www
-              cp -a ${frontend}/* srv/www/
-              mkdir -p etc
-              cat > etc/lighttpd.conf <<CONF
-              server.document-root = "/srv/www"
-              server.port = 8080
-              server.bind = "0.0.0.0"
-              index-file.names = ( "index.html" )
-              mimetype.assign = (
-                ".html" => "text/html",
-                ".css"  => "text/css",
-                ".js"   => "application/javascript",
-                ".json" => "application/json",
-                ".svg"  => "image/svg+xml",
-                ".png"  => "image/png",
-                ".wasm" => "application/wasm",
-              )
-              CONF
-            '';
             config = {
-              Cmd = [ "${pkgs.lighttpd}/bin/lighttpd" "-D" "-f" "/etc/lighttpd.conf" ];
+              Cmd = [ "${pkgs.lighttpd}/bin/lighttpd" "-D" "-f" "${lighttpdConf}" ];
+              User = "65534:65534";
               ExposedPorts = {
-                "8080/tcp" = { };
+                "${listenPort}" = { };
+              };
+              Healthcheck = {
+                Test = [
+                  "${pkgs.curlMinimal}/bin/curl"
+                  "-f"
+                  "-s"
+                  "localhost:${listenPort}/"
+                ];
+                Interval = 30000000000;
+                Timeout = 10000000000;
+                Retries = 3;
               };
             };
           };
+
           isLinux = builtins.elem system [
             "x86_64-linux"
             "aarch64-linux"

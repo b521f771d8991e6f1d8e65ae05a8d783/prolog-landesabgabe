@@ -2,8 +2,6 @@ name: Nix Flake ❄️
 on:
   workflow_dispatch:
   push:
-    branches:
-      - master
   pull_request:
     branches:
       - master
@@ -51,22 +49,35 @@ jobs:
         env:
           IMAGE: ghcr.io/${{ github.repository }}
           SHA: ${{ github.sha }}
+          REF: ${{ github.ref_name }}
         run: |
           IMAGE_ARCHIVE=$(readlink -f result)
+          # Sanitise branch name for use as Docker tag
+          TAG=$(echo "$REF" | sed 's/[^a-zA-Z0-9._-]/-/g')
           skopeo copy \
             docker-archive:"$IMAGE_ARCHIVE" \
-            docker://"$IMAGE":latest
+            docker://"$IMAGE":"$TAG"
           skopeo copy \
             docker-archive:"$IMAGE_ARCHIVE" \
             docker://"$IMAGE":"${SHA::8}" \
             --digestfile /tmp/digest
           echo "digest=$(cat /tmp/digest)" >> "$GITHUB_OUTPUT"
 
+      - name: Tag as latest
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+        env:
+          IMAGE: ghcr.io/${{ github.repository }}
+        run: |
+          IMAGE_ARCHIVE=$(readlink -f result)
+          skopeo copy \
+            docker-archive:"$IMAGE_ARCHIVE" \
+            docker://"$IMAGE":latest
+
       - uses: sigstore/cosign-installer@v3
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
 
       - name: Sign image with cosign
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
         env:
           IMAGE: ghcr.io/${{ github.repository }}
           DIGEST: ${{ steps.push.outputs.digest }}

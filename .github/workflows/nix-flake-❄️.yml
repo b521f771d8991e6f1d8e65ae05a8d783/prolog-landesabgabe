@@ -17,6 +17,8 @@ jobs:
 
       - uses: DeterminateSystems/nix-installer-action@v17
       - uses: DeterminateSystems/magic-nix-cache-action@v8
+        with:
+          use-flakehub: false
 
       - name: Build and test
         run: nix build -L --show-trace
@@ -33,6 +35,8 @@ jobs:
 
       - uses: DeterminateSystems/nix-installer-action@v17
       - uses: DeterminateSystems/magic-nix-cache-action@v8
+        with:
+          use-flakehub: false
 
       - name: Build Docker image
         run: nix build -L --show-trace .#dockerImage

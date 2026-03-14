@@ -10,10 +10,10 @@ on:
 
 jobs:
   build:
-    permissions:
-      contents: read
-      packages: write        # required to push to ghcr.io
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
 
@@ -23,19 +23,31 @@ jobs:
       - name: Build and test
         run: nix build -L --show-trace
 
+  docker:
+    needs: build
+    permissions:
+      contents: read
+      packages: write
+      id-token: write          # required for cosign keyless signing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: DeterminateSystems/nix-installer-action@v17
+      - uses: DeterminateSystems/magic-nix-cache-action@v8
+
       - name: Build Docker image
         run: nix build -L --show-trace .#dockerImage
 
       - name: Login to ghcr.io
-        # skopeo is pre-installed on ubuntu-latest
         run: |
           skopeo login ghcr.io \
             --username ${{ github.actor }} \
             --password ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push to ghcr.io
-        # Only push on actual commits to master, not on PRs
         if: github.event_name != 'pull_request'
+        id: push
         env:
           IMAGE: ghcr.io/${{ github.repository }}
           SHA: ${{ github.sha }}
@@ -44,6 +56,18 @@ jobs:
           skopeo copy \
             docker-archive:"$IMAGE_ARCHIVE" \
             docker://"$IMAGE":latest
-          skopeo copy \
+          DIGEST=$(skopeo copy \
             docker-archive:"$IMAGE_ARCHIVE" \
-            docker://"$IMAGE":"${SHA::8}"
+            docker://"$IMAGE":"${SHA::8}" \
+            --digestfile /dev/stdout)
+          echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
+
+      - uses: sigstore/cosign-installer@v3
+        if: github.event_name != 'pull_request'
+
+      - name: Sign image with cosign
+        if: github.event_name != 'pull_request'
+        env:
+          IMAGE: ghcr.io/${{ github.repository }}
+          DIGEST: ${{ steps.push.outputs.digest }}
+        run: cosign sign --yes "${IMAGE}@${DIGEST}"

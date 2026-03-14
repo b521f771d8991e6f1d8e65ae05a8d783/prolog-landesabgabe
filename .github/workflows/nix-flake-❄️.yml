@@ -56,11 +56,11 @@ jobs:
           skopeo copy \
             docker-archive:"$IMAGE_ARCHIVE" \
             docker://"$IMAGE":latest
-          DIGEST=$(skopeo copy \
+          skopeo copy \
             docker-archive:"$IMAGE_ARCHIVE" \
             docker://"$IMAGE":"${SHA::8}" \
-            --digestfile /dev/stdout)
-          echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
+            --digestfile /tmp/digest
+          echo "digest=$(cat /tmp/digest)" >> "$GITHUB_OUTPUT"
 
       - uses: sigstore/cosign-installer@v3
         if: github.event_name != 'pull_request'
